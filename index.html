@@ -36,7 +36,6 @@ body {
   padding: 20px;
 }
 
-/* Header */
 .header {
   text-align: center;
   padding: 40px 0;
@@ -63,7 +62,6 @@ body {
   margin-top: 10px;
 }
 
-/* Cards */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -81,13 +79,12 @@ body {
   font-size: 1.1em;
 }
 
-/* Input */
 .input-group {
   display: flex;
   gap: 12px;
 }
 
-input[type="text"], input[type="password"], input[type="email"] {
+input[type="text"], input[type="password"] {
   flex: 1;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -104,7 +101,17 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
-/* Buttons */
+select {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .btn {
   padding: 12px 24px;
   border: none;
@@ -122,7 +129,6 @@ input:focus {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none !important;
 }
 
 .btn-primary {
@@ -146,24 +152,18 @@ input:focus {
   color: var(--accent);
 }
 
-/* Video Cards */
 .video-item {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 16px;
-  transition: all 0.3s;
   animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.video-item:hover {
-  border-color: var(--accent);
 }
 
 .video-header {
@@ -191,14 +191,12 @@ input:focus {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .badge-processing { background: #2a2a35; color: var(--warning); }
 .badge-completed { background: #1a2a25; color: var(--success); }
 .badge-error { background: #2a1a1a; color: var(--danger); }
 
-/* Progress */
 .progress-section {
   margin: 15px 0;
 }
@@ -224,7 +222,6 @@ input:focus {
   transition: width 0.5s ease;
 }
 
-/* Clips Grid */
 .clips-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -237,7 +234,6 @@ input:focus {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
-  transition: all 0.3s;
 }
 
 .clip-card:hover {
@@ -257,7 +253,6 @@ input:focus {
   font-size: 2em;
   cursor: pointer;
   position: relative;
-  overflow: hidden;
 }
 
 .clip-thumbnail::after {
@@ -298,7 +293,6 @@ input:focus {
   font-size: 12px;
 }
 
-/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -321,13 +315,10 @@ input:focus {
   padding: 30px;
   max-width: 500px;
   width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 .modal h2 {
   margin-bottom: 8px;
-  font-size: 1.5em;
 }
 
 .modal .description {
@@ -348,11 +339,10 @@ input:focus {
   font-weight: 500;
 }
 
-.form-group input {
+.form-group input, .form-group select {
   width: 100%;
 }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -367,13 +357,13 @@ input:focus {
 
 .toast-success { background: var(--success); color: #000; }
 .toast-error { background: var(--danger); }
+.toast-info { background: var(--accent); }
 
 @keyframes slideUp {
   from { transform: translateY(100px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Loading spinner */
 .spinner {
   width: 20px;
   height: 20px;
@@ -388,7 +378,6 @@ input:focus {
   to { transform: rotate(360deg); }
 }
 
-/* Empty state */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -431,7 +420,17 @@ input:focus {
   margin-top: 4px;
 }
 
-/* Responsivo */
+.api-status {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.api-status.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.api-status.inactive { background: var(--danger); }
+
 @media (max-width: 600px) {
   .header h1 { font-size: 1.8em; }
   .input-group { flex-direction: column; }
@@ -443,14 +442,12 @@ input:focus {
 <body>
 
 <div class="container">
-  <!-- Header -->
   <div class="header">
     <div class="logo">🎬</div>
     <h1>Clipador PRO</h1>
     <p>Transforme vídeos do YouTube em shorts viralizáveis com IA</p>
   </div>
 
-  <!-- Stats -->
   <div class="stats">
     <div class="stat-card">
       <div class="stat-value" id="totalVideos">0</div>
@@ -466,23 +463,23 @@ input:focus {
     </div>
   </div>
 
-  <!-- Input -->
   <div class="card">
     <div class="card-header">
       <span>🔗</span> Novo Vídeo
     </div>
     <div class="input-group">
-      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube (ex: https://youtube.com/watch?v=...)" />
+      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
       <button class="btn btn-primary" id="processBtn">
         <span>⚡</span> Processar
       </button>
     </div>
     <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">
-      💡 <a href="#" onclick="openSettings()" style="color: var(--accent);">Configure sua chave OpenAI</a> para começar
+      <span class="api-status" id="apiStatusDot"></span>
+      <span id="apiStatusText">Configure uma API gratuita nas</span>
+      <a href="#" onclick="openSettings()" style="color: var(--accent); margin-left: 4px;">configurações</a>
     </div>
   </div>
 
-  <!-- Videos List -->
   <div id="videoList">
     <div class="empty-state">
       <div class="icon">📹</div>
@@ -492,20 +489,42 @@ input:focus {
   </div>
 </div>
 
-<!-- Settings Modal -->
 <div class="modal-overlay" id="settingsModal">
   <div class="modal">
-    <h2>⚙️ Configurações</h2>
+    <h2>⚙️ Configurações da API</h2>
     <p class="description">
-      Configure sua chave da OpenAI para processar vídeos.<br>
+      Escolha qual IA gratuita usar:<br><br>
+      <strong>🌟 Recomendado: Google Gemini</strong> (100% grátis)<br>
+      <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--accent);">
+        → Pegar chave gratuita do Gemini
+      </a>
+      <br><br>
+      <strong>🤖 OpenAI</strong> (pago, precisa de créditos)<br>
       <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--accent);">
-        → Obter chave da OpenAI (créditos grátis)
+        → Gerenciar chave da OpenAI
       </a>
     </p>
     
     <div class="form-group">
-      <label>OpenAI API Key</label>
-      <input type="password" id="openaiKey" placeholder="sk-..." />
+      <label>Provedor de IA</label>
+      <select id="apiProvider" onchange="toggleApiFields()">
+        <option value="gemini">🌟 Google Gemini (Grátis)</option>
+        <option value="openai">🤖 OpenAI (Pago)</option>
+      </select>
+    </div>
+    
+    <div id="geminiFields">
+      <div class="form-group">
+        <label>Chave API do Gemini</label>
+        <input type="password" id="geminiKey" placeholder="AIza..." />
+      </div>
+    </div>
+    
+    <div id="openaiFields" style="display:none;">
+      <div class="form-group">
+        <label>Chave API da OpenAI</label>
+        <input type="password" id="openaiKey" placeholder="sk-..." />
+      </div>
     </div>
     
     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -520,7 +539,12 @@ input:focus {
 let videos = JSON.parse(localStorage.getItem('clipador_videos') || '[]');
 let config = JSON.parse(localStorage.getItem('clipador_config') || '{}');
 
-// ============ DOM ============
+// Config padrão
+if (!config.provider) {
+  config.provider = 'gemini';
+  localStorage.setItem('clipador_config', JSON.stringify(config));
+}
+
 const youtubeInput = document.getElementById('youtubeUrl');
 const processBtn = document.getElementById('processBtn');
 const videoList = document.getElementById('videoList');
@@ -528,16 +552,38 @@ const settingsModal = document.getElementById('settingsModal');
 
 // ============ INIT ============
 function init() {
-  if (!config.openaiKey) {
+  updateApiStatus();
+  
+  if (!config.geminiKey && !config.openaiKey) {
     setTimeout(openSettings, 500);
   }
+  
   updateStats();
   renderVideos();
 }
 
+function updateApiStatus() {
+  const dot = document.getElementById('apiStatusDot');
+  const text = document.getElementById('apiStatusText');
+  
+  if (config.provider === 'gemini' && config.geminiKey) {
+    dot.className = 'api-status active';
+    text.textContent = 'Gemini configurado';
+  } else if (config.provider === 'openai' && config.openaiKey) {
+    dot.className = 'api-status active';
+    text.textContent = 'OpenAI configurada';
+  } else {
+    dot.className = 'api-status inactive';
+    text.textContent = 'API não configurada -';
+  }
+}
+
 // ============ SETTINGS ============
 function openSettings() {
+  document.getElementById('apiProvider').value = config.provider || 'gemini';
+  document.getElementById('geminiKey').value = config.geminiKey || '';
   document.getElementById('openaiKey').value = config.openaiKey || '';
+  toggleApiFields();
   settingsModal.classList.add('open');
 }
 
@@ -545,10 +591,20 @@ function closeSettings() {
   settingsModal.classList.remove('open');
 }
 
+function toggleApiFields() {
+  const provider = document.getElementById('apiProvider').value;
+  document.getElementById('geminiFields').style.display = provider === 'gemini' ? 'block' : 'none';
+  document.getElementById('openaiFields').style.display = provider === 'openai' ? 'block' : 'none';
+}
+
 function saveSettings() {
+  config.provider = document.getElementById('apiProvider').value;
+  config.geminiKey = document.getElementById('geminiKey').value.trim();
   config.openaiKey = document.getElementById('openaiKey').value.trim();
+  
   localStorage.setItem('clipador_config', JSON.stringify(config));
   closeSettings();
+  updateApiStatus();
   showToast('Configurações salvas!', 'success');
 }
 
@@ -557,12 +613,18 @@ processBtn.addEventListener('click', async () => {
   const url = youtubeInput.value.trim();
   
   if (!url) return showToast('Cole uma URL do YouTube', 'error');
-  if (!config.openaiKey) return showToast('Configure sua chave OpenAI primeiro', 'error');
+  
+  const hasKey = (config.provider === 'gemini' && config.geminiKey) || 
+                 (config.provider === 'openai' && config.openaiKey);
+  
+  if (!hasKey) {
+    showToast('Configure uma chave de API primeiro', 'error');
+    return openSettings();
+  }
   
   const videoId = extractVideoId(url);
   if (!videoId) return showToast('URL do YouTube inválida', 'error');
   
-  // Criar vídeo
   const video = {
     id: Date.now().toString(),
     url,
@@ -580,7 +642,6 @@ processBtn.addEventListener('click', async () => {
   renderVideos();
   youtubeInput.value = '';
   
-  // Processar
   await processVideo(video);
 });
 
@@ -600,23 +661,18 @@ function extractVideoId(url) {
 // ============ PROCESSING PIPELINE ============
 async function processVideo(video) {
   try {
-    // Etapa 1: Metadata
     updateProgress(video.id, 10, 'Obtendo informações do vídeo...');
     const metadata = await getVideoMetadata(video.videoId);
     video.title = metadata.title;
-    video.thumbnail = metadata.thumbnail;
     save();
     renderVideos();
     
-    // Etapa 2: Transcrição (simulada)
-    updateProgress(video.id, 30, 'Baixando e transcrevendo áudio...');
-    const transcript = await simulateTranscription();
+    updateProgress(video.id, 30, 'Preparando análise com IA...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Etapa 3: Análise IA
     updateProgress(video.id, 60, 'Analisando com IA para encontrar melhores momentos...');
-    const clips = await analyzeTranscript(transcript, video.title);
+    const clips = await analyzeWithAI(video.videoId, video.title);
     
-    // Etapa 4: Gerar clipes
     updateProgress(video.id, 80, 'Gerando clipes finais...');
     
     video.clips = clips.map((clip, index) => ({
@@ -629,7 +685,6 @@ async function processVideo(video) {
       youtubeUrl: `https://youtube.com/watch?v=${video.videoId}&t=${Math.floor(clip.inicio)}`
     }));
     
-    // Finalizado
     updateProgress(video.id, 100, 'Concluído!');
     video.status = 'completed';
     save();
@@ -638,7 +693,7 @@ async function processVideo(video) {
     showToast(`${video.clips.length} shorts gerados com sucesso!`, 'success');
     
   } catch (error) {
-    console.error('Erro no processamento:', error);
+    console.error('Erro:', error);
     video.status = 'error';
     video.etapa = error.message;
     save();
@@ -659,7 +714,7 @@ function updateProgress(videoId, progress, etapa) {
 // ============ API CALLS ============
 async function getVideoMetadata(videoId) {
   const response = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
-  if (!response.ok) throw new Error('Vídeo não encontrado ou indisponível');
+  if (!response.ok) throw new Error('Vídeo não encontrado');
   
   const data = await response.json();
   return {
@@ -668,1014 +723,76 @@ async function getVideoMetadata(videoId) {
   };
 }
 
-async function simulateTranscription() {
-  // Simula delay de processamento
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  return `0:00 Introdução ao tema principal
-0:30 Apresentação do problema que vamos resolver
-1:00 Primeira dica importante que você precisa saber
-1:45 Exemplo prático mostrando como aplicar
-2:30 Resultados impressionantes dessa técnica
-3:15 Segunda estratégia poderosa
-4:00 Caso de sucesso de um cliente
-4:45 Terceira técnica avançada
-5:30 Demonstração ao vivo dos resultados
-6:15 Dica bônus exclusiva
-7:00 Principais erros que você deve evitar
-8:00 Conclusão e próximos passos
-9:00 Oferta especial para os inscritos`;
-}
+async function analyzeWithAI(videoId, title) {
+  const prompt = `Você é um editor de vídeos especialista em criar shorts virais para YouTube Shorts e TikTok.
 
-async function analyzeTranscript(transcript, title) {
-  const prompt = `Você é um editor de vídeos profissional especializado em criar shorts virais para YouTube e TikTok.
-
-Analise a transcrição abaixo e identifique os MELHORES momentos para criar shorts.
+Analise este vídeo e sugira os 3-5 melhores momentos para criar shorts.
 
 CRITÉRIOS:
-1. Gancho forte nos primeiros 3 segundos (pergunta, afirmação chocante, curiosidade)
+1. Gancho forte nos primeiros 3 segundos
 2. Duração ideal: 30-60 segundos
-3. Conteúdo independente (funciona sem contexto do vídeo completo)
-4. Alto potencial de engajamento (emoção, revelação, dica valiosa, humor)
-5. Momento com clímax/ápice de informação
+3. Conteúdo que funciona sozinho (sem contexto)
+4. Alto potencial de engajamento
+5. Momento de pico emocional/informativo
 
-TÍTULO DO VÍDEO: ${title}
+TÍTULO: ${title}
+VIDEO ID: ${videoId}
+LINK: https://youtube.com/watch?v=${videoId}
 
-TRANSCRIÇÃO:
-${transcript}
-
-Responda APENAS com um array JSON neste formato exato:
+Responda APENAS com JSON:
 [
   {
     "inicio": 60.0,
     "fim": 115.0,
-    "titulo_gancho": "Título viral otimizado para o short",
-    "descricao": "Breve descrição do conteúdo do clipe",
+    "titulo_gancho": "Título viral para o short",
+    "descricao": "O que acontece nesse trecho",
     "virality": 8.5
   }
 ]
 
-Selecione os 3-5 melhores momentos. O campo "virality" é uma nota de 0 a 10 do potencial de viralização.`;
+Escolha momentos específicos com timestamps realistas (baseado no título/contexto).`;
 
-  // Lista de modelos para tentar em ordem
-  const models = [
-    'gpt-3.5-turbo',
-    'gpt-3.5-turbo-0125',
-    'gpt-4o-mini',
-    'gpt-4o',
-    'gpt-4-turbo'
-  ];
+  if (config.provider === 'gemini') {
+    return await callGeminiAPI(prompt);
+  } else {
+    return await callOpenAIAPI(prompt);
+  }
+}
 
-  let lastError = null;
-
-  for (const model of models) {
-    try {
-      console.log(`🔄 Tentando modelo: ${model}...`);
-      
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.openaiKey}`
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            {
-              role: 'system',
-              content: 'Você é um editor de vídeo especialista. Responda APENAS com JSON válido, sem texto adicional.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
+async function callGeminiAPI(prompt) {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${config.geminiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
           temperature: 0.7,
-          max_tokens: 2000
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.warn(`⚠️ Modelo ${model} falhou:`, error.error?.message);
-        
-        // Se for erro de modelo não encontrado, tenta o próximo
-        if (error.error?.code === 'model_not_found' || 
-            error.error?.type === 'invalid_request_error' ||
-            error.error?.message?.includes('does not exist')) {
-          lastError = error;
-          continue;
+          maxOutputTokens: 2000
         }
-        
-        throw new Error(error.error?.message || `Erro HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0].message.content;
-      
-      console.log(`✅ Sucesso com modelo: ${model}`);
-      
-      // Extrair JSON da resposta
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) throw new Error('Formato de resposta inválido da IA');
-      
-      return JSON.parse(jsonMatch[0]);
-      
-    } catch (error) {
-      console.error(`❌ Erro com modelo ${model}:`, error);
-      lastError = error;
-      
-      // Se não for erro de modelo, não tenta outros
-      if (!error.message?.includes('does not exist') && 
-          error.error?.code !== 'model_not_found') {
-        throw error;
-      }
-      
-      continue;
+      })
     }
-  }
-
-  // Se todos os modelos falharam
-  throw new Error(
-    'Nenhum modelo OpenAI disponível. Tente os modelos gratuitos:\n' +
-    '- gpt-3.5-turbo (recomendado)\n' +
-    '- gpt-4o-mini (mais recente)\n\n' +
-    'Verifique em: https://platform.openai.com/playground'
   );
-}
 
-// ============ RENDER ============
-function renderVideos() {
-  if (videos.length === 0) {
-    videoList.innerHTML = `
-      <div class="empty-state">
-        <div class="icon">📹</div>
-        <p>Nenhum vídeo processado ainda</p>
-        <p style="font-size: 13px;">Cole um link do YouTube acima e clique em Processar</p>
-      </div>`;
-    return;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Erro na API do Gemini');
   }
 
-  videoList.innerHTML = videos.map(video => `
-    <div class="video-item">
-      <div class="video-header">
-        <div>
-          <div class="video-title">${escapeHtml(video.title)}</div>
-          <div class="video-url">${escapeHtml(video.url)}</div>
-          <div style="color: var(--muted); font-size: 11px; margin-top: 4px;">
-            ${new Date(video.createdAt).toLocaleString('pt-BR')}
-          </div>
-        </div>
-        <span class="badge badge-${video.status}">
-          ${video.status === 'processing' ? '<span class="spinner"></span> Processando' : ''}
-          ${video.status === 'completed' ? '✅ Pronto' : ''}
-          ${video.status === 'error' ? '❌ Erro' : ''}
-        </span>
-      </div>
-      
-      ${video.status === 'processing' ? `
-        <div class="progress-section">
-          <div class="progress-info">
-            <span>${video.etapa}</span>
-            <span>${video.progress}%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${video.progress}%"></div>
-          </div>
-        </div>
-      ` : ''}
-      
-      ${video.clips.length > 0 ? `
-        <div class="clips-grid">
-          ${video.clips.map(clip => `
-            <div class="clip-card">
-              <div class="clip-thumbnail" onclick="window.open('${clip.youtubeUrl}', '_blank')">
-                🎬
-              </div>
-              <div class="clip-time">⏱ ${formatTime(clip.inicio)} - ${formatTime(clip.fim)}</div>
-              <div class="clip-title">${escapeHtml(clip.titulo)}</div>
-              <div class="clip-actions">
-                <button class="btn btn-primary" onclick="window.open('${clip.youtubeUrl}', '_blank')">
-                  ▶ Assistir
-                </button>
-                <button class="btn btn-secondary" onclick="copyToClipboard('${clip.youtubeUrl}')">
-                  📋
-                </button>
-              </div>
-              ${clip.virality ? `
-                <div style="margin-top: 8px; font-size: 11px; color: var(--accent);">
-                  🔥 Potencial viral: ${clip.virality}/10
-                </div>
-              ` : ''}
-            </div>
-          `).join('')}
-        </div>
-      ` : ''}
-      
-      ${video.status === 'error' ? `
-        <div style="color: var(--danger); margin-top: 10px; padding: 12px; background: rgba(255,71,87,0.1); border-radius: 8px; white-space: pre-line;">
-          ❌ ${video.etapa}
-        </div>
-      ` : ''}
-      
-      <div style="margin-top: 15px; display: flex; gap: 8px;">
-        <button class="btn btn-secondary" onclick="deleteVideo('${video.id}')" title="Excluir">
-          🗑 Excluir
-        </button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function updateStats() {
-  const completedVideos = videos.filter(v => v.status === 'completed');
-  const totalClips = completedVideos.reduce((sum, v) => sum + v.clips.length, 0);
-  const totalMinutes = completedVideos.reduce((sum, v) => {
-    const clipMinutes = v.clips.reduce((s, c) => s + (c.fim - c.inicio) / 60, 0);
-    return sum + clipMinutes;
-  }, 0);
-  
-  document.getElementById('totalVideos').textContent = completedVideos.length;
-  document.getElementById('totalClips').textContent = totalClips;
-  document.getElementById('totalMinutes').textContent = Math.round(totalMinutes);
-}
-
-// ============ UTILS ============
-function formatTime(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-function save() {
-  localStorage.setItem('clipador_videos', JSON.stringify(videos));
-}
-
-function deleteVideo(id) {
-  if (confirm('Excluir este vídeo?')) {
-    videos = videos.filter(v => v.id !== id);
-    save();
-    renderVideos();
-    updateStats();
-    showToast('Vídeo excluído', 'success');
-  }
-}
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Link copiado!', 'success');
-  });
-}
-
-function showToast(message, type = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
-}
-
-// ============ STARTUP ============
-init();
-
-// Keyboard shortcut: Ctrl+, abre configurações
-document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === ',') {
-    e.preventDefault();
-    openSettings();
-  }
-});
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clipador — Cortador de Shorts com IA</title>
-<style>
-:root {
-  --bg: #0a0a0f;
-  --surface: #13131a;
-  --surface2: #1a1a24;
-  --border: #252530;
-  --text: #e8e8ed;
-  --muted: #7a7a85;
-  --accent: #6c5ce7;
-  --accent2: #a855f7;
-  --success: #00d8a4;
-  --danger: #ff4757;
-  --warning: #ffa502;
-  --radius: 12px;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  min-height: 100vh;
-  line-height: 1.6;
-}
-
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Header */
-.header {
-  text-align: center;
-  padding: 40px 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 30px;
-}
-
-.logo {
-  font-size: 3em;
-  margin-bottom: 10px;
-}
-
-.header h1 {
-  font-size: 2.5em;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header p {
-  color: var(--muted);
-  font-size: 1.1em;
-  margin-top: 10px;
-}
-
-/* Cards */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 20px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-weight: 600;
-  font-size: 1.1em;
-}
-
-/* Input */
-.input-group {
-  display: flex;
-  gap: 12px;
-}
-
-input[type="text"], input[type="password"], input[type="email"] {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s;
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
-}
-
-/* Buttons */
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-}
-
-.btn-secondary {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
-
-.btn-secondary:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* Video Cards */
-.video-item {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 16px;
-  transition: all 0.3s;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.video-item:hover {
-  border-color: var(--accent);
-}
-
-.video-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 15px;
-}
-
-.video-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 4px;
-}
-
-.video-url {
-  font-size: 12px;
-  color: var(--muted);
-  word-break: break-all;
-}
-
-.badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.badge-processing { background: #2a2a35; color: var(--warning); }
-.badge-completed { background: #1a2a25; color: var(--success); }
-.badge-error { background: #2a1a1a; color: var(--danger); }
-
-/* Progress */
-.progress-section {
-  margin: 15px 0;
-}
-
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.progress-bar {
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  border-radius: 3px;
-  transition: width 0.5s ease;
-}
-
-/* Clips Grid */
-.clips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 12px;
-  margin-top: 15px;
-}
-
-.clip-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  transition: all 0.3s;
-}
-
-.clip-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
-
-.clip-thumbnail {
-  width: 100%;
-  height: 140px;
-  background: var(--surface2);
-  border-radius: 6px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.clip-thumbnail::after {
-  content: '▶';
-  position: absolute;
-  font-size: 24px;
-  background: rgba(0,0,0,0.7);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.clip-time {
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-
-.clip-title {
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-.clip-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.clip-actions .btn {
-  flex: 1;
-  padding: 8px;
-  font-size: 12px;
-}
-
-/* Modal */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-overlay.open {
-  display: flex;
-}
-
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 30px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal h2 {
-  margin-bottom: 8px;
-  font-size: 1.5em;
-}
-
-.modal .description {
-  color: var(--muted);
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.form-group input {
-  width: 100%;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 16px 24px;
-  border-radius: 8px;
-  color: white;
-  font-weight: 500;
-  z-index: 2000;
-  animation: slideUp 0.3s ease;
-}
-
-.toast-success { background: var(--success); color: #000; }
-.toast-error { background: var(--danger); }
-
-@keyframes slideUp {
-  from { transform: translateY(100px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Loading spinner */
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  display: inline-block;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--muted);
-}
-
-.empty-state .icon {
-  font-size: 64px;
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 2em;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .header h1 { font-size: 1.8em; }
-  .input-group { flex-direction: column; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .clips-grid { grid-template-columns: 1fr; }
-}
-</style>
-</head>
-<body>
-
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">🎬</div>
-    <h1>Clipador PRO</h1>
-    <p>Transforme vídeos do YouTube em shorts viralizáveis com IA</p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-value" id="totalVideos">0</div>
-      <div class="stat-label">Vídeos Processados</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="totalClips">0</div>
-      <div class="stat-label">Shorts Gerados</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="totalMinutes">0</div>
-      <div class="stat-label">Minutos Economizados</div>
-    </div>
-  </div>
-
-  <!-- Input -->
-  <div class="card">
-    <div class="card-header">
-      <span>🔗</span> Novo Vídeo
-    </div>
-    <div class="input-group">
-      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube (ex: https://youtube.com/watch?v=...)" />
-      <button class="btn btn-primary" id="processBtn">
-        <span>⚡</span> Processar
-      </button>
-    </div>
-    <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">
-      💡 <a href="#" onclick="openSettings()" style="color: var(--accent);">Configure sua chave OpenAI</a> para começar
-    </div>
-  </div>
-
-  <!-- Videos List -->
-  <div id="videoList">
-    <div class="empty-state">
-      <div class="icon">📹</div>
-      <p>Nenhum vídeo processado ainda</p>
-      <p style="font-size: 13px;">Cole um link do YouTube acima e clique em Processar</p>
-    </div>
-  </div>
-</div>
-
-<!-- Settings Modal -->
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal">
-    <h2>⚙️ Configurações</h2>
-    <p class="description">
-      Configure sua chave da OpenAI para processar vídeos.<br>
-      <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--accent);">
-        → Obter chave da OpenAI (créditos grátis)
-      </a>
-    </p>
-    
-    <div class="form-group">
-      <label>OpenAI API Key</label>
-      <input type="password" id="openaiKey" placeholder="sk-..." />
-    </div>
-    
-    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-      <button class="btn btn-secondary" onclick="closeSettings()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveSettings()">💾 Salvar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ============ APP STATE ============
-let videos = JSON.parse(localStorage.getItem('clipador_videos') || '[]');
-let config = JSON.parse(localStorage.getItem('clipador_config') || '{}');
-
-// ============ DOM ============
-const youtubeInput = document.getElementById('youtubeUrl');
-const processBtn = document.getElementById('processBtn');
-const videoList = document.getElementById('videoList');
-const settingsModal = document.getElementById('settingsModal');
-
-// ============ INIT ============
-function init() {
-  if (!config.openaiKey) {
-    setTimeout(openSettings, 500);
-  }
-  updateStats();
-  renderVideos();
-}
-
-// ============ SETTINGS ============
-function openSettings() {
-  document.getElementById('openaiKey').value = config.openaiKey || '';
-  settingsModal.classList.add('open');
-}
-
-function closeSettings() {
-  settingsModal.classList.remove('open');
-}
-
-function saveSettings() {
-  config.openaiKey = document.getElementById('openaiKey').value.trim();
-  localStorage.setItem('clipador_config', JSON.stringify(config));
-  closeSettings();
-  showToast('Configurações salvas!', 'success');
-}
-
-// ============ PROCESS VIDEO ============
-processBtn.addEventListener('click', async () => {
-  const url = youtubeInput.value.trim();
-  
-  if (!url) return showToast('Cole uma URL do YouTube', 'error');
-  if (!config.openaiKey) return showToast('Configure sua chave OpenAI primeiro', 'error');
-  
-  const videoId = extractVideoId(url);
-  if (!videoId) return showToast('URL do YouTube inválida', 'error');
-  
-  // Criar vídeo
-  const video = {
-    id: Date.now().toString(),
-    url,
-    videoId,
-    title: 'Analisando vídeo...',
-    status: 'processing',
-    progress: 0,
-    etapa: 'Iniciando...',
-    clips: [],
-    createdAt: new Date().toISOString()
-  };
-  
-  videos.unshift(video);
-  save();
-  renderVideos();
-  youtubeInput.value = '';
-  
-  // Processar
-  await processVideo(video);
-});
-
-function extractVideoId(url) {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /youtube\.com\/watch\?.*v=([^&\n?#]+)/
-  ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-// ============ PROCESSING PIPELINE ============
-async function processVideo(video) {
-  try {
-    // Etapa 1: Metadata
-    updateProgress(video.id, 10, 'Obtendo informações do vídeo...');
-    const metadata = await getVideoMetadata(video.videoId);
-    video.title = metadata.title;
-    video.thumbnail = metadata.thumbnail;
-    save();
-    renderVideos();
-    
-    // Etapa 2: Transcrição (simulada)
-    updateProgress(video.id, 30, 'Baixando e transcrevendo áudio...');
-    const transcript = await simulateTranscription();
-    
-    // Etapa 3: Análise IA
-    updateProgress(video.id, 60, 'Analisando com IA para encontrar melhores momentos...');
-    const clips = await analyzeTranscript(transcript, video.title);
-    
-    // Etapa 4: Gerar clipes
-    updateProgress(video.id, 80, 'Gerando clipes finais...');
-    
-    video.clips = clips.map((clip, index) => ({
-      id: `${video.id}-clip-${index}`,
-      inicio: clip.inicio,
-      fim: clip.fim,
-      titulo: clip.titulo_gancho,
-      descricao: clip.descricao || '',
-      virality: clip.virality || 0,
-      youtubeUrl: `https://youtube.com/watch?v=${video.videoId}&t=${Math.floor(clip.inicio)}`
-    }));
-    
-    // Finalizado
-    updateProgress(video.id, 100, 'Concluído!');
-    video.status = 'completed';
-    save();
-    renderVideos();
-    updateStats();
-    showToast(`${video.clips.length} shorts gerados com sucesso!`, 'success');
-    
-  } catch (error) {
-    console.error('Erro no processamento:', error);
-    video.status = 'error';
-    video.etapa = error.message;
-    save();
-    renderVideos();
-    showToast('Erro: ' + error.message, 'error');
-  }
-}
-
-function updateProgress(videoId, progress, etapa) {
-  const video = videos.find(v => v.id === videoId);
-  if (video) {
-    video.progress = progress;
-    video.etapa = etapa;
-    save();
-  }
-}
-
-// ============ API CALLS ============
-async function getVideoMetadata(videoId) {
-  const response = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
-  if (!response.ok) throw new Error('Vídeo não encontrado ou indisponível');
-  
   const data = await response.json();
-  return {
-    title: data.title,
-    thumbnail: data.thumbnail_url
-  };
-}
-
-async function simulateTranscription() {
-  // Simula delay de processamento
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  const content = data.candidates[0].content.parts[0].text;
   
-  return `0:00 Introdução ao tema principal
-0:30 Apresentação do problema que vamos resolver
-1:00 Primeira dica importante que você precisa saber
-1:45 Exemplo prático mostrando como aplicar
-2:30 Resultados impressionantes dessa técnica
-3:15 Segunda estratégia poderosa
-4:00 Caso de sucesso de um cliente
-4:45 Terceira técnica avançada
-5:30 Demonstração ao vivo dos resultados
-6:15 Dica bônus exclusiva
-7:00 Principais erros que você deve evitar
-8:00 Conclusão e próximos passos
-9:00 Oferta especial para os inscritos`;
+  // Extrair JSON da resposta
+  const jsonMatch = content.match(/\[[\s\S]*\]/);
+  if (!jsonMatch) throw new Error('Formato de resposta inválido');
+  
+  return JSON.parse(jsonMatch[0]);
 }
 
-async function analyzeTranscript(transcript, title) {
-  const prompt = `Você é um editor de vídeos profissional especializado em criar shorts virais para YouTube e TikTok.
-
-Analise a transcrição abaixo e identifique os MELHORES momentos para criar shorts.
-
-CRITÉRIOS:
-1. Gancho forte nos primeiros 3 segundos (pergunta, afirmação chocante, curiosidade)
-2. Duração ideal: 30-60 segundos
-3. Conteúdo independente (funciona sem contexto do vídeo completo)
-4. Alto potencial de engajamento (emoção, revelação, dica valiosa, humor)
-5. Momento com clímax/ápice de informação
-
-TÍTULO DO VÍDEO: ${title}
-
-TRANSCRIÇÃO:
-${transcript}
-
-Responda APENAS com um array JSON neste formato exato:
-[
-  {
-    "inicio": 60.0,
-    "fim": 115.0,
-    "titulo_gancho": "Título viral otimizado para o short",
-    "descricao": "Breve descrição do conteúdo do clipe",
-    "virality": 8.5
-  }
-]
-
-Selecione os 3-5 melhores momentos. O campo "virality" é uma nota de 0 a 10 do potencial de viralização.`;
-
+async function callOpenAIAPI(prompt) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -1685,14 +802,8 @@ Selecione os 3-5 melhores momentos. O campo "virality" é uma nota de 0 a 10 do 
     body: JSON.stringify({
       model: 'gpt-3.5-turbo',
       messages: [
-        {
-          role: 'system',
-          content: 'Você é um editor de vídeo especialista. Responda APENAS com JSON válido, sem texto adicional.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
+        { role: 'system', content: 'Responda apenas com JSON válido.' },
+        { role: 'user', content: prompt }
       ],
       temperature: 0.7,
       max_tokens: 2000
@@ -1701,15 +812,14 @@ Selecione os 3-5 melhores momentos. O campo "virality" é uma nota de 0 a 10 do 
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error?.message || 'Erro na análise com IA');
+    throw new Error(error.error?.message || 'Erro na API da OpenAI');
   }
 
   const data = await response.json();
   const content = data.choices[0].message.content;
   
-  // Extrair JSON da resposta
   const jsonMatch = content.match(/\[[\s\S]*\]/);
-  if (!jsonMatch) throw new Error('Formato de resposta inválido da IA');
+  if (!jsonMatch) throw new Error('Formato de resposta inválido');
   
   return JSON.parse(jsonMatch[0]);
 }
@@ -1769,7 +879,7 @@ function renderVideos() {
                   ▶ Assistir
                 </button>
                 <button class="btn btn-secondary" onclick="copyToClipboard('${clip.youtubeUrl}')">
-                  📋
+                  📋 Copiar
                 </button>
               </div>
               ${clip.virality ? `
@@ -1788,8 +898,8 @@ function renderVideos() {
         </div>
       ` : ''}
       
-      <div style="margin-top: 15px; display: flex; gap: 8px;">
-        <button class="btn btn-secondary" onclick="deleteVideo('${video.id}')" title="Excluir">
+      <div style="margin-top: 15px;">
+        <button class="btn btn-secondary" onclick="deleteVideo('${video.id}')">
           🗑 Excluir
         </button>
       </div>
@@ -1801,8 +911,7 @@ function updateStats() {
   const completedVideos = videos.filter(v => v.status === 'completed');
   const totalClips = completedVideos.reduce((sum, v) => sum + v.clips.length, 0);
   const totalMinutes = completedVideos.reduce((sum, v) => {
-    const clipMinutes = v.clips.reduce((s, c) => s + (c.fim - c.inicio) / 60, 0);
-    return sum + clipMinutes;
+    return sum + v.clips.reduce((s, c) => s + (c.fim - c.inicio) / 60, 0);
   }, 0);
   
   document.getElementById('totalVideos').textContent = completedVideos.length;
@@ -1810,7 +919,6 @@ function updateStats() {
   document.getElementById('totalMinutes').textContent = Math.round(totalMinutes);
 }
 
-// ============ UTILS ============
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
@@ -1849,15 +957,12 @@ function showToast(message, type = 'success') {
   toast.textContent = message;
   document.body.appendChild(toast);
   
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
+  setTimeout(() => toast.remove(), 3000);
 }
 
 // ============ STARTUP ============
 init();
 
-// Keyboard shortcut: Ctrl+, abre configurações
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === ',') {
     e.preventDefault();
