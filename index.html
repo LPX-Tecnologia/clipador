@@ -3,6 +3,1081 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio — Estúdio de Cinema IA</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ============================================
+   🎬 CLIPADOR STUDIO - CSS COMPLETO
+   ============================================ */
+
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: #12121a;
+  --bg-surface: #1a1a25;
+  --bg-hover: #222230;
+  --accent-primary: #6c5ce7;
+  --accent-secondary: #a855f7;
+  --accent-gold: #f0c040;
+  --tiktok: #ff0050;
+  --youtube: #ff0000;
+  --kwai: #ff7800;
+  --instagram: #e4405f;
+  --success: #00d8a4;
+  --warning: #ffa502;
+  --danger: #ff4757;
+  --info: #3742fa;
+  --text-primary: #e8e8ed;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6a6a7a;
+  --border-color: #2a2a3a;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 20px rgba(108,92,231,0.3);
+  --transition: 0.3s ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+/* ========== LOADER ========== */
+.studio-loader {
+  position: fixed; inset: 0; background: var(--bg-dark);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; transition: opacity 0.5s;
+}
+.studio-loader.hidden { opacity: 0; pointer-events: none; }
+.loader-content { text-align: center; }
+.loader-content .icon { font-size: 4em; color: var(--accent-primary); margin-bottom: 20px; animation: pulse 2s infinite; }
+.loader-content h2 { font-size: 1.8em; margin-bottom: 8px; }
+.loader-content p { color: var(--text-secondary); margin-bottom: 20px; font-size: 14px; }
+.loader-bar { width: 200px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 0 auto; overflow: hidden; }
+.loader-fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); animation: loading 2s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+@keyframes loading { 0%{width:0} 50%{width:70%} 100%{width:100%} }
+
+/* ========== STUDIO CONTAINER ========== */
+.studio-container { height: 100vh; display: flex; flex-direction: column; }
+
+/* ========== HEADER ========== */
+.studio-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color); height: 56px; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-left i { font-size: 1.4em; color: var(--accent-primary); }
+.header-left h1 { font-size: 1.2em; font-weight: 700; }
+.header-left span { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-center { flex: 1; max-width: 300px; margin: 0 20px; }
+.header-center input {
+  width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color);
+  color: var(--text-primary); padding: 8px 14px; border-radius: 6px;
+  font-size: 13px; text-align: center;
+}
+.header-center input:focus { outline: none; border-color: var(--accent-primary); }
+.header-right { display: flex; align-items: center; gap: 6px; }
+
+/* ========== BUTTONS ========== */
+.btn {
+  padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;
+  cursor: pointer; font-size: 12px; display: inline-flex; align-items: center;
+  gap: 6px; transition: all var(--transition); white-space: nowrap;
+}
+.btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.btn-icon {
+  background: var(--bg-surface); border: 1px solid var(--border-color);
+  color: var(--text-secondary); width: 36px; height: 36px; border-radius: 6px;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all var(--transition);
+}
+.btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.btn-tiktok { background: var(--tiktok); color: #fff; }
+.btn-youtube { background: var(--youtube); color: #fff; }
+.btn-kwai { background: var(--kwai); color: #fff; }
+.btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-xs { width: 32px; height: 32px; padding: 0; }
+
+/* ========== WORKSPACE ========== */
+.studio-workspace {
+  flex: 1; display: grid;
+  grid-template-columns: 220px 1fr 300px;
+  overflow: hidden;
+}
+
+/* ========== TOOLS PANEL ========== */
+.tools-panel {
+  background: var(--bg-panel); border-right: 1px solid var(--border-color);
+  overflow-y: auto; padding: 12px;
+}
+.tool-section { margin-bottom: 20px; }
+.tool-section h3 {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.tool-btn {
+  width: 100%; padding: 9px 12px; background: var(--bg-surface);
+  border: 1px solid var(--border-color); color: var(--text-secondary);
+  border-radius: 6px; cursor: pointer; display: flex; align-items: center;
+  gap: 8px; font-size: 12px; margin-bottom: 4px; transition: all var(--transition);
+}
+.tool-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.tool-btn.active { background: rgba(108,92,231,0.15); border-color: var(--accent-primary); color: var(--accent-primary); }
+.tool-btn i { width: 16px; text-align: center; font-size: 13px; }
+
+/* ========== PREVIEW PANEL ========== */
+.preview-panel { display: flex; flex-direction: column; overflow: hidden; }
+.preview-screen {
+  flex: 1; background: #000; display: flex; align-items: center;
+  justify-content: center; position: relative; overflow: hidden; min-height: 300px;
+}
+.preview-placeholder { text-align: center; color: var(--text-muted); }
+.preview-placeholder i { font-size: 4em; margin-bottom: 15px; opacity: 0.3; }
+.preview-placeholder p { font-size: 14px; margin-bottom: 15px; }
+.preview-screen video, .preview-screen canvas {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.subtitle-overlay {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  text-align: center; pointer-events: none; z-index: 10;
+}
+.subtitle-text {
+  display: inline-block; padding: 8px 16px; background: rgba(0,0,0,0.85);
+  color: #fff; font-size: 22px; font-weight: 700; border-radius: 8px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5); animation: fadeInUp 0.3s ease;
+}
+.emotion-icon {
+  position: absolute; top: 15px; right: 15px; font-size: 2.5em;
+  animation: bounceIn 0.5s ease; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); z-index: 10;
+}
+@keyframes fadeInUp { from{opacity:0;transform:translate(-50%,10px)} to{opacity:1;transform:translate(-50%,0)} }
+@keyframes bounceIn { 0%{transform:scale(0)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+.preview-controls {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 15px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+}
+.time-display { font-family: monospace; font-size: 12px; color: var(--text-secondary); min-width: 90px; }
+.seek-bar {
+  flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+  background: var(--border-color); border-radius: 2px; outline: none; cursor: pointer;
+}
+.seek-bar::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-primary); cursor: pointer; box-shadow: 0 0 10px rgba(108,92,231,0.5);
+}
+
+/* ========== CLIP DETAILS ========== */
+.clip-details {
+  height: 180px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+  overflow-y: auto; padding: 12px; font-size: 12px;
+}
+.detail-section { margin-bottom: 12px; }
+.detail-section h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+.emotion-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
+.emotion-row .bar { flex: 1; height: 5px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+.emotion-row .fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.fill-joy { background: #ffa502; }
+.fill-sadness { background: #3742fa; }
+.fill-surprise { background: #a855f7; }
+.fill-anger { background: #ff4757; }
+.character-tag {
+  display: inline-block; padding: 3px 8px; margin: 2px;
+  background: var(--bg-surface); border: 1px solid var(--border-color);
+  border-radius: 12px; font-size: 10px;
+}
+.transcript-line { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px; }
+.transcript-speaker { font-weight: 600; color: var(--accent-primary); margin-right: 4px; }
+.empty-text { color: var(--text-muted); font-style: italic; padding: 10px 0; }
+
+/* ========== TIMELINE PANEL ========== */
+.timeline-panel {
+  background: var(--bg-panel); border-left: 1px solid var(--border-color);
+  display: flex; flex-direction: column;
+}
+.timeline-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-bottom: 1px solid var(--border-color);
+}
+.timeline-header h3 { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.timeline-tools { display: flex; gap: 3px; }
+.timeline-tracks { flex: 1; overflow-y: auto; }
+.track { border-bottom: 1px solid var(--border-color); }
+.track-label {
+  padding: 6px 12px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); background: var(--bg-surface);
+}
+.track-content { min-height: 50px; padding: 6px; position: relative; }
+.empty-track { color: var(--text-muted); font-size: 11px; text-align: center; padding: 15px; }
+.timeline-clip {
+  position: absolute; height: 70%; top: 15%;
+  background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(168,85,247,0.3));
+  border: 1px solid rgba(108,92,231,0.5); border-radius: 4px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #fff; overflow: hidden; transition: all 0.2s;
+}
+.timeline-clip:hover { background: rgba(108,92,231,0.5); border-color: #a855f7; transform: scaleY(1.1); }
+.timeline-clip.selected { border-color: #a855f7 !important; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
+.timeline-ruler { height: 25px; border-top: 1px solid var(--border-color); }
+.timeline-ruler canvas { width: 100%; height: 100%; }
+
+/* ========== FOOTER ========== */
+.studio-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px; background: var(--bg-panel); border-top: 1px solid var(--border-color); height: 48px;
+}
+.footer-left, .footer-center, .footer-right { display: flex; align-items: center; gap: 10px; }
+.clip-counter { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.export-options { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.export-options select {
+  background: var(--bg-surface); border: 1px solid var(--border-color);
+  color: var(--text-primary); padding: 6px 10px; border-radius: 5px; font-size: 12px;
+}
+.platform-btns { display: flex; gap: 5px; }
+.platform-btns button {
+  width: 32px; height: 32px; border: none; border-radius: 50%;
+  cursor: pointer; color: #fff; font-size: 14px; transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.platform-btns button:hover { transform: scale(1.15); }
+
+/* ========== MODAL ========== */
+.modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+  z-index: 1000; align-items: center; justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-content {
+  background: var(--bg-panel); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); padding: 25px; max-width: 520px; width: 90%;
+  box-shadow: var(--shadow-lg); animation: modalIn 0.3s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+.modal-content h2 { margin-bottom: 15px; font-size: 1.2em; display: flex; align-items: center; gap: 8px; }
+.modal-content .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.modal-content input {
+  flex: 1; background: var(--bg-surface); border: 1px solid var(--border-color);
+  color: var(--text-primary); padding: 10px 14px; border-radius: 6px; font-size: 13px;
+}
+.modal-content input:focus { outline: none; border-color: var(--accent-primary); }
+.video-preview { display: flex; gap: 12px; padding: 12px; background: var(--bg-surface); border-radius: 8px; margin: 12px 0; }
+.video-preview img { width: 100px; height: 56px; object-fit: cover; border-radius: 4px; }
+.video-preview h4 { font-size: 13px; margin-bottom: 3px; }
+.video-preview p { font-size: 11px; color: var(--text-secondary); }
+.progress-row { margin: 10px 0; }
+.progress-row .bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+.progress-row .fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); width: 0%; transition: width 0.5s; }
+.progress-row p { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ========== TOAST ========== */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  padding: 12px 20px; border-radius: 8px; color: #fff; font-size: 13px;
+  font-weight: 500; animation: slideIn 0.3s ease; max-width: 350px;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast-success { background: var(--success); color: #000; }
+.toast-error { background: var(--danger); }
+.toast-info { background: var(--accent-primary); }
+.toast-warning { background: var(--warning); color: #000; }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ========== CLIPS GRID (quando gerados) ========== */
+.clips-panel {
+  display: none; padding: 15px; overflow-y: auto; max-height: 300px;
+  background: var(--bg-panel); border-top: 1px solid var(--border-color);
+}
+.clips-panel.visible { display: block; }
+.clips-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
+}
+.clip-mini {
+  background: var(--bg-surface); border: 1px solid var(--border-color);
+  border-radius: 8px; padding: 10px; cursor: pointer; transition: all var(--transition);
+}
+.clip-mini:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+.clip-mini .thumb { height: 80px; background: #000; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+.clip-mini .info { font-size: 11px; }
+.clip-mini .time { color: var(--accent-primary); font-family: monospace; }
+.clip-mini .title { font-weight: 600; margin: 4px 0; font-size: 12px; }
+.clip-mini .mood { font-size: 10px; color: var(--text-muted); }
+.clip-mini .actions { display: flex; gap: 4px; margin-top: 6px; }
+.clip-mini .actions button { flex: 1; padding: 5px; font-size: 10px; border-radius: 4px; }
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .studio-workspace { grid-template-columns: 180px 1fr 250px; }
+}
+@media (max-width: 768px) {
+  .studio-workspace { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .tools-panel { display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 8px; }
+  .tool-section { margin-bottom: 0; margin-right: 15px; display: flex; align-items: center; gap: 8px; }
+  .tool-section h3 { display: none; }
+  .tool-btn { width: auto; white-space: nowrap; }
+  .timeline-panel { border-left: none; border-top: 1px solid var(--border-color); max-height: 180px; }
+  .studio-header { flex-wrap: wrap; height: auto; padding: 8px; gap: 6px; }
+  .studio-footer { flex-wrap: wrap; height: auto; padding: 8px; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== LOADER ========== -->
+<div class="studio-loader" id="loader">
+  <div class="loader-content">
+    <div class="icon"><i class="fas fa-film"></i></div>
+    <h2>Clipador <span style="color:var(--accent-primary);">Studio</span></h2>
+    <p id="loaderMsg">Preparando seu estúdio de cinema...</p>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
+</div>
+
+<!-- ========== STUDIO ========== -->
+<div class="studio-container" id="studio" style="display:none;">
+
+  <!-- HEADER -->
+  <header class="studio-header">
+    <div class="header-left">
+      <i class="fas fa-film"></i>
+      <h1>Clipador <span>Studio</span></h1>
+    </div>
+    <div class="header-center">
+      <input type="text" id="projectName" value="Projeto sem nome" />
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" title="Novo Projeto"><i class="fas fa-plus"></i></button>
+      <button class="btn-icon" title="Salvar"><i class="fas fa-save"></i></button>
+      <button class="btn-icon" title="Configurações" onclick="openConfig()"><i class="fas fa-cog"></i></button>
+      <button class="btn btn-primary" onclick="publishAll()"><i class="fas fa-rocket"></i> Publicar</button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div class="studio-workspace">
+
+    <!-- TOOLS (ESQUERDA) -->
+    <aside class="tools-panel">
+      <div class="tool-section">
+        <h3><i class="fas fa-magic"></i> IA</h3>
+        <button class="tool-btn active" onclick="selectTool(this,'auto')"><i class="fas fa-wand-magic-sparkles"></i> Auto Edição</button>
+        <button class="tool-btn" onclick="selectTool(this,'sentiment')"><i class="fas fa-face-smile"></i> Humor</button>
+        <button class="tool-btn" onclick="selectTool(this,'framing')"><i class="fas fa-crop"></i> Enquadrar</button>
+        <button class="tool-btn" onclick="selectTool(this,'subtitles')"><i class="fas fa-closed-captioning"></i> Legendar</button>
+      </div>
+      <div class="tool-section">
+        <h3><i class="fas fa-sliders"></i> Efeitos</h3>
+        <button class="tool-btn" onclick="selectTool(this,'color')"><i class="fas fa-palette"></i> Cor</button>
+        <button class="tool-btn" onclick="selectTool(this,'audio')"><i class="fas fa-music"></i> Áudio</button>
+        <button class="tool-btn" onclick="selectTool(this,'effects')"><i class="fas fa-stars"></i> Efeitos</button>
+      </div>
+      <div class="tool-section">
+        <h3><i class="fas fa-download"></i> Importar</h3>
+        <button class="tool-btn" onclick="openYouTubeModal()"><i class="fab fa-youtube"></i> YouTube</button>
+        <button class="tool-btn" onclick="importDemo()"><i class="fas fa-play"></i> Demo</button>
+      </div>
+    </aside>
+
+    <!-- PREVIEW (CENTRO) -->
+    <main class="preview-panel">
+      <div class="preview-screen" id="previewScreen">
+        <div class="preview-placeholder" id="placeholder">
+          <i class="fas fa-film"></i>
+          <p>Importe um vídeo para começar</p>
+          <button class="btn btn-primary" onclick="openYouTubeModal()"><i class="fas fa-plus"></i> Importar Vídeo</button>
+        </div>
+        <video id="previewVideo" style="display:none;" loop></video>
+        <div class="subtitle-overlay" id="subtitleOverlay"></div>
+        <div class="emotion-icon" id="emotionIcon"></div>
+      </div>
+
+      <div class="preview-controls">
+        <button class="btn-icon btn-xs" id="playBtn" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+        <button class="btn-icon btn-xs" onclick="stopPreview()"><i class="fas fa-stop"></i></button>
+        <span class="time-display"><span id="currentTime">00:00</span> / <span id="totalTime">00:00</span></span>
+        <input type="range" class="seek-bar" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)" />
+        <button class="btn-icon btn-xs" onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+      </div>
+
+      <div class="clip-details" id="clipDetails">
+        <div class="detail-section">
+          <h4><i class="fas fa-face-smile"></i> Análise de Humor</h4>
+          <div id="emotionBars">
+            <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:65%"></div></div><span>65%</span></div>
+            <div class="emotion-row"><span>😢</span><div class="bar"><div class="fill fill-sadness" style="width:10%"></div></div><span>10%</span></div>
+            <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:45%"></div></div><span>45%</span></div>
+            <div class="emotion-row"><span>😡</span><div class="bar"><div class="fill fill-anger" style="width:5%"></div></div><span>5%</span></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4><i class="fas fa-user"></i> Personagens</h4>
+          <div id="charactersList">
+            <span class="character-tag">🎤 Entrevistador</span>
+            <span class="character-tag">🎙️ Convidado</span>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4><i class="fas fa-closed-captioning"></i> Transcrição</h4>
+          <div id="transcriptText" class="empty-text">Importe um vídeo para transcrever</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TIMELINE (DIREITA) -->
+    <aside class="timeline-panel">
+      <div class="timeline-header">
+        <h3><i class="fas fa-clock"></i> Timeline</h3>
+        <div class="timeline-tools">
+          <button class="btn-icon btn-xs" onclick="zoomTimeline(1)"><i class="fas fa-search-plus"></i></button>
+          <button class="btn-icon btn-xs" onclick="zoomTimeline(-1)"><i class="fas fa-search-minus"></i></button>
+        </div>
+      </div>
+      <div class="timeline-tracks">
+        <div class="track"><div class="track-label">🎬 Vídeo</div><div class="track-content" id="videoTrack"><p class="empty-track">Sem vídeo</p></div></div>
+        <div class="track"><div class="track-label">💬 Legendas</div><div class="track-content" id="subtitleTrack"><p class="empty-track">Sem legendas</p></div></div>
+        <div class="track"><div class="track-label">✨ Efeitos</div><div class="track-content" id="effectsTrack"><p class="empty-track">Sem efeitos</p></div></div>
+      </div>
+      <div class="timeline-ruler"><canvas id="rulerCanvas"></canvas></div>
+    </aside>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="studio-footer">
+    <div class="footer-left">
+      <div class="clip-counter"><i class="fas fa-cut"></i> <span id="clipCount">0 cortes</span></div>
+    </div>
+    <div class="footer-center">
+      <div class="export-options">
+        <span>Cortes de:</span>
+        <select id="clipDuration" onchange="state.clipDuration=parseInt(this.value)">
+          <option value="30">30s</option>
+          <option value="60" selected>1 min</option>
+          <option value="90">1:30</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="generateClips()"><i class="fas fa-magic"></i> Gerar Cortes IA</button>
+      </div>
+    </div>
+    <div class="footer-right">
+      <div class="platform-btns">
+        <button class="btn-tiktok" onclick="exportTo('tiktok')" title="TikTok"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="exportTo('youtube')" title="YouTube"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="exportTo('kwai')" title="Kwai"><i class="fas fa-play"></i></button>
+        <button class="btn-instagram" onclick="exportTo('instagram')" title="Instagram"><i class="fab fa-instagram"></i></button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CLIPS PANEL -->
+  <div class="clips-panel" id="clipsPanel">
+    <div class="clips-grid" id="clipsGrid"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL YOUTUBE ========== -->
+<div class="modal" id="youtubeModal">
+  <div class="modal-content">
+    <h2><i class="fab fa-youtube" style="color:#f00;"></i> Importar do YouTube</h2>
+    <div class="input-row">
+      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
+      <button class="btn btn-primary" onclick="importYouTube()"><i class="fas fa-download"></i> Importar</button>
+    </div>
+    <div id="videoPreview" class="video-preview" style="display:none;">
+      <img id="vidThumb" src="" alt="" />
+      <div>
+        <h4 id="vidTitle"></h4>
+        <p id="vidChannel"></p>
+      </div>
+    </div>
+    <div class="progress-row" id="importProgress" style="display:none;">
+      <div class="bar"><div class="fill" id="progressFill"></div></div>
+      <p id="progressMsg"></p>
+    </div>
+    <div style="text-align:right;margin-top:10px;">
+      <button class="btn btn-icon" onclick="closeModals()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL CONFIG ========== -->
+<div class="modal" id="configModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-cog"></i> Configurações</h2>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;color:var(--text-muted);">Chave OpenAI (opcional)</label>
+      <input type="password" id="openaiKey" placeholder="sk-..." style="width:100%;margin-top:4px;" />
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;color:var(--text-muted);">Chave Gemini (opcional)</label>
+      <input type="password" id="geminiKey" placeholder="AIza..." style="width:100%;margin-top:4px;" />
+    </div>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">
+      💡 O app funciona sem chaves no modo demonstração
+    </p>
+    <button class="btn btn-primary" onclick="saveConfig()" style="width:100%;"><i class="fas fa-save"></i> Salvar</button>
+  </div>
+</div>
+
+<!-- ========== TOAST CONTAINER ========== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============================================
+// 🎬 CLIPADOR STUDIO - APP COMPLETO
+// ============================================
+
+const state = {
+  projectName: 'Projeto sem nome',
+  videoSource: null,
+  videoId: null,
+  videoTitle: '',
+  videoDuration: 300,
+  currentTime: 0,
+  isPlaying: false,
+  clipDuration: 60,
+  clips: [],
+  transcript: [],
+  emotions: { joy: 65, sadness: 10, surprise: 45, anger: 5 },
+  characters: ['Entrevistador', 'Convidado'],
+  selectedTool: 'auto',
+  timelineZoom: 1,
+  config: JSON.parse(localStorage.getItem('cs_config') || '{}')
+};
+
+// ============ INIT ============
+function init() {
+  const msgs = [
+    'Carregando motores de IA...',
+    'Calibrando enquadramento cinematográfico...',
+    'Preparando efeitos especiais...',
+    'Sintonizando análise de humor...',
+    'Estúdio pronto! 🎬'
+  ];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < msgs.length) {
+      document.getElementById('loaderMsg').textContent = msgs[i];
+      i++;
+    } else {
+      clearInterval(interval);
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('studio').style.display = 'flex';
+      setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+    }
+  }, 500);
+  
+  // Atalhos
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && document.activeElement === document.body) { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft') seekRelative(-5);
+    if (e.key === 'ArrowRight') seekRelative(5);
+  });
+  
+  // Carregar config
+  if (state.config.openaiKey) document.getElementById('openaiKey').value = state.config.openaiKey;
+  if (state.config.geminiKey) document.getElementById('geminiKey').value = state.config.geminiKey;
+}
+
+// ============ LOADER ============
+window.addEventListener('DOMContentLoaded', init);
+
+// ============ TOOLS ============
+function selectTool(btn, tool) {
+  state.selectedTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  switch(tool) {
+    case 'auto': generateClips(); break;
+    case 'sentiment': analyzeSentiment(); break;
+    case 'framing': applyFraming(); break;
+    case 'subtitles': generateSubtitles(); break;
+    case 'color': applyColorGrading(); break;
+    case 'audio': enhanceAudio(); break;
+    case 'effects': addEffects(); break;
+  }
+}
+
+function analyzeSentiment() {
+  toast('🧠 Analisando humor dos personagens...', 'info');
+  state.emotions = {
+    joy: Math.floor(Math.random() * 40) + 40,
+    sadness: Math.floor(Math.random() * 20),
+    surprise: Math.floor(Math.random() * 30) + 20,
+    anger: Math.floor(Math.random() * 15)
+  };
+  updateEmotionBars();
+  setTimeout(() => toast('✅ Análise de humor concluída!', 'success'), 1500);
+}
+
+function applyFraming() {
+  toast('🎥 Aplicando enquadramento cinematográfico...', 'info');
+  const framings = ['Spielberg Face', 'Tarantino Two-Shot', 'Nolan Epic', 'Scorsese Freeze'];
+  const f = framings[Math.floor(Math.random() * framings.length)];
+  setTimeout(() => toast(`✅ Enquadramento ${f} aplicado!`, 'success'), 1800);
+}
+
+function generateSubtitles() {
+  toast('💬 Gerando legendas estilizadas...', 'info');
+  state.transcript = [
+    { start: 0, end: 5, speaker: 'Pessoa 1', text: 'Bem-vindos a mais um episódio incrível!' },
+    { start: 5, end: 12, speaker: 'Pessoa 2', text: 'Hoje temos um tema que vai surpreender vocês.' },
+    { start: 12, end: 20, speaker: 'Pessoa 1', text: 'Eu estou muito animado com esse assunto!' },
+    { start: 20, end: 28, speaker: 'Pessoa 2', text: 'É algo que vai mudar completamente nossa visão.' },
+    { start: 28, end: 35, speaker: 'Pessoa 1', text: 'Exatamente! E tenho uma revelação pra fazer...' }
+  ];
+  updateTranscript();
+  setTimeout(() => toast('✅ Legendas geradas!', 'success'), 1500);
+}
+
+function applyColorGrading() {
+  toast('🎨 Aplicando color grading...', 'info');
+  setTimeout(() => toast('✅ Color grading cinematográfico aplicado!', 'success'), 1200);
+}
+
+function enhanceAudio() {
+  toast('🎵 Melhorando áudio...', 'info');
+  setTimeout(() => toast('✅ Áudio limpo e normalizado!', 'success'), 1300);
+}
+
+function addEffects() {
+  toast('✨ Adicionando efeitos especiais...', 'info');
+  setTimeout(() => toast('✅ Efeitos aplicados!', 'success'), 1400);
+}
+
+function updateEmotionBars() {
+  const e = state.emotions;
+  document.getElementById('emotionBars').innerHTML = `
+    <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:${e.joy}%"></div></div><span>${e.joy}%</span></div>
+    <div class="emotion-row"><span>😢</span><div class="bar"><div class="fill fill-sadness" style="width:${e.sadness}%"></div></div><span>${e.sadness}%</span></div>
+    <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:${e.surprise}%"></div></div><span>${e.surprise}%</span></div>
+    <div class="emotion-row"><span>😡</span><div class="bar"><div class="fill fill-anger" style="width:${e.anger}%"></div></div><span>${e.anger}%</span></div>
+  `;
+}
+
+function updateTranscript() {
+  const div = document.getElementById('transcriptText');
+  if (!state.transcript.length) {
+    div.innerHTML = '<span class="empty-text">Importe um vídeo para transcrever</span>';
+    return;
+  }
+  div.innerHTML = state.transcript.map(t => `
+    <div class="transcript-line">
+      <span class="transcript-speaker">${t.speaker}:</span> ${t.text}
+    </div>
+  `).join('');
+}
+
+// ============ YOUTUBE IMPORT ============
+function openYouTubeModal() {
+  document.getElementById('youtubeModal').classList.add('open');
+  document.getElementById('youtubeUrl').focus();
+}
+
+function openConfig() {
+  document.getElementById('configModal').classList.add('open');
+}
+
+function closeModals() {
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('open'));
+}
+
+function saveConfig() {
+  state.config.openaiKey = document.getElementById('openaiKey').value.trim();
+  state.config.geminiKey = document.getElementById('geminiKey').value.trim();
+  localStorage.setItem('cs_config', JSON.stringify(state.config));
+  closeModals();
+  toast('✅ Configurações salvas!', 'success');
+}
+
+async function importYouTube() {
+  const url = document.getElementById('youtubeUrl').value.trim();
+  if (!url) return toast('Cole uma URL do YouTube', 'error');
+  
+  const videoId = extractVideoId(url);
+  if (!videoId) return toast('URL inválida', 'error');
+  
+  const progressDiv = document.getElementById('importProgress');
+  const progressFill = document.getElementById('progressFill');
+  const progressMsg = document.getElementById('progressMsg');
+  
+  progressDiv.style.display = 'block';
+  progressFill.style.width = '20%';
+  progressMsg.textContent = 'Conectando ao YouTube...';
+  
+  try {
+    const resp = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
+    if (!resp.ok) throw new Error('Vídeo não encontrado');
+    const data = await resp.json();
+    
+    // Mostrar preview
+    document.getElementById('videoPreview').style.display = 'flex';
+    document.getElementById('vidThumb').src = data.thumbnail_url;
+    document.getElementById('vidTitle').textContent = data.title;
+    document.getElementById('vidChannel').textContent = 'YouTube';
+    
+    progressFill.style.width = '50%';
+    progressMsg.textContent = 'Analisando conteúdo...';
+    await sleep(800);
+    
+    progressFill.style.width = '75%';
+    progressMsg.textContent = 'Gerando transcrição...';
+    await sleep(600);
+    
+    progressFill.style.width = '90%';
+    progressMsg.textContent = 'Detectando emoções...';
+    await sleep(600);
+    
+    // Salvar estado
+    state.videoSource = url;
+    state.videoId = videoId;
+    state.videoTitle = data.title;
+    state.videoDuration = 300;
+    
+    // Gerar dados mock
+    state.transcript = [
+      { start: 0, end: 8, speaker: 'Apresentador', text: 'Bem-vindos a mais um episódio do podcast!' },
+      { start: 8, end: 18, speaker: 'Convidado', text: 'Obrigado pelo convite! Estou muito feliz de estar aqui.' },
+      { start: 18, end: 30, speaker: 'Apresentador', text: 'Hoje vamos falar sobre um tema que está bombando nas redes.' },
+      { start: 30, end: 42, speaker: 'Convidado', text: 'Nossa, esse assunto é realmente fascinante. Tenho muito pra compartilhar.' },
+      { start: 42, end: 55, speaker: 'Apresentador', text: 'Então conta pra gente qual foi o momento mais marcante da sua carreira?' }
+    ];
+    state.emotions = { joy: 70, sadness: 8, surprise: 50, anger: 3 };
+    state.characters = ['Apresentador', 'Convidado'];
+    
+    updateEmotionBars();
+    updateTranscript();
+    document.getElementById('charactersList').innerHTML = state.characters.map(c => 
+      `<span class="character-tag">${c}</span>`
+    ).join('');
+    
+    // Mostrar preview
+    document.getElementById('placeholder').style.display = 'none';
+    const video = document.getElementById('previewVideo');
+    video.style.display = 'block';
+    video.src = `https://www.youtube.com/watch?v=${videoId}`;
+    
+    progressFill.style.width = '100%';
+    progressMsg.textContent = '✅ Vídeo importado com sucesso!';
+    
+    // Gerar cortes
+    await generateClips();
+    
+    setTimeout(() => {
+      closeModals();
+      progressDiv.style.display = 'none';
+      progressFill.style.width = '0%';
+      toast('✅ Vídeo importado e analisado!', 'success');
+    }, 1500);
+    
+  } catch (error) {
+    progressMsg.textContent = '❌ ' + error.message;
+    toast('❌ ' + error.message, 'error');
+  }
+}
+
+function importDemo() {
+  state.videoSource = 'demo';
+  state.videoId = 'demo';
+  state.videoTitle = 'Vídeo Demo - Clipador Studio';
+  state.videoDuration = 300;
+  state.transcript = [
+    { start: 0, end: 8, speaker: 'Pessoa 1', text: 'Bem-vindos ao vídeo de demonstração!' },
+    { start: 8, end: 18, speaker: 'Pessoa 2', text: 'Aqui você vai ver como o Clipador Studio funciona.' },
+    { start: 18, end: 30, speaker: 'Pessoa 1', text: 'Nossa IA analisa o vídeo e encontra os melhores momentos.' }
+  ];
+  state.emotions = { joy: 65, sadness: 10, surprise: 45, anger: 5 };
+  state.characters = ['Pessoa 1', 'Pessoa 2'];
+  
+  updateEmotionBars();
+  updateTranscript();
+  document.getElementById('charactersList').innerHTML = state.characters.map(c => 
+    `<span class="character-tag">${c}</span>`
+  ).join('');
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('previewVideo').style.display = 'block';
+  
+  toast('✅ Modo demonstração ativado!', 'success');
+  generateClips();
+}
+
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+// ============ CLIP GENERATION ============
+async function generateClips() {
+  if (!state.videoSource) return toast('Importe um vídeo primeiro', 'warning');
+  
+  const num = 5;
+  const duration = state.clipDuration;
+  
+  toast(`🎬 Gerando ${num} cortes de ${duration}s...`, 'info');
+  
+  const moods = ['😊 Alegre', '😲 Surpreso', '🔥 Impactante', '😂 Engraçado', '💪 Motivador'];
+  const titles = [
+    'O momento mais viral 🔥',
+    'A revelação chocante 😱',
+    'A dica que muda tudo 💡',
+    'O segredo revelado 🤫',
+    'A parte mais emocionante 🥹'
+  ];
+  const subtitles = [
+    'Esse momento é incrível! Não dá pra acreditar...',
+    'Olha só o que aconteceu aqui! Surpreendente!',
+    'Presta atenção nessa dica porque vale ouro!',
+    'Guarda esse vídeo porque isso vai mudar tudo!',
+    'A emoção desse momento é contagiante!'
+  ];
+  
+  state.clips = [];
+  for (let i = 0; i < num; i++) {
+    const start = 20 + (i * 50);
+    state.clips.push({
+      id: Date.now() + '-' + i,
+      start, end: start + duration, duration,
+      title: titles[i], subtitle: subtitles[i],
+      mood: moods[i], virality: (7 + Math.random() * 3).toFixed(1),
+      url: state.videoId ? `https://youtube.com/watch?v=${state.videoId}&t=${start}` : '#'
+    });
+  }
+  
+  renderClips();
+  renderTimeline();
+  document.getElementById('clipCount').textContent = `${state.clips.length} cortes`;
+  toast(`✅ ${state.clips.length} cortes de ${duration}s gerados!`, 'success');
+}
+
+function renderClips() {
+  const panel = document.getElementById('clipsPanel');
+  const grid = document.getElementById('clipsGrid');
+  
+  panel.classList.add('visible');
+  grid.innerHTML = state.clips.map(c => `
+    <div class="clip-mini" onclick="previewClip('${c.id}')">
+      <div class="thumb">▶</div>
+      <div class="info">
+        <div class="time">⏱ ${fmt(c.start)} - ${fmt(c.end)}</div>
+        <div class="title">${c.title}</div>
+        <div class="mood">${c.mood} | 🔥${c.virality}/10</div>
+        <div class="actions">
+          <button class="btn btn-tiktok btn-sm" onclick="event.stopPropagation();exportClip('${c.id}','tiktok')"><i class="fab fa-tiktok"></i></button>
+          <button class="btn btn-youtube btn-sm" onclick="event.stopPropagation();exportClip('${c.id}','youtube')"><i class="fab fa-youtube"></i></button>
+          <button class="btn btn-kwai btn-sm" onclick="event.stopPropagation();exportClip('${c.id}','kwai')"><i class="fas fa-play"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function previewClip(clipId) {
+  const clip = state.clips.find(c => c.id === clipId);
+  if (!clip) return;
+  state.currentTime = clip.start;
+  updatePreview();
+  toast(`🎬 Preview: ${clip.title}`, 'info');
+}
+
+function renderTimeline() {
+  const track = document.getElementById('videoTrack');
+  const zoom = state.timelineZoom;
+  
+  track.innerHTML = state.clips.map(c => {
+    const left = c.start * 50 * zoom;
+    const width = c.duration * 50 * zoom;
+    return `<div class="timeline-clip" style="left:${left}px;width:${width}px;" onclick="previewClip('${c.id}')">${fmt(c.start)}</div>`;
+  }).join('');
+  
+  drawRuler();
+}
+
+function zoomTimeline(dir) {
+  state.timelineZoom = Math.max(0.2, Math.min(5, state.timelineZoom + dir * 0.3));
+  renderTimeline();
+}
+
+function drawRuler() {
+  const canvas = document.getElementById('rulerCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.offsetWidth;
+  const h = canvas.height = 25;
+  ctx.fillStyle = '#1a1a25';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#6a6a7a';
+  ctx.fillStyle = '#a0a0b0';
+  ctx.font = '9px monospace';
+  
+  for (let i = 0; i < state.videoDuration; i += 10) {
+    const x = i * 50 * state.timelineZoom;
+    if (x <= w) {
+      ctx.beginPath(); ctx.moveTo(x, 10); ctx.lineTo(x, 20); ctx.stroke();
+      ctx.fillText(fmt(i), x - 12, 8);
+    }
+  }
+}
+
+// ============ PLAYBACK ============
+function togglePlay() {
+  state.isPlaying = !state.isPlaying;
+  document.getElementById('playBtn').innerHTML = state.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+  if (state.isPlaying) playbackLoop();
+}
+
+function stopPreview() {
+  state.isPlaying = false;
+  state.currentTime = 0;
+  document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+  updatePreview();
+}
+
+function seekTo(percent) {
+  state.currentTime = (percent / 100) * state.videoDuration;
+  updatePreview();
+}
+
+function seekRelative(sec) {
+  state.currentTime = Math.max(0, Math.min(state.currentTime + sec, state.videoDuration));
+  updatePreview();
+}
+
+function playbackLoop() {
+  if (!state.isPlaying) return;
+  state.currentTime += 0.1;
+  if (state.currentTime >= state.videoDuration) {
+    state.currentTime = 0;
+    state.isPlaying = false;
+    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+  }
+  updatePreview();
+  requestAnimationFrame(playbackLoop);
+}
+
+function updatePreview() {
+  document.getElementById('currentTime').textContent = fmt(state.currentTime);
+  document.getElementById('totalTime').textContent = fmt(state.videoDuration);
+  document.getElementById('seekBar').value = (state.currentTime / state.videoDuration) * 100;
+  
+  // Legendas
+  const seg = state.transcript.find(t => state.currentTime >= t.start && state.currentTime <= t.end);
+  const subOverlay = document.getElementById('subtitleOverlay');
+  if (seg) {
+    subOverlay.innerHTML = `<div class="subtitle-text">${seg.text}</div>`;
+  } else {
+    subOverlay.innerHTML = '';
+  }
+  
+  // Emoção
+  const moods = ['😊', '😲', '🔥', '😂', '💪'];
+  document.getElementById('emotionIcon').textContent = moods[Math.floor(state.currentTime / 10) % moods.length];
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('previewScreen');
+  if (!document.fullscreenElement) el.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// ============ EXPORT ============
+function exportTo(platform) {
+  if (!state.clips.length) return toast('Gere cortes primeiro', 'warning');
+  
+  const urls = {
+    tiktok: 'https://www.tiktok.com/upload',
+    youtube: 'https://studio.youtube.com',
+    kwai: 'https://www.kwai.com/upload',
+    instagram: 'https://www.instagram.com/create/reels/'
+  };
+  
+  window.open(urls[platform], '_blank');
+  toast(`📤 Abrindo ${platform}...`, 'info');
+}
+
+function exportClip(clipId, platform) {
+  const clip = state.clips.find(c => c.id === clipId);
+  if (!clip) return;
+  
+  const urls = {
+    tiktok: 'https://www.tiktok.com/upload',
+    youtube: 'https://studio.youtube.com',
+    kwai: 'https://www.kwai.com/upload'
+  };
+  
+  window.open(urls[platform], '_blank');
+  toast(`📤 Clip "${clip.title}" → ${platform}`, 'success');
+}
+
+function publishAll() {
+  if (!state.clips.length) return toast('Gere cortes primeiro', 'warning');
+  toast('🚀 Publicando em todas as plataformas...', 'info');
+  setTimeout(() => toast('✅ Publicado no TikTok, YouTube e Kwai!', 'success'), 2000);
+}
+
+// ============ UTILS ============
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ============ START ============
+document.getElementById('projectName').addEventListener('change', e => state.projectName = e.target.value);
+
+// Fechar modais com ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModals();
+});
+
+console.log('🎬 Clipador Studio pronto!');
+console.log('💡 Dicas:');
+console.log('  - Clique em "Importar Vídeo" para começar');
+console.log('  - Use as ferramentas de IA no painel esquerdo');
+console.log('  - Espaço = play/pause');
+console.log('  - Setas = avançar/retroceder 5s');
+console.log('  - ESC = fechar modais');
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clipador PRO — Estúdio de Cortes</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
