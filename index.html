@@ -3,6 +3,915 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipador PRO — Estúdio Completo</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --border: #252530;
+  --text: #e8e8ed;
+  --muted: #7a7a85;
+  --accent: #6c5ce7;
+  --accent2: #a855f7;
+  --success: #00d8a4;
+  --danger: #ff4757;
+  --warning: #ffa502;
+  --tiktok: #ff0050;
+  --youtube: #ff0000;
+  --kwai: #ff7800;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Navegação */
+.nav {
+  display: flex; gap: 4px; margin-bottom: 30px;
+  background: var(--surface); border-radius: var(--radius);
+  padding: 4px; border: 1px solid var(--border);
+}
+
+.nav-btn {
+  flex: 1; padding: 12px 20px; border: none;
+  background: transparent; color: var(--muted);
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+  font-size: 13px; transition: all 0.3s;
+}
+
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { background: var(--accent); color: white; }
+
+/* Header */
+.header {
+  text-align: center; padding: 30px 0 20px;
+}
+
+.header h1 {
+  font-size: 2.5em;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+
+/* Cards */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+}
+
+.card-header {
+  font-weight: 600; font-size: 16px; margin-bottom: 15px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* Inputs */
+.input-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.input-group > * { flex: 1; min-width: 200px; }
+
+input, select, textarea {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); padding: 12px 16px; border-radius: 8px;
+  font-size: 14px; width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+
+textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+.btn {
+  padding: 12px 24px; border: none; border-radius: 8px;
+  font-weight: 600; cursor: pointer; font-size: 14px;
+  transition: all 0.3s; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+
+.btn-tiktok { background: var(--tiktok); color: white; }
+.btn-youtube { background: var(--youtube); color: white; }
+.btn-kwai { background: var(--kwai); color: white; }
+
+.btn-success { background: var(--success); color: #000; }
+
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+
+/* Clips Grid */
+.clips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.clip-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  transition: all 0.3s;
+}
+
+.clip-card:hover { border-color: var(--accent); }
+
+.clip-preview {
+  width: 100%; height: 180px; background: var(--bg);
+  border-radius: 8px; margin-bottom: 12px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 3em; cursor: pointer; position: relative;
+  overflow: hidden;
+}
+
+.clip-preview video {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.clip-number {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--accent); color: white; width: 28px; height: 28px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: bold;
+}
+
+.clip-time {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  color: var(--accent); margin-bottom: 6px;
+}
+
+.clip-title {
+  font-size: 14px; font-weight: 500; margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.clip-subtitle {
+  font-size: 11px; color: var(--muted); margin-bottom: 12px;
+  max-height: 60px; overflow: hidden;
+}
+
+.clip-actions {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+
+/* Schedule */
+.schedule-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; background: var(--bg); border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.platform-badge {
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+}
+
+.platform-tiktok { background: var(--tiktok); color: white; }
+.platform-youtube { background: var(--youtube); color: white; }
+.platform-kwai { background: var(--kwai); color: white; }
+
+/* History Table */
+.history-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+
+.history-table th {
+  text-align: left; padding: 12px; color: var(--muted);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table td {
+  padding: 12px; border-bottom: 1px solid var(--border);
+}
+
+.status-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 6px;
+}
+
+.status-posted { background: var(--success); }
+.status-scheduled { background: var(--warning); }
+.status-failed { background: var(--danger); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+  z-index: 1000; align-items: center; justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 30px;
+  max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
+}
+
+/* Stats */
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+
+.stat-value {
+  font-size: 2em; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  padding: 16px 24px; border-radius: 8px; color: white;
+  font-weight: 500; z-index: 2000; animation: slideUp 0.3s ease;
+}
+
+.toast-success { background: var(--success); color: #000; }
+.toast-error { background: var(--danger); }
+.toast-info { background: var(--accent); }
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.spinner {
+  width: 20px; height: 20px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.api-indicator {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 6px;
+}
+
+.api-indicator.online { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.api-indicator.offline { background: var(--danger); }
+
+label {
+  display: block; margin-bottom: 4px;
+  color: var(--muted); font-size: 12px; font-weight: 500;
+}
+
+.form-group { margin-bottom: 12px; }
+
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.8em; }
+  .clips-grid { grid-template-columns: 1fr; }
+  .nav { flex-wrap: wrap; }
+  .nav-btn { font-size: 11px; padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎬 Clipador PRO</h1>
+    <p>Estúdio completo: corte, legende, agende e publique</p>
+  </div>
+
+  <!-- Navegação -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchTab('cortar')">✂️ Cortar Vídeo</button>
+    <button class="nav-btn" onclick="switchTab('agendar')">📅 Agendamento</button>
+    <button class="nav-btn" onclick="switchTab('historico')">📊 Histórico</button>
+    <button class="nav-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+  </div>
+
+  <!-- Aba: Cortar Vídeo -->
+  <div id="tab-cortar" class="tab-content active">
+    <div class="card">
+      <div class="card-header">🔗 Processar Novo Vídeo</div>
+      <div class="input-group">
+        <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
+        <select id="numClips">
+          <option value="3">3 cortes</option>
+          <option value="5" selected>5 cortes</option>
+          <option value="7">7 cortes</option>
+          <option value="10">10 cortes</option>
+        </select>
+        <button class="btn btn-primary" onclick="processarVideo()">
+          ⚡ Analisar e Cortar
+        </button>
+      </div>
+      <div style="margin-top: 8px; font-size: 11px; color: var(--muted);">
+        <span class="api-indicator" id="apiDot"></span>
+        <span id="apiLabel">Configure a API nas configurações</span>
+      </div>
+    </div>
+
+    <div id="videoInfo" style="display:none;">
+      <div class="card">
+        <div class="card-header" id="videoTitle">Analisando...</div>
+        <div class="progress-bar" style="height:6px;background:var(--border);border-radius:3px;margin:10px 0;">
+          <div id="progressFill" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.5s;"></div>
+        </div>
+        <div id="progressText" style="font-size:12px;color:var(--muted);"></div>
+      </div>
+
+      <div id="clipsContainer" class="clips-grid"></div>
+    </div>
+  </div>
+
+  <!-- Aba: Agendamento -->
+  <div id="tab-agendar" class="tab-content">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="statAgendados">0</div>
+        <div class="stat-label">Agendados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statPublicados">0</div>
+        <div class="stat-label">Publicados Hoje</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statProximo">--</div>
+        <div class="stat-label">Próximo Post</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📅 Agendar Novo Post</div>
+      <div class="input-group">
+        <select id="scheduleClip">
+          <option value="">Selecione um clipe...</option>
+        </select>
+        <select id="schedulePlatform">
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube Shorts</option>
+          <option value="kwai">Kwai</option>
+        </select>
+        <input type="datetime-local" id="scheduleTime" />
+        <button class="btn btn-primary" onclick="agendarPost()">📅 Agendar</button>
+      </div>
+      <div style="margin-top: 8px; font-size: 11px; color: var(--muted);">
+        ⚠️ Horário de Brasília (GMT-3). Posts automáticos simulados.
+      </div>
+    </div>
+
+    <div id="scheduleList"></div>
+  </div>
+
+  <!-- Aba: Histórico -->
+  <div id="tab-historico" class="tab-content">
+    <div class="card">
+      <div class="card-header">📊 Histórico de Publicações</div>
+      
+      <div class="input-group" style="margin-bottom:15px;">
+        <select id="historyFilter" onchange="renderHistorico()">
+          <option value="hoje">Hoje</option>
+          <option value="semana">Esta Semana</option>
+          <option value="mes">Este Mês</option>
+          <option value="ano">Este Ano</option>
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+
+      <div id="historyContent">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Clipe</th>
+              <th>Plataforma</th>
+              <th>Data</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);">Nenhuma publicação ainda</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aba: Configurações -->
+  <div id="tab-config" class="tab-content">
+    <div class="card">
+      <div class="card-header">⚙️ Configurações da API</div>
+      
+      <div style="background:#1a2a25;border:1px solid var(--success);border-radius:8px;padding:12px;margin-bottom:15px;">
+        <strong>🌟 Google Gemini - GRÁTIS</strong><br>
+        <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent);font-size:13px;">
+          → Pegar chave gratuita
+        </a>
+      </div>
+
+      <div class="form-group">
+        <label>Chave API Gemini</label>
+        <input type="password" id="geminiKey" placeholder="AIza..." />
+      </div>
+
+      <button class="btn btn-success btn-sm" onclick="detectarModelos()" style="margin-bottom:12px;">
+        🔍 Detectar modelos
+      </button>
+
+      <div id="configResult" style="font-size:12px;margin-bottom:12px;"></div>
+
+      <div class="form-group">
+        <label>Modelo</label>
+        <select id="selectedModel"><option value="">Auto</option></select>
+      </div>
+
+      <hr style="border-color:var(--border);margin:20px 0;">
+
+      <div class="card-header">🔗 Contas para Postagem</div>
+      
+      <div class="form-group">
+        <label>TikTok (simulado)</label>
+        <input type="text" id="tiktokAccount" placeholder="@seuperfil" />
+      </div>
+      <div class="form-group">
+        <label>YouTube (simulado)</label>
+        <input type="text" id="youtubeAccount" placeholder="Nome do canal" />
+      </div>
+      <div class="form-group">
+        <label>Kwai (simulado)</label>
+        <input type="text" id="kwaiAccount" placeholder="@seuperfil" />
+      </div>
+
+      <button class="btn btn-primary" onclick="salvarConfig()">💾 Salvar Tudo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============ STATE ============
+  const state = {
+    videos: JSON.parse(localStorage.getItem('cp_videos') || '[]'),
+    clips: JSON.parse(localStorage.getItem('cp_clips') || '[]'),
+    schedule: JSON.parse(localStorage.getItem('cp_schedule') || '[]'),
+    history: JSON.parse(localStorage.getItem('cp_history') || '[]'),
+    config: JSON.parse(localStorage.getItem('cp_config') || '{}')
+  };
+
+  if (!state.config.geminiKey) state.config.geminiKey = '';
+  if (!state.config.selectedModel) state.config.selectedModel = '';
+
+  function save(k) {
+    localStorage.setItem(`cp_${k}`, JSON.stringify(state[k]));
+  }
+
+  // ============ UI TABS ============
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tab === 'agendar') renderAgendamento();
+    if (tab === 'historico') renderHistorico();
+    if (tab === 'config') carregarConfig();
+  };
+
+  // ============ CONFIG ============
+  function carregarConfig() {
+    document.getElementById('geminiKey').value = state.config.geminiKey || '';
+    document.getElementById('selectedModel').value = state.config.selectedModel || '';
+    document.getElementById('tiktokAccount').value = state.config.tiktokAccount || '';
+    document.getElementById('youtubeAccount').value = state.config.youtubeAccount || '';
+    document.getElementById('kwaiAccount').value = state.config.kwaiAccount || '';
+    updateModelSelect();
+    updateApiIndicator();
+  }
+
+  function updateModelSelect() {
+    const select = document.getElementById('selectedModel');
+    const models = JSON.parse(localStorage.getItem('cp_models') || '[]');
+    while (select.options.length > 1) select.remove(1);
+    models.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      if (m === state.config.selectedModel) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+
+  window.detectarModelos = async function() {
+    const key = document.getElementById('geminiKey').value.trim();
+    if (!key) return showToast('Digite a chave primeiro', 'error');
+    
+    const div = document.getElementById('configResult');
+    div.innerHTML = '🔄 Detectando...';
+    
+    try {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+      const data = await resp.json();
+      
+      const models = data.models
+        .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+        .map(m => m.name.replace('models/', ''))
+        .filter(m => !m.includes('image') && !m.includes('vision') && !m.includes('tts') && !m.includes('robot'))
+        .slice(0, 15);
+      
+      localStorage.setItem('cp_models', JSON.stringify(models));
+      updateModelSelect();
+      
+      div.innerHTML = `✅ ${models.length} modelos encontrados`;
+      
+      // Testar primeiro
+      for (const model of models.slice(0, 5)) {
+        try {
+          const t = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({contents:[{parts:[{text:'OK'}]}]})
+          });
+          if (t.ok) {
+            state.config.selectedModel = model;
+            document.getElementById('selectedModel').value = model;
+            div.innerHTML += `<br>✅ Modelo: ${model}`;
+            break;
+          }
+        } catch(e) {}
+      }
+    } catch(e) {
+      div.innerHTML = `❌ ${e.message}`;
+    }
+  };
+
+  window.salvarConfig = function() {
+    state.config.geminiKey = document.getElementById('geminiKey').value.trim();
+    state.config.selectedModel = document.getElementById('selectedModel').value;
+    state.config.tiktokAccount = document.getElementById('tiktokAccount').value.trim();
+    state.config.youtubeAccount = document.getElementById('youtubeAccount').value.trim();
+    state.config.kwaiAccount = document.getElementById('kwaiAccount').value.trim();
+    save('config');
+    updateApiIndicator();
+    showToast('✅ Configurações salvas!', 'success');
+  };
+
+  function updateApiIndicator() {
+    const dot = document.getElementById('apiDot');
+    const label = document.getElementById('apiLabel');
+    if (state.config.geminiKey) {
+      dot.className = 'api-indicator online';
+      label.textContent = 'API configurada';
+    } else {
+      dot.className = 'api-indicator offline';
+      label.textContent = 'Configure a API nas configurações';
+    }
+  }
+
+  // ============ PROCESSAR VÍDEO ============
+  window.processarVideo = async function() {
+    const url = document.getElementById('youtubeUrl').value.trim();
+    const numClips = parseInt(document.getElementById('numClips').value);
+    
+    if (!url) return showToast('Cole uma URL', 'error');
+    if (!state.config.geminiKey) return showToast('Configure a API primeiro', 'error');
+    
+    const videoId = extractVideoId(url);
+    if (!videoId) return showToast('URL inválida', 'error');
+    
+    document.getElementById('videoInfo').style.display = 'block';
+    document.getElementById('videoTitle').textContent = 'Analisando...';
+    document.getElementById('progressFill').style.width = '10%';
+    document.getElementById('progressText').textContent = 'Obtendo informações...';
+    
+    try {
+      // Metadata
+      const resp = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
+      const meta = await resp.json();
+      document.getElementById('videoTitle').textContent = meta.title;
+      document.getElementById('progressFill').style.width = '30%';
+      document.getElementById('progressText').textContent = 'Analisando com IA...';
+      
+      // IA
+      const model = state.config.selectedModel || 'gemini-2.0-flash';
+      const prompt = `Analise: "${meta.title}"
+Link: https://youtube.com/watch?v=${videoId}
+
+Selecione EXATAMENTE ${numClips} momentos para shorts virais (30-60s cada).
+
+Responda APENAS JSON:
+[{"inicio":120.5,"fim":175.0,"titulo_gancho":"Título viral","legenda":"Legenda do trecho","virality":8.5}]`;
+
+      const aiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${state.config.geminiKey}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          contents:[{parts:[{text:prompt}]}],
+          generationConfig:{temperature:0.8,maxOutputTokens:2000}
+        })
+      });
+      
+      const aiData = await aiResp.json();
+      let text = aiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      text = text.replace(/```json|```/g, '').trim();
+      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('IA não retornou JSON');
+      
+      const clipsData = JSON.parse(jsonMatch[0]);
+      
+      document.getElementById('progressFill').style.width = '80%';
+      document.getElementById('progressText').textContent = 'Gerando clipes...';
+      
+      // Criar clipes
+      state.clips = clipsData.map((c, i) => ({
+        id: `${Date.now()}-${i}`,
+        videoId,
+        videoTitle: meta.title,
+        inicio: c.inicio || 0,
+        fim: c.fim || 60,
+        titulo: c.titulo_gancho || 'Clipe',
+        legenda: c.legenda || '',
+        virality: c.virality || 7.5,
+        youtubeUrl: `https://youtube.com/watch?v=${videoId}&t=${Math.floor(c.inicio||0)}`,
+        createdAt: new Date().toISOString()
+      }));
+      
+      save('clips');
+      
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('progressText').textContent = `✅ ${state.clips.length} clipes gerados!`;
+      
+      renderClips();
+      showToast(`✅ ${state.clips.length} clipes prontos!`, 'success');
+      
+    } catch(e) {
+      console.error(e);
+      document.getElementById('progressText').textContent = `❌ ${e.message}`;
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  function renderClips() {
+    const container = document.getElementById('clipsContainer');
+    if (!state.clips.length) {
+      container.innerHTML = '<p style="color:var(--muted);">Nenhum clipe ainda</p>';
+      return;
+    }
+    
+    container.innerHTML = state.clips.map((c, i) => `
+      <div class="clip-card">
+        <div class="clip-preview" onclick="window.open('${c.youtubeUrl}','_blank')">
+          <div class="clip-number">${i+1}</div>
+          ▶
+        </div>
+        <div class="clip-time">⏱ ${fmt(c.inicio)} - ${fmt(c.fim)} | 🔥 ${c.virality}/10</div>
+        <div class="clip-title">${esc(c.titulo)}</div>
+        <div class="clip-subtitle">${esc(c.legenda).substring(0,100)}...</div>
+        <div class="clip-actions">
+          <button class="btn btn-tiktok btn-sm" onclick="compartilhar('${c.id}','tiktok')">📱 TikTok</button>
+          <button class="btn btn-youtube btn-sm" onclick="compartilhar('${c.id}','youtube')">▶ YouTube</button>
+          <button class="btn btn-kwai btn-sm" onclick="compartilhar('${c.id}','kwai')">🎬 Kwai</button>
+          <button class="btn btn-sm" style="background:var(--surface);color:var(--text);" onclick="copiarLink('${c.youtubeUrl}')">📋</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ============ COMPARTILHAR ============
+  window.compartilhar = function(clipId, platform) {
+    const clip = state.clips.find(c => c.id === clipId);
+    if (!clip) return;
+    
+    const urls = {
+      tiktok: 'https://www.tiktok.com/upload?from=web',
+      youtube: 'https://studio.youtube.com/channel/UC/videos/upload',
+      kwai: 'https://www.kwai.com/upload'
+    };
+    
+    // Salvar no histórico
+    state.history.unshift({
+      id: Date.now().toString(),
+      clipId,
+      clipTitle: clip.titulo,
+      platform,
+      status: 'posted',
+      date: new Date().toISOString()
+    });
+    save('history');
+    
+    showToast(`📤 Abrindo ${platform}...`, 'info');
+    window.open(urls[platform] || clip.youtubeUrl, '_blank');
+  };
+
+  window.copiarLink = function(url) {
+    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copiado!', 'success'));
+  };
+
+  // ============ AGENDAMENTO ============
+  function renderAgendamento() {
+    // Atualizar select de clipes
+    const select = document.getElementById('scheduleClip');
+    select.innerHTML = '<option value="">Selecione um clipe...</option>';
+    state.clips.forEach(c => {
+      select.innerHTML += `<option value="${c.id}">${esc(c.titulo).substring(0,50)}</option>`;
+    });
+    
+    // Atualizar lista
+    const list = document.getElementById('scheduleList');
+    const now = new Date();
+    
+    const futuros = state.schedule
+      .filter(s => new Date(s.scheduleTime) > now)
+      .sort((a,b) => new Date(a.scheduleTime) - new Date(b.scheduleTime));
+    
+    if (!futuros.length) {
+      list.innerHTML = '<p style="color:var(--muted);padding:20px;">Nenhum post agendado</p>';
+    } else {
+      list.innerHTML = '<div class="card-header">📅 Posts Agendados</div>' + futuros.map(s => {
+        const clip = state.clips.find(c => c.id === s.clipId);
+        const d = new Date(s.scheduleTime);
+        return `
+          <div class="schedule-item">
+            <span class="platform-badge platform-${s.platform}">${s.platform}</span>
+            <span style="flex:1;font-size:13px;">${esc(clip?.titulo || 'Clipe')}</span>
+            <span style="font-size:12px;color:var(--muted);">${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+            <button class="btn btn-sm" style="background:var(--danger);color:white;" onclick="cancelarAgendamento('${s.id}')">✕</button>
+          </div>`;
+      }).join('');
+    }
+    
+    // Estatísticas
+    const hoje = state.history.filter(h => new Date(h.date).toDateString() === now.toDateString());
+    document.getElementById('statAgendados').textContent = futuros.length;
+    document.getElementById('statPublicados').textContent = hoje.length;
+    document.getElementById('statProximo').textContent = futuros.length > 0 ? 
+      new Date(futuros[0].scheduleTime).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '--';
+  }
+
+  window.agendarPost = function() {
+    const clipId = document.getElementById('scheduleClip').value;
+    const platform = document.getElementById('schedulePlatform').value;
+    const time = document.getElementById('scheduleTime').value;
+    
+    if (!clipId || !time) return showToast('Selecione clipe e horário', 'error');
+    
+    state.schedule.push({
+      id: Date.now().toString(),
+      clipId,
+      platform,
+      scheduleTime: new Date(time).toISOString(),
+      status: 'scheduled',
+      createdAt: new Date().toISOString()
+    });
+    save('schedule');
+    
+    state.history.unshift({
+      id: Date.now().toString(),
+      clipId,
+      clipTitle: state.clips.find(c => c.id === clipId)?.titulo || '',
+      platform,
+      status: 'scheduled',
+      date: new Date().toISOString(),
+      scheduledFor: time
+    });
+    save('history');
+    
+    renderAgendamento();
+    showToast('✅ Post agendado!', 'success');
+  };
+
+  window.cancelarAgendamento = function(id) {
+    state.schedule = state.schedule.filter(s => s.id !== id);
+    save('schedule');
+    renderAgendamento();
+    showToast('Agendamento cancelado', 'info');
+  };
+
+  // Verificar agendamentos a cada minuto
+  setInterval(() => {
+    const now = new Date();
+    state.schedule.forEach(s => {
+      if (new Date(s.scheduleTime) <= now && s.status === 'scheduled') {
+        // Simular postagem
+        s.status = 'posted';
+        
+        const histEntry = state.history.find(h => h.clipId === s.clipId && h.status === 'scheduled');
+        if (histEntry) histEntry.status = 'posted';
+        
+        save('schedule');
+        save('history');
+        showToast(`📤 Post automático no ${s.platform.toUpperCase()}!`, 'success');
+      }
+    });
+  }, 60000);
+
+  // ============ HISTÓRICO ============
+  window.renderHistorico = function() {
+    const filter = document.getElementById('historyFilter')?.value || 'todos';
+    const now = new Date();
+    
+    let filtered = state.history;
+    
+    if (filter === 'hoje') {
+      filtered = filtered.filter(h => new Date(h.date).toDateString() === now.toDateString());
+    } else if (filter === 'semana') {
+      const weekAgo = new Date(now - 7*24*60*60*1000);
+      filtered = filtered.filter(h => new Date(h.date) >= weekAgo);
+    } else if (filter === 'mes') {
+      filtered = filtered.filter(h => new Date(h.date).getMonth() === now.getMonth());
+    } else if (filter === 'ano') {
+      filtered = filtered.filter(h => new Date(h.date).getFullYear() === now.getFullYear());
+    }
+    
+    const tbody = document.getElementById('historyBody');
+    
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Nenhum registro</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = filtered.map(h => {
+      const d = new Date(h.date);
+      return `
+        <tr>
+          <td><span class="status-dot status-${h.status}"></span>${h.status === 'posted' ? 'Publicado' : h.status === 'scheduled' ? 'Agendado' : 'Erro'}</td>
+          <td>${esc(h.clipTitle || '').substring(0,40)}</td>
+          <td><span class="platform-badge platform-${h.platform}">${h.platform}</span></td>
+          <td>${d.toLocaleDateString('pt-BR')}</td>
+          <td>${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+        </tr>`;
+    }).join('');
+  };
+
+  // ============ UTILS ============
+  function extractVideoId(url) {
+    const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+    return m ? m[1] : null;
+  }
+
+  function fmt(s) {
+    const m = Math.floor(s/60), sec = Math.floor(s%60);
+    return `${m}:${sec.toString().padStart(2,'0')}`;
+  }
+
+  function esc(t) {
+    const d = document.createElement('div');
+    d.textContent = t || '';
+    return d.innerHTML;
+  }
+
+  function showToast(msg, type) {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // ============ INIT ============
+  updateApiIndicator();
+  renderClips();
+
+  // Carregar configurações se existirem
+  if (!state.config.geminiKey) {
+    switchTab('config');
+  }
+
+})();
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clipador — Cortador de Shorts com IA</title>
 <style>
 :root {
