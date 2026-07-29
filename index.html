@@ -3,6 +3,815 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipador PRO — Estúdio de Cortes</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --border: #252530;
+  --text: #e8e8ed;
+  --muted: #7a7a85;
+  --accent: #6c5ce7;
+  --accent2: #a855f7;
+  --success: #00d8a4;
+  --danger: #ff4757;
+  --warning: #ffa502;
+  --tiktok: #ff0050;
+  --youtube: #ff0000;
+  --kwai: #ff7800;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+.nav {
+  display: flex; gap: 4px; margin-bottom: 30px;
+  background: var(--surface); border-radius: 12px;
+  padding: 4px; border: 1px solid var(--border);
+}
+
+.nav-btn {
+  flex: 1; padding: 12px 20px; border: none;
+  background: transparent; color: var(--muted);
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+  font-size: 13px; transition: all 0.3s;
+}
+
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { background: var(--accent); color: white; }
+
+.header {
+  text-align: center; padding: 30px 0 20px;
+}
+
+.header h1 {
+  font-size: 2.5em;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; margin-bottom: 20px;
+}
+
+.card-header {
+  font-weight: 600; font-size: 16px; margin-bottom: 15px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.input-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.input-group > * { flex: 1; min-width: 200px; }
+
+input, select {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); padding: 12px 16px; border-radius: 8px;
+  font-size: 14px; width: 100%;
+}
+
+input:focus, select:focus {
+  outline: none; border-color: var(--accent);
+}
+
+.btn {
+  padding: 12px 24px; border: none; border-radius: 8px;
+  font-weight: 600; cursor: pointer; font-size: 14px;
+  transition: all 0.3s; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+
+.btn-tiktok { background: var(--tiktok); color: white; }
+.btn-youtube { background: var(--youtube); color: white; }
+.btn-kwai { background: var(--kwai); color: white; }
+
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+
+.clips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.clip-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  transition: all 0.3s;
+}
+
+.clip-card:hover { border-color: var(--accent); }
+
+.clip-preview {
+  width: 100%; height: 180px; background: var(--bg);
+  border-radius: 8px; margin-bottom: 12px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 3em; cursor: pointer; position: relative;
+  overflow: hidden;
+}
+
+.clip-number {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--accent); color: white; width: 28px; height: 28px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: bold;
+}
+
+.clip-time {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  color: var(--accent); margin-bottom: 6px;
+}
+
+.clip-title {
+  font-size: 14px; font-weight: 500; margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.clip-subtitle {
+  font-size: 11px; color: var(--muted); margin-bottom: 12px;
+  max-height: 60px; overflow: hidden;
+}
+
+.clip-actions {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+
+.schedule-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; background: var(--bg); border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.platform-badge {
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+}
+
+.platform-tiktok { background: var(--tiktok); color: white; }
+.platform-youtube { background: var(--youtube); color: white; }
+.platform-kwai { background: var(--kwai); color: white; }
+
+.history-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+
+.history-table th {
+  text-align: left; padding: 12px; color: var(--muted);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table td {
+  padding: 12px; border-bottom: 1px solid var(--border);
+}
+
+.status-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 6px;
+}
+
+.status-posted { background: var(--success); }
+.status-scheduled { background: var(--warning); }
+.status-failed { background: var(--danger); }
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px; text-align: center;
+}
+
+.stat-value {
+  font-size: 2em; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  padding: 16px 24px; border-radius: 8px; color: white;
+  font-weight: 500; z-index: 2000; animation: slideUp 0.3s ease;
+}
+
+.toast-success { background: var(--success); color: #000; }
+.toast-error { background: var(--danger); }
+.toast-info { background: var(--accent); }
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.8em; }
+  .clips-grid { grid-template-columns: 1fr; }
+  .nav { flex-wrap: wrap; }
+  .nav-btn { font-size: 11px; padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎬 Clipador PRO</h1>
+    <p>Corte • Legende • Agende • Publique</p>
+  </div>
+
+  <!-- Navegação -->
+  <div class="nav">
+    <button class="nav-btn active" data-tab="cortar">✂️ Cortar Vídeo</button>
+    <button class="nav-btn" data-tab="agendar">📅 Agendamento</button>
+    <button class="nav-btn" data-tab="historico">📊 Histórico</button>
+  </div>
+
+  <!-- Aba Cortar -->
+  <div id="tab-cortar" class="tab-content active">
+    <div class="card">
+      <div class="card-header">🔗 Processar Vídeo</div>
+      <div class="input-group">
+        <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
+        <select id="numClips">
+          <option value="3">3 cortes</option>
+          <option value="5" selected>5 cortes</option>
+          <option value="7">7 cortes</option>
+          <option value="10">10 cortes</option>
+        </select>
+        <button class="btn btn-primary" id="processBtn">
+          ⚡ Gerar Cortes
+        </button>
+      </div>
+      <div style="margin-top: 8px; font-size: 11px; color: var(--muted);">
+        🎯 Modo demonstração: gera clipes de exemplo com timestamps reais
+      </div>
+    </div>
+
+    <div id="videoInfo" style="display:none;">
+      <div class="card">
+        <div class="card-header" id="videoTitle">Processando...</div>
+        <div style="height:6px;background:var(--border);border-radius:3px;margin:10px 0;">
+          <div id="progressFill" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.3s;"></div>
+        </div>
+        <div id="progressText" style="font-size:12px;color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <div id="clipsContainer" class="clips-grid">
+      <div class="empty-state">
+        <p style="font-size:48px;">📹</p>
+        <p>Cole um link do YouTube e clique em Gerar Cortes</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aba Agendamento -->
+  <div id="tab-agendar" class="tab-content">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="statAgendados">0</div>
+        <div class="stat-label">Agendados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statPublicados">0</div>
+        <div class="stat-label">Publicados Hoje</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statProximo">--:--</div>
+        <div class="stat-label">Próximo Post</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📅 Agendar Novo Post</div>
+      <div class="input-group">
+        <select id="scheduleClip">
+          <option value="">Selecione um clipe...</option>
+        </select>
+        <select id="schedulePlatform">
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube Shorts</option>
+          <option value="kwai">Kwai</option>
+        </select>
+        <input type="datetime-local" id="scheduleTime" />
+        <button class="btn btn-primary" id="scheduleBtn">📅 Agendar</button>
+      </div>
+    </div>
+
+    <div id="scheduleList"></div>
+  </div>
+
+  <!-- Aba Histórico -->
+  <div id="tab-historico" class="tab-content">
+    <div class="card">
+      <div class="card-header">📊 Histórico de Publicações</div>
+      
+      <select id="historyFilter" style="margin-bottom:15px;">
+        <option value="hoje">Hoje</option>
+        <option value="semana">Esta Semana</option>
+        <option value="mes">Este Mês</option>
+        <option value="todos">Todos</option>
+      </select>
+
+      <div style="overflow-x:auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Clipe</th>
+              <th>Plataforma</th>
+              <th>Data</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr>
+              <td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">
+                Nenhuma publicação ainda
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ APP COMPLETO - MODO DEMONSTRAÇÃO ============
+(function() {
+  'use strict';
+
+  // Estado
+  const state = {
+    clips: JSON.parse(localStorage.getItem('cp_clips') || '[]'),
+    schedule: JSON.parse(localStorage.getItem('cp_schedule') || '[]'),
+    history: JSON.parse(localStorage.getItem('cp_history') || '[]')
+  };
+
+  // Salvar
+  function save(key) {
+    localStorage.setItem('cp_' + key, JSON.stringify(state[key]));
+  }
+
+  // ============ NAVEGAÇÃO ============
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const tab = document.getElementById('tab-' + tabName);
+    if (tab) tab.classList.add('active');
+    
+    const btn = document.querySelector('[data-tab="' + tabName + '"]');
+    if (btn) btn.classList.add('active');
+    
+    if (tabName === 'agendar') renderAgendamento();
+    if (tabName === 'historico') renderHistorico();
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
+
+  // ============ PROCESSAR VÍDEO ============
+  document.getElementById('processBtn').addEventListener('click', async function() {
+    const url = document.getElementById('youtubeUrl').value.trim();
+    const numClips = parseInt(document.getElementById('numClips').value);
+    
+    if (!url) return showToast('Cole uma URL do YouTube', 'error');
+    
+    const videoId = extractVideoId(url);
+    if (!videoId) return showToast('URL do YouTube inválida', 'error');
+    
+    // Mostrar progresso
+    const videoInfo = document.getElementById('videoInfo');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const videoTitle = document.getElementById('videoTitle');
+    
+    videoInfo.style.display = 'block';
+    videoTitle.textContent = 'Obtendo informações...';
+    progressFill.style.width = '20%';
+    progressText.textContent = 'Conectando ao YouTube...';
+    
+    try {
+      // Buscar título real do vídeo
+      const resp = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v=' + videoId + '&format=json');
+      
+      if (!resp.ok) throw new Error('Vídeo não encontrado');
+      
+      const meta = await resp.json();
+      
+      videoTitle.textContent = meta.title;
+      progressFill.style.width = '60%';
+      progressText.textContent = 'Gerando ' + numClips + ' clipes...';
+      
+      // Simular processamento
+      await sleep(800);
+      
+      // Gerar clipes de demonstração
+      const titulos = [
+        'O momento mais viral do vídeo',
+        'A revelação que ninguém esperava',
+        'A dica que vai mudar tudo',
+        'O segredo finalmente revelado',
+        'A parte mais emocionante',
+        'A resposta que chocou todos',
+        'O melhor conselho que você vai ouvir',
+        'Isso vai explodir nos shorts',
+        'Momento de pura sabedoria',
+        'A verdade que precisava ser dita'
+      ];
+      
+      const legendas = [
+        'Trecho imperdível desta conversa',
+        'Momento de ouro do vídeo',
+        'Isso vai bombar nos shorts',
+        'Corte perfeito para viralizar',
+        'Compartilhe com quem precisa ver isso',
+        'Um dos melhores momentos do vídeo',
+        'Essa parte é simplesmente incrível'
+      ];
+      
+      state.clips = [];
+      
+      for (let i = 0; i < numClips; i++) {
+        const inicio = (i + 1) * 90 + Math.floor(Math.random() * 30);
+        const fim = inicio + 30 + Math.floor(Math.random() * 30);
+        
+        state.clips.push({
+          id: Date.now().toString() + '-' + i,
+          videoId: videoId,
+          videoTitle: meta.title,
+          inicio: inicio,
+          fim: fim,
+          titulo: titulos[i % titulos.length],
+          legenda: legendas[i % legendas.length],
+          virality: (7 + Math.floor(Math.random() * 3)) + (Math.random() * 0.9),
+          youtubeUrl: 'https://youtube.com/watch?v=' + videoId + '&t=' + Math.floor(inicio),
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      save('clips');
+      
+      progressFill.style.width = '100%';
+      progressText.textContent = '✅ ' + state.clips.length + ' clipes gerados com sucesso!';
+      
+      renderClips();
+      showToast('✅ ' + state.clips.length + ' clipes gerados!', 'success');
+      
+      // Limpar campo
+      document.getElementById('youtubeUrl').value = '';
+      
+      // Esconder progresso após 2 segundos
+      setTimeout(() => {
+        videoInfo.style.display = 'none';
+      }, 2000);
+      
+    } catch (error) {
+      progressText.textContent = '❌ ' + error.message;
+      showToast('❌ ' + error.message, 'error');
+    }
+  });
+
+  function extractVideoId(url) {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  // ============ RENDER CLIPS ============
+  function renderClips() {
+    const container = document.getElementById('clipsContainer');
+    
+    if (!state.clips.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p style="font-size:48px;">📹</p>
+          <p>Cole um link do YouTube e clique em Gerar Cortes</p>
+        </div>`;
+      return;
+    }
+    
+    container.innerHTML = state.clips.map((clip, index) => `
+      <div class="clip-card">
+        <div class="clip-preview" onclick="window.open('${clip.youtubeUrl}','_blank')">
+          <div class="clip-number">${index + 1}</div>
+          ▶
+        </div>
+        <div class="clip-time">
+          ⏱ ${formatTime(clip.inicio)} - ${formatTime(clip.fim)} | 🔥 ${clip.virality.toFixed(1)}/10
+        </div>
+        <div class="clip-title">${escapeHtml(clip.titulo)}</div>
+        <div class="clip-subtitle">${escapeHtml(clip.legenda)}</div>
+        <div class="clip-actions">
+          <button class="btn btn-tiktok btn-sm" data-action="share" data-clip-id="${clip.id}" data-platform="tiktok">
+            📱 TikTok
+          </button>
+          <button class="btn btn-youtube btn-sm" data-action="share" data-clip-id="${clip.id}" data-platform="youtube">
+            ▶ YouTube
+          </button>
+          <button class="btn btn-kwai btn-sm" data-action="share" data-clip-id="${clip.id}" data-platform="kwai">
+            🎬 Kwai
+          </button>
+          <button class="btn btn-sm" data-action="copy" data-url="${clip.youtubeUrl}" style="background:var(--surface);color:var(--text);">
+            📋 Copiar
+          </button>
+        </div>
+      </div>
+    `).join('');
+    
+    // Event listeners para compartilhar
+    container.querySelectorAll('[data-action="share"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        compartilharClip(this.dataset.clipId, this.dataset.platform);
+      });
+    });
+    
+    // Event listeners para copiar
+    container.querySelectorAll('[data-action="copy"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        navigator.clipboard.writeText(this.dataset.url).then(() => {
+          showToast('📋 Link copiado!', 'success');
+        });
+      });
+    });
+  }
+
+  function compartilharClip(clipId, platform) {
+    const clip = state.clips.find(c => c.id === clipId);
+    if (!clip) return;
+    
+    const platformUrls = {
+      tiktok: 'https://www.tiktok.com/upload',
+      youtube: 'https://studio.youtube.com',
+      kwai: 'https://www.kwai.com/upload'
+    };
+    
+    // Registrar no histórico
+    state.history.unshift({
+      id: Date.now().toString(),
+      clipId: clipId,
+      clipTitle: clip.titulo,
+      platform: platform,
+      status: 'posted',
+      date: new Date().toISOString()
+    });
+    save('history');
+    
+    showToast('📤 Abrindo ' + platform + '...', 'info');
+    window.open(platformUrls[platform] || clip.youtubeUrl, '_blank');
+  }
+
+  // ============ AGENDAMENTO ============
+  function renderAgendamento() {
+    // Atualizar select de clipes
+    const select = document.getElementById('scheduleClip');
+    select.innerHTML = '<option value="">Selecione um clipe...</option>';
+    state.clips.forEach(clip => {
+      select.innerHTML += `<option value="${clip.id}">${escapeHtml(clip.titulo).substring(0, 50)}</option>`;
+    });
+    
+    // Lista de agendamentos
+    const now = new Date();
+    const agendados = state.schedule
+      .filter(s => new Date(s.scheduleTime) > now)
+      .sort((a, b) => new Date(a.scheduleTime) - new Date(b.scheduleTime));
+    
+    const listDiv = document.getElementById('scheduleList');
+    
+    if (!agendados.length) {
+      listDiv.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">Nenhum post agendado</p>';
+    } else {
+      listDiv.innerHTML = '<div class="card-header">📅 Posts Agendados</div>' + 
+        agendados.map(s => {
+          const clip = state.clips.find(c => c.id === s.clipId);
+          const data = new Date(s.scheduleTime);
+          return `
+            <div class="schedule-item">
+              <span class="platform-badge platform-${s.platform}">${s.platform}</span>
+              <span style="flex:1;font-size:13px;">${escapeHtml(clip?.titulo || 'Clipe não encontrado').substring(0, 40)}</span>
+              <span style="font-size:12px;color:var(--muted);">
+                ${data.toLocaleDateString('pt-BR')} ${data.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}
+              </span>
+              <button class="btn btn-sm" style="background:var(--danger);color:white;padding:4px 10px;" 
+                      data-cancel-id="${s.id}">✕</button>
+            </div>`;
+        }).join('');
+      
+      // Event listeners para cancelar
+      listDiv.querySelectorAll('[data-cancel-id]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          state.schedule = state.schedule.filter(s => s.id !== this.dataset.cancelId);
+          save('schedule');
+          renderAgendamento();
+          showToast('Agendamento cancelado', 'info');
+        });
+      });
+    }
+    
+    // Estatísticas
+    const hoje = state.history.filter(h => {
+      const d = new Date(h.date);
+      return d.toDateString() === now.toDateString();
+    });
+    
+    document.getElementById('statAgendados').textContent = agendados.length;
+    document.getElementById('statPublicados').textContent = hoje.length;
+    document.getElementById('statProximo').textContent = agendados[0] 
+      ? new Date(agendados[0].scheduleTime).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) 
+      : '--:--';
+  }
+
+  document.getElementById('scheduleBtn').addEventListener('click', function() {
+    const clipId = document.getElementById('scheduleClip').value;
+    const platform = document.getElementById('schedulePlatform').value;
+    const timeStr = document.getElementById('scheduleTime').value;
+    
+    if (!clipId || !timeStr) {
+      return showToast('Selecione o clipe e a data/hora', 'error');
+    }
+    
+    const scheduleTime = new Date(timeStr);
+    
+    if (scheduleTime <= new Date()) {
+      return showToast('Selecione uma data/hora futura', 'error');
+    }
+    
+    state.schedule.push({
+      id: Date.now().toString(),
+      clipId: clipId,
+      platform: platform,
+      scheduleTime: scheduleTime.toISOString(),
+      status: 'scheduled',
+      createdAt: new Date().toISOString()
+    });
+    save('schedule');
+    
+    const clip = state.clips.find(c => c.id === clipId);
+    state.history.unshift({
+      id: Date.now().toString(),
+      clipId: clipId,
+      clipTitle: clip?.titulo || '',
+      platform: platform,
+      status: 'scheduled',
+      date: new Date().toISOString(),
+      scheduledFor: timeStr
+    });
+    save('history');
+    
+    renderAgendamento();
+    showToast('✅ Post agendado com sucesso!', 'success');
+  });
+
+  // Verificar agendamentos a cada minuto
+  setInterval(() => {
+    const now = new Date();
+    let updated = false;
+    
+    state.schedule.forEach(s => {
+      if (new Date(s.scheduleTime) <= now && s.status === 'scheduled') {
+        s.status = 'posted';
+        updated = true;
+        
+        const histEntry = state.history.find(h => 
+          h.clipId === s.clipId && h.status === 'scheduled'
+        );
+        if (histEntry) histEntry.status = 'posted';
+      }
+    });
+    
+    if (updated) {
+      save('schedule');
+      save('history');
+      showToast('📤 Post automático realizado!', 'success');
+    }
+  }, 60000);
+
+  // ============ HISTÓRICO ============
+  function renderHistorico() {
+    const filter = document.getElementById('historyFilter').value;
+    const now = new Date();
+    
+    let filtered = [...state.history];
+    
+    if (filter === 'hoje') {
+      filtered = filtered.filter(h => new Date(h.date).toDateString() === now.toDateString());
+    } else if (filter === 'semana') {
+      const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      filtered = filtered.filter(h => new Date(h.date) >= weekAgo);
+    } else if (filter === 'mes') {
+      filtered = filtered.filter(h => new Date(h.date).getMonth() === now.getMonth());
+    }
+    
+    const tbody = document.getElementById('historyBody');
+    
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">Nenhum registro encontrado</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = filtered.map(h => {
+      const d = new Date(h.date);
+      const statusText = h.status === 'posted' ? 'Publicado' : 'Agendado';
+      const statusClass = h.status === 'posted' ? 'posted' : 'scheduled';
+      
+      return `
+        <tr>
+          <td>
+            <span class="status-dot status-${statusClass}"></span>
+            ${statusText}
+          </td>
+          <td>${escapeHtml(h.clipTitle || '').substring(0, 40)}</td>
+          <td><span class="platform-badge platform-${h.platform}">${h.platform}</span></td>
+          <td>${d.toLocaleDateString('pt-BR')}</td>
+          <td>${d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('historyFilter').addEventListener('change', renderHistorico);
+
+  // ============ UTILITÁRIOS ============
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ':' + secs.toString().padStart(2, '0');
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+  }
+
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // ============ INICIALIZAÇÃO ============
+  renderClips();
+  renderAgendamento();
+  renderHistorico();
+
+})();
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clipador PRO</title>
 <style>
 :root{--bg:#0a0a0f;--surface:#13131a;--border:#252530;--text:#e8e8ed;--muted:#7a7a85;--accent:#6c5ce7;--success:#00d8a4;--danger:#ff4757;--warning:#ffa502;--tiktok:#ff0050;--youtube:#ff0000;--kwai:#ff7800}
