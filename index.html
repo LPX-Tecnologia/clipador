@@ -7,6 +7,441 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
+  --bg: #0a0a0f; --panel: #12121a; --surface: #1a1a25;
+  --border: #2a2a3a; --text: #e8e8ed; --muted: #6a6a7a;
+  --accent: #6c5ce7; --accent2: #a855f7;
+  --success: #00d8a4; --danger: #ff4757; --warning: #ffa502;
+  --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.studio { height: 100vh; display: flex; flex-direction: column; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--border); height: 50px; }
+.header h1 { font-size: 1.1em; }
+.header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-right { display: flex; gap: 5px; }
+
+.btn { padding: 7px 14px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-icon { background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+.btn-tiktok { background: var(--tiktok); color: #fff; }
+.btn-youtube { background: var(--youtube); color: #fff; }
+.btn-kwai { background: var(--kwai); color: #fff; }
+.btn-xs { width: 28px; height: 28px; font-size: 11px; }
+
+.workspace { flex: 1; display: grid; grid-template-columns: 180px 1fr 250px; overflow: hidden; }
+.tools { background: var(--panel); border-right: 1px solid var(--border); padding: 10px; overflow-y: auto; }
+.tools h3 { font-size: 9px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; }
+.tool-btn { width: 100%; padding: 7px 10px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 3px; transition: 0.2s; }
+.tool-btn:hover { border-color: var(--accent); }
+.tool-btn.active { background: rgba(108,92,231,0.15); border-color: var(--accent); color: var(--accent); }
+
+.preview { display: flex; flex-direction: column; }
+.preview-screen { flex: 1; background: #000; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.preview-screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.subtitle { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; text-align: center; }
+.subtitle-text { display: inline-block; padding: 8px 16px; background: rgba(0,0,0,0.85); color: #fff; font-size: 18px; font-weight: 700; border-radius: 8px; }
+.emotion { position: absolute; top: 10px; right: 10px; font-size: 2.5em; z-index: 10; }
+.framing-tag { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 10px; border-radius: 15px; font-size: 10px; z-index: 10; }
+.cut-tag { position: absolute; bottom: 10px; right: 10px; background: var(--accent); color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 10px; z-index: 10; }
+
+.controls { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--panel); border-top: 1px solid var(--border); }
+.time { font-family: monospace; font-size: 11px; color: var(--muted); min-width: 70px; }
+.seek { flex: 1; height: 3px; -webkit-appearance: none; background: var(--border); border-radius: 2px; cursor: pointer; }
+.seek::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+
+.details { height: 120px; background: var(--panel); border-top: 1px solid var(--border); padding: 8px; font-size: 10px; overflow-y: auto; }
+.emotion-bar { display: flex; align-items: center; gap: 5px; margin: 2px 0; }
+.emotion-bar .bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.emotion-bar .fill { height: 100%; border-radius: 2px; }
+.fill-joy { background: #ffa502; } .fill-surprise { background: #a855f7; }
+.char-tag { display: inline-block; padding: 2px 6px; margin: 1px; background: var(--surface); border-radius: 8px; font-size: 9px; }
+
+.timeline { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+.timeline h3 { padding: 8px 10px; font-size: 10px; border-bottom: 1px solid var(--border); }
+.timeline-tracks { flex: 1; overflow-y: auto; }
+.track-label { padding: 4px 10px; font-size: 9px; font-weight: 600; text-transform: uppercase; color: var(--muted); background: var(--surface); }
+.track-content { min-height: 40px; padding: 4px; position: relative; }
+.track-empty { color: var(--muted); font-size: 9px; text-align: center; padding: 12px; }
+.clip-bar { position: absolute; height: 60%; top: 20%; background: rgba(108,92,231,0.3); border: 1px solid rgba(108,92,231,0.5); border-radius: 3px; cursor: pointer; font-size: 7px; color: #fff; display: flex; align-items: center; justify-content: center; }
+.clip-bar:hover { background: rgba(108,92,231,0.5); }
+.clip-bar.active { border-color: #a855f7; }
+
+.footer { display: flex; align-items: center; justify-content: space-between; padding: 5px 12px; background: var(--panel); border-top: 1px solid var(--border); height: 38px; font-size: 10px; }
+.footer select { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 3px 6px; border-radius: 3px; font-size: 10px; }
+.platforms { display: flex; gap: 3px; }
+.platforms button { width: 24px; height: 24px; border: none; border-radius: 50%; cursor: pointer; color: #fff; font-size: 10px; }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+.modal.open { display: flex; }
+.modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; max-width: 450px; width: 90%; }
+.modal-box h2 { font-size: 1em; margin-bottom: 10px; }
+.modal-box input { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 5px; font-size: 12px; margin-bottom: 8px; }
+.modal-box input:focus { outline: none; border-color: var(--accent); }
+.modal-row { display: flex; gap: 6px; }
+.modal-row input { flex: 1; }
+.preview-box { display: flex; gap: 8px; padding: 8px; background: var(--surface); border-radius: 5px; margin: 8px 0; }
+.preview-box img { width: 70px; height: 40px; object-fit: cover; border-radius: 3px; }
+.preview-box h4 { font-size: 11px; }
+.progress { margin: 8px 0; }
+.progress .bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress .fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s; }
+.progress p { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.clips-panel { display: none; padding: 8px; background: var(--panel); border-top: 1px solid var(--border); max-height: 160px; overflow-y: auto; }
+.clips-panel.on { display: block; }
+.clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; }
+.clip-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px; cursor: pointer; }
+.clip-card:hover { border-color: var(--accent); }
+.clip-card.active { border-color: var(--accent); }
+.clip-card .thumb { height: 50px; background: #000; border-radius: 3px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+.clip-card .time { font-family: monospace; font-size: 9px; color: var(--accent); }
+.clip-card .title { font-size: 10px; font-weight: 600; margin: 2px 0; }
+.clip-card .actions { display: flex; gap: 2px; margin-top: 3px; }
+.clip-card .actions button { flex: 1; padding: 2px; font-size: 8px; border-radius: 2px; border: none; cursor: pointer; color: #fff; }
+
+.toasts { position: fixed; bottom: 10px; right: 10px; z-index: 2000; display: flex; flex-direction: column; gap: 4px; }
+.toast { padding: 8px 14px; border-radius: 5px; font-size: 11px; animation: slideIn 0.3s; }
+.toast-success { background: var(--success); color: #000; } .toast-error { background: var(--danger); } .toast-info { background: var(--accent); }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+@media (max-width: 768px) {
+  .workspace { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .tools { display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .tool-btn { width: auto; white-space: nowrap; font-size: 10px; }
+  .timeline { border-left: none; border-top: 1px solid var(--border); max-height: 130px; }
+}
+</style>
+</head>
+<body>
+
+<div class="studio" id="app">
+
+  <header class="header">
+    <h1>🎬 Clipador <span>Studio</span></h1>
+    <div class="header-right">
+      <button class="btn-icon" onclick="openModal()" title="Importar"><i class="fab fa-youtube"></i></button>
+      <button class="btn-icon" onclick="loadDemo()" title="Demo"><i class="fas fa-play"></i></button>
+      <button class="btn btn-primary" onclick="publishAll()"><i class="fas fa-rocket"></i> Publicar</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="tools">
+      <h3>Ferramentas</h3>
+      <button class="tool-btn active" onclick="useTool(this,'auto')"><i class="fas fa-magic"></i> Auto Cortes</button>
+      <button class="tool-btn" onclick="useTool(this,'mood')"><i class="fas fa-face-smile"></i> Humor</button>
+      <button class="tool-btn" onclick="useTool(this,'frame')"><i class="fas fa-crop"></i> Enquadrar</button>
+      <button class="tool-btn" onclick="useTool(this,'subs')"><i class="fas fa-closed-captioning"></i> Legendar</button>
+    </aside>
+
+    <main class="preview">
+      <div class="preview-screen" id="screen">
+        <canvas id="canvas"></canvas>
+        <div class="subtitle" id="subOverlay"></div>
+        <div class="emotion" id="emotionIcon">🎬</div>
+        <div class="framing-tag" id="framingTag" style="display:none;">🎥 <span id="framingName">Cinematic</span></div>
+        <div class="cut-tag" id="cutTag" style="display:none;">✂️ <span id="cutTime">00:00</span></div>
+      </div>
+      <div class="controls">
+        <button class="btn-icon btn-xs" id="playBtn" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+        <span class="time"><span id="curTime">00:00</span> / <span id="totTime">01:00</span></span>
+        <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)">
+        <button class="btn-icon btn-xs" onclick="toggleFS()"><i class="fas fa-expand"></i></button>
+      </div>
+      <div class="details">
+        <div id="emotionBars">
+          <div class="emotion-bar"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:65%"></div></div></div>
+          <div class="emotion-bar"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:45%"></div></div></div>
+        </div>
+        <div style="margin-top:5px;" id="charsList"><span class="char-tag">Carregando...</span></div>
+      </div>
+    </main>
+
+    <aside class="timeline">
+      <h3>Timeline</h3>
+      <div class="timeline-tracks">
+        <div class="track-label">Cortes</div>
+        <div class="track-content" id="trackContent"><div class="track-empty">Clique Demo ou Importar</div></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <span id="clipCount">0 cortes</span>
+    <select id="clipDur" onchange="S.clipDur=parseInt(this.value)">
+      <option value="30">30s</option><option value="60" selected>1min</option>
+    </select>
+    <button class="btn btn-primary btn-xs" onclick="makeClips()">Gerar Cortes</button>
+    <div class="platforms">
+      <button class="btn-tiktok" onclick="share('tiktok')"><i class="fab fa-tiktok"></i></button>
+      <button class="btn-youtube" onclick="share('youtube')"><i class="fab fa-youtube"></i></button>
+      <button class="btn-kwai" onclick="share('kwai')"><i class="fas fa-play"></i></button>
+    </div>
+  </footer>
+
+  <div class="clips-panel" id="clipsPanel">
+    <div class="clips-grid" id="clipsGrid"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="ytModal">
+  <div class="modal-box">
+    <h2><i class="fab fa-youtube" style="color:#f00;"></i> Importar YouTube</h2>
+    <div class="modal-row"><input type="text" id="ytUrl" placeholder="Cole a URL..."><button class="btn btn-primary" onclick="importYT()">Importar</button></div>
+    <div id="ytPreview" class="preview-box" style="display:none;"><img id="ytThumb" src=""><div><h4 id="ytTitle"></h4></div></div>
+    <div class="progress" id="ytProgress" style="display:none;"><div class="bar"><div class="fill" id="ytFill"></div></div><p id="ytMsg"></p></div>
+    <button class="btn-icon" onclick="closeModals()" style="margin-top:6px;"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ============ APP ÚNICO - SEM REDECLARAÇÕES ============
+const S = {
+  vid: null, vidTitle: 'Demo', time: 0, playing: false, clipDur: 60,
+  clips: [], clipIdx: -1,
+  subs: [
+    { s:0, e:4, sp:'Pessoa 1', tx:'Esse momento é incrível!' },
+    { s:4, e:8, sp:'Pessoa 2', tx:'Não dá pra acreditar...' },
+    { s:8, e:12, sp:'Pessoa 1', tx:'Isso mudou tudo!' }
+  ],
+  mood: { joy:65, surp:45 },
+  chars: ['Pessoa 1', 'Pessoa 2'],
+  framing: 'Spielberg Face'
+};
+
+// Init
+(function() {
+  const c = document.getElementById('canvas');
+  c.width = c.parentElement.offsetWidth;
+  c.height = c.parentElement.offsetHeight;
+  
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && document.activeElement === document.body) { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft') seekRel(-3);
+    if (e.key === 'ArrowRight') seekRel(3);
+    if (e.key === 'Escape') closeModals();
+  });
+  
+  setTimeout(() => loadDemo(), 200);
+  console.log('🎬 Clipador Studio pronto!');
+})();
+
+// ============ FUNÇÕES ============
+function openModal() { document.getElementById('ytModal').classList.add('open'); document.getElementById('ytUrl').focus(); }
+function closeModals() { document.getElementById('ytModal').classList.remove('open'); }
+
+function useTool(btn, t) {
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (t === 'auto') makeClips();
+  if (t === 'mood') { S.mood = { joy:40+Math.random()*40, surp:20+Math.random()*30 }; updateBars(); toast('🧠 Humor analisado!'); }
+  if (t === 'frame') { const f = ['Spielberg Face','Tarantino Two-Shot','Nolan Epic','Kubrick Stare']; S.framing = f[Math.floor(Math.random()*f.length)]; document.getElementById('framingTag').style.display='block'; document.getElementById('framingName').textContent=S.framing; toast('🎥 Enquadramento: '+S.framing); }
+  if (t === 'subs') toast('💬 Legendas geradas!');
+}
+
+function updateBars() {
+  document.getElementById('emotionBars').innerHTML = `
+    <div class="emotion-bar"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:${S.mood.joy}%"></div></div></div>
+    <div class="emotion-bar"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:${S.mood.surp}%"></div></div></div>`;
+}
+
+async function importYT() {
+  const url = document.getElementById('ytUrl').value.trim();
+  if (!url) return toast('Cole uma URL', 'error');
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if (!m) return toast('URL inválida', 'error');
+  
+  document.getElementById('ytProgress').style.display = 'block';
+  document.getElementById('ytFill').style.width = '30%';
+  document.getElementById('ytMsg').textContent = 'Conectando...';
+  
+  try {
+    const r = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v='+m[1]+'&format=json');
+    const d = await r.json();
+    S.vidTitle = d.title; S.vid = m[1];
+    document.getElementById('ytPreview').style.display = 'flex';
+    document.getElementById('ytThumb').src = d.thumbnail_url;
+    document.getElementById('ytTitle').textContent = d.title;
+    document.getElementById('ytFill').style.width = '100%';
+    document.getElementById('ytMsg').textContent = '✅ Pronto!';
+    makeClips();
+    setTimeout(() => { closeModals(); document.getElementById('ytProgress').style.display='none'; toast('✅ Importado!'); }, 1000);
+  } catch(e) {
+    document.getElementById('ytMsg').textContent = '❌ '+e.message;
+  }
+}
+
+function loadDemo() {
+  S.vid = 'demo'; S.vidTitle = 'Vídeo Demo';
+  S.chars = ['Pessoa 1', 'Pessoa 2'];
+  S.framing = 'Spielberg Face';
+  document.getElementById('charsList').innerHTML = S.chars.map(c => `<span class="char-tag">${c}</span>`).join('');
+  document.getElementById('framingTag').style.display = 'block';
+  document.getElementById('framingName').textContent = S.framing;
+  document.getElementById('cutTag').style.display = 'block';
+  makeClips();
+  toast('✅ Demo carregado! Clique ▶', 'success');
+}
+
+function makeClips() {
+  const n = 5;
+  S.clips = [];
+  for (let i = 0; i < n; i++) {
+    S.clips.push({
+      id: Date.now()+'-'+i, s: i*12, e: (i+1)*12,
+      title: ['🔥 Viral','😱 Revelação','💡 Dica','🤫 Segredo','🥹 Emoção'][i],
+      mood: ['😊','😲','🔥','😂','💪'][i], vir: (7+Math.random()*3).toFixed(1)
+    });
+  }
+  S.clipIdx = 0; S.time = 0;
+  document.getElementById('clipCount').textContent = S.clips.length + ' cortes';
+  document.getElementById('totTime').textContent = '00:12';
+  renderClips();
+  renderTimeline();
+  document.getElementById('cutTag').style.display = 'block';
+  document.getElementById('cutTime').textContent = fmt(S.clips[0].s) + ' - ' + fmt(S.clips[0].e);
+  toast('✅ ' + S.clips.length + ' cortes!', 'success');
+}
+
+function renderClips() {
+  const p = document.getElementById('clipsPanel');
+  const g = document.getElementById('clipsGrid');
+  p.classList.add('on');
+  g.innerHTML = S.clips.map((c, i) => `
+    <div class="clip-card ${i===S.clipIdx?'active':''}" onclick="previewClip(${i})">
+      <div class="thumb"><span style="font-size:1.5em;">${c.mood}</span></div>
+      <div class="time">⏱ ${fmt(c.s)}-${fmt(c.e)}</div>
+      <div class="title">${c.title}</div>
+      <div class="actions">
+        <button class="btn-tiktok" onclick="event.stopPropagation();share('tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="event.stopPropagation();share('youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="event.stopPropagation();share('kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function previewClip(i) {
+  S.clipIdx = i; S.time = 0;
+  document.querySelectorAll('.clip-card').forEach((el, j) => el.classList.toggle('active', j===i));
+  document.getElementById('curTime').textContent = '00:00';
+  document.getElementById('seekBar').value = 0;
+  document.getElementById('cutTime').textContent = fmt(S.clips[i].s) + ' - ' + fmt(S.clips[i].e);
+  draw();
+}
+
+function renderTimeline() {
+  document.getElementById('trackContent').innerHTML = S.clips.map((c, i) => 
+    `<div class="clip-bar ${i===S.clipIdx?'active':''}" style="left:${(i/S.clips.length)*100}%;width:${100/S.clips.length}%;" onclick="previewClip(${i})">${fmt(c.s)}</div>`
+  ).join('');
+}
+
+// ============ PLAYBACK ============
+function togglePlay() {
+  S.playing = !S.playing;
+  document.getElementById('playBtn').innerHTML = S.playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+  if (S.playing) loop();
+}
+
+function loop() {
+  if (!S.playing) return;
+  S.time += 0.05;
+  if (S.time >= 12) {
+    S.time = 12; S.playing = false;
+    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+    if (S.clipIdx < S.clips.length-1) {
+      setTimeout(() => { previewClip(S.clipIdx+1); S.playing=true; document.getElementById('playBtn').innerHTML='<i class="fas fa-pause"></i>'; loop(); }, 800);
+    }
+  }
+  draw();
+  document.getElementById('curTime').textContent = fmt(S.time);
+  document.getElementById('seekBar').value = (S.time/12)*100;
+  requestAnimationFrame(() => loop());
+}
+
+function seekTo(p) { S.time = (p/100)*12; draw(); document.getElementById('curTime').textContent = fmt(S.time); }
+function seekRel(s) { S.time = Math.max(0, Math.min(S.time+s, 12)); draw(); document.getElementById('curTime').textContent = fmt(S.time); document.getElementById('seekBar').value = (S.time/12)*100; }
+
+function draw() {
+  const c = document.getElementById('canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const w = c.width = c.parentElement.offsetWidth;
+  const h = c.height = c.parentElement.offsetHeight;
+  
+  const g = ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,'#1a1a2e'); g.addColorStop(0.5,'#16213e'); g.addColorStop(1,'#0f3460');
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  
+  for (let i=0; i<12; i++) {
+    const x = (Math.sin(S.time*2+i)*0.5+0.5)*w;
+    const y = (Math.cos(S.time*1.5+i)*0.5+0.5)*h;
+    ctx.fillStyle = `rgba(255,255,255,${0.15+Math.sin(S.time*3+i)*0.1})`;
+    ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
+  }
+  
+  const who = Math.floor(S.time/3)%2;
+  const cx = w/2, cy = h/2;
+  
+  ctx.fillStyle = who===0 ? '#a855f7' : '#6c5ce7';
+  ctx.beginPath(); ctx.arc(cx-60,cy,30,0,Math.PI*2); ctx.fill();
+  if (who===0) { ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(cx-60,cy,34,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.font='22px sans-serif'; ctx.fillText('👤', cx-71, cy+7);
+  
+  ctx.fillStyle = who===1 ? '#ff8787' : '#ff6b6b';
+  ctx.beginPath(); ctx.arc(cx+60,cy,30,0,Math.PI*2); ctx.fill();
+  if (who===1) { ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(cx+60,cy,34,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.fillText('👤', cx+49, cy+7);
+  
+  document.getElementById('emotionIcon').textContent = ['😊','😲','🔥','😂','💪'][Math.floor(S.time/2)%5];
+  
+  const seg = S.subs.find(t => S.time>=t.s && S.time<=t.e);
+  document.getElementById('subOverlay').innerHTML = seg ? 
+    `<div class="subtitle-text" style="background:${seg.sp==='Pessoa 1'?'rgba(108,92,231,0.9)':'rgba(255,107,107,0.9)'}">${seg.tx}</div>` : '';
+}
+
+function toggleFS() {
+  const el = document.getElementById('screen');
+  if (!document.fullscreenElement) el.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// ============ SHARE ============
+function share(p) {
+  const u = { tiktok:'https://www.tiktok.com/upload', youtube:'https://studio.youtube.com', kwai:'https://www.kwai.com/upload' };
+  window.open(u[p], '_blank');
+  toast('📤 '+p+'!');
+}
+function publishAll() { toast('🚀 Publicando...'); setTimeout(() => toast('✅ Publicado!', 'success'), 1500); }
+
+// ============ UTILS ============
+function fmt(s) { const m=Math.floor(s/60), se=Math.floor(s%60); return m+':'+se.toString().padStart(2,'0'); }
+function toast(m, t='info') {
+  const c = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = 'toast toast-'+t; d.textContent = m;
+  c.appendChild(d);
+  setTimeout(() => { d.style.opacity='0'; setTimeout(() => d.remove(), 300); }, 2000);
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
   --bg-dark: #0a0a0f; --bg-panel: #12121a; --bg-surface: #1a1a25;
   --bg-hover: #222230; --accent-primary: #6c5ce7; --accent-secondary: #a855f7;
   --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800; --instagram: #e4405f;
