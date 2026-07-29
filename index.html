@@ -1,4 +1,277 @@
-<!DOCTYPE html>
+// ============ APP COM LOADER QUE SOME ============
+const S = {
+  vid: null, vidTitle: 'Demo', time: 0, playing: false, clipDur: 60,
+  clips: [], clipIdx: -1,
+  subs: [
+    { s:0, e:4, sp:'Pessoa 1', tx:'Esse momento é incrível!' },
+    { s:4, e:8, sp:'Pessoa 2', tx:'Não dá pra acreditar...' },
+    { s:8, e:12, sp:'Pessoa 1', tx:'Isso mudou tudo!' }
+  ],
+  mood: { joy:65, surp:45 },
+  chars: ['Pessoa 1', 'Pessoa 2'],
+  framing: 'Spielberg Face'
+};
+
+// ============ FORÇAR REMOÇÃO DO LOADER ============
+window.addEventListener('DOMContentLoaded', function() {
+  const loader = document.getElementById('loader');
+  const msgEl = document.getElementById('loaderMsg');
+  const msgs = [
+    '🎬 Inicializando...',
+    '🧠 Carregando IA...',
+    '🎥 Calibrando câmera...',
+    '✨ Preparando efeitos...',
+    '🚀 Pronto!'
+  ];
+  let i = 0;
+  
+  // Atualizar mensagens
+  const interval = setInterval(() => {
+    if (i < msgs.length) {
+      if (msgEl) msgEl.textContent = msgs[i];
+      i++;
+    }
+  }, 400);
+  
+  // FORÇAR remoção do loader após 2.5 segundos
+  setTimeout(function() {
+    clearInterval(interval);
+    
+    // Esconder loader
+    if (loader) {
+      loader.style.opacity = '0';
+      loader.style.transition = 'opacity 0.5s ease';
+    }
+    
+    // Remover do DOM
+    setTimeout(function() {
+      if (loader) {
+        loader.style.display = 'none';
+        loader.remove(); // Remove completamente
+      }
+      
+      // Iniciar app
+      initApp();
+      
+    }, 500);
+    
+  }, 2500);
+});
+
+// ============ INIT APP ============
+function initApp() {
+  const c = document.getElementById('canvas');
+  if (c) {
+    c.width = c.parentElement.offsetWidth;
+    c.height = c.parentElement.offsetHeight;
+  }
+  
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && document.activeElement === document.body) { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft') seekRel(-3);
+    if (e.key === 'ArrowRight') seekRel(3);
+    if (e.key === 'Escape') closeModals();
+  });
+  
+  // Carregar demo
+  setTimeout(() => loadDemo(), 300);
+  
+  console.log('🎬 Clipador Studio pronto!');
+}
+
+// ============ FUNÇÕES ============
+function openModal() { document.getElementById('ytModal').classList.add('open'); document.getElementById('ytUrl').focus(); }
+function closeModals() { document.getElementById('ytModal').classList.remove('open'); }
+
+function useTool(btn, t) {
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (t === 'auto') makeClips();
+  if (t === 'mood') { S.mood = { joy:40+Math.random()*40, surp:20+Math.random()*30 }; updateBars(); toast('🧠 Humor analisado!'); }
+  if (t === 'frame') { const f = ['Spielberg Face','Tarantino Two-Shot','Nolan Epic','Kubrick Stare']; S.framing = f[Math.floor(Math.random()*f.length)]; document.getElementById('framingTag').style.display='block'; document.getElementById('framingName').textContent=S.framing; toast('🎥 '+S.framing); }
+  if (t === 'subs') toast('💬 Legendas geradas!');
+}
+
+function updateBars() {
+  document.getElementById('emotionBars').innerHTML = `
+    <div class="emotion-bar"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:${S.mood.joy}%"></div></div></div>
+    <div class="emotion-bar"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:${S.mood.surp}%"></div></div></div>`;
+}
+
+async function importYT() {
+  const url = document.getElementById('ytUrl').value.trim();
+  if (!url) return toast('Cole uma URL', 'error');
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if (!m) return toast('URL inválida', 'error');
+  
+  document.getElementById('ytProgress').style.display = 'block';
+  document.getElementById('ytFill').style.width = '30%';
+  document.getElementById('ytMsg').textContent = 'Conectando...';
+  
+  try {
+    const r = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v='+m[1]+'&format=json');
+    const d = await r.json();
+    S.vidTitle = d.title; S.vid = m[1];
+    document.getElementById('ytPreview').style.display = 'flex';
+    document.getElementById('ytThumb').src = d.thumbnail_url;
+    document.getElementById('ytTitle').textContent = d.title;
+    document.getElementById('ytFill').style.width = '100%';
+    document.getElementById('ytMsg').textContent = '✅ Pronto!';
+    makeClips();
+    setTimeout(() => { closeModals(); document.getElementById('ytProgress').style.display='none'; toast('✅ Importado!'); }, 1000);
+  } catch(e) {
+    document.getElementById('ytMsg').textContent = '❌ '+e.message;
+  }
+}
+
+function loadDemo() {
+  S.vid = 'demo'; S.vidTitle = 'Vídeo Demo';
+  S.chars = ['Pessoa 1', 'Pessoa 2'];
+  S.framing = 'Spielberg Face';
+  document.getElementById('charsList').innerHTML = S.chars.map(c => `<span class="char-tag">${c}</span>`).join('');
+  document.getElementById('framingTag').style.display = 'block';
+  document.getElementById('framingName').textContent = S.framing;
+  document.getElementById('cutTag').style.display = 'block';
+  makeClips();
+  toast('✅ Demo carregado! Clique ▶', 'success');
+}
+
+function makeClips() {
+  const n = 5;
+  S.clips = [];
+  for (let i = 0; i < n; i++) {
+    S.clips.push({
+      id: Date.now()+'-'+i, s: i*12, e: (i+1)*12,
+      title: ['🔥 Viral','😱 Revelação','💡 Dica','🤫 Segredo','🥹 Emoção'][i],
+      mood: ['😊','😲','🔥','😂','💪'][i], vir: (7+Math.random()*3).toFixed(1)
+    });
+  }
+  S.clipIdx = 0; S.time = 0;
+  document.getElementById('clipCount').textContent = S.clips.length + ' cortes';
+  document.getElementById('totTime').textContent = '00:12';
+  renderClips();
+  renderTimeline();
+  document.getElementById('cutTag').style.display = 'block';
+  document.getElementById('cutTime').textContent = fmt(S.clips[0].s) + ' - ' + fmt(S.clips[0].e);
+  toast('✅ ' + S.clips.length + ' cortes!', 'success');
+}
+
+function renderClips() {
+  const p = document.getElementById('clipsPanel');
+  const g = document.getElementById('clipsGrid');
+  p.classList.add('on');
+  g.innerHTML = S.clips.map((c, i) => `
+    <div class="clip-card ${i===S.clipIdx?'active':''}" onclick="previewClip(${i})">
+      <div class="thumb"><span style="font-size:1.5em;">${c.mood}</span></div>
+      <div class="time">⏱ ${fmt(c.s)}-${fmt(c.e)}</div>
+      <div class="title">${c.title}</div>
+      <div class="actions">
+        <button class="btn-tiktok" onclick="event.stopPropagation();share('tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="event.stopPropagation();share('youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="event.stopPropagation();share('kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function previewClip(i) {
+  S.clipIdx = i; S.time = 0;
+  document.querySelectorAll('.clip-card').forEach((el, j) => el.classList.toggle('active', j===i));
+  document.getElementById('curTime').textContent = '00:00';
+  document.getElementById('seekBar').value = 0;
+  document.getElementById('cutTime').textContent = fmt(S.clips[i].s) + ' - ' + fmt(S.clips[i].e);
+  draw();
+}
+
+function renderTimeline() {
+  document.getElementById('trackContent').innerHTML = S.clips.map((c, i) => 
+    `<div class="clip-bar ${i===S.clipIdx?'active':''}" style="left:${(i/S.clips.length)*100}%;width:${100/S.clips.length}%;" onclick="previewClip(${i})">${fmt(c.s)}</div>`
+  ).join('');
+}
+
+function togglePlay() {
+  S.playing = !S.playing;
+  document.getElementById('playBtn').innerHTML = S.playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+  if (S.playing) loop();
+}
+
+function loop() {
+  if (!S.playing) return;
+  S.time += 0.05;
+  if (S.time >= 12) {
+    S.time = 12; S.playing = false;
+    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+    if (S.clipIdx < S.clips.length-1) {
+      setTimeout(() => { previewClip(S.clipIdx+1); S.playing=true; document.getElementById('playBtn').innerHTML='<i class="fas fa-pause"></i>'; loop(); }, 800);
+    }
+  }
+  draw();
+  document.getElementById('curTime').textContent = fmt(S.time);
+  document.getElementById('seekBar').value = (S.time/12)*100;
+  requestAnimationFrame(() => loop());
+}
+
+function seekTo(p) { S.time = (p/100)*12; draw(); document.getElementById('curTime').textContent = fmt(S.time); }
+function seekRel(s) { S.time = Math.max(0, Math.min(S.time+s, 12)); draw(); document.getElementById('curTime').textContent = fmt(S.time); document.getElementById('seekBar').value = (S.time/12)*100; }
+
+function draw() {
+  const c = document.getElementById('canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const w = c.width = c.parentElement.offsetWidth;
+  const h = c.height = c.parentElement.offsetHeight;
+  
+  const g = ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,'#1a1a2e'); g.addColorStop(0.5,'#16213e'); g.addColorStop(1,'#0f3460');
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  
+  for (let i=0; i<12; i++) {
+    const x = (Math.sin(S.time*2+i)*0.5+0.5)*w;
+    const y = (Math.cos(S.time*1.5+i)*0.5+0.5)*h;
+    ctx.fillStyle = `rgba(255,255,255,${0.15+Math.sin(S.time*3+i)*0.1})`;
+    ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
+  }
+  
+  const who = Math.floor(S.time/3)%2;
+  const cx = w/2, cy = h/2;
+  
+  ctx.fillStyle = who===0 ? '#a855f7' : '#6c5ce7';
+  ctx.beginPath(); ctx.arc(cx-60,cy,30,0,Math.PI*2); ctx.fill();
+  if (who===0) { ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(cx-60,cy,34,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.font='22px sans-serif'; ctx.fillText('👤', cx-71, cy+7);
+  
+  ctx.fillStyle = who===1 ? '#ff8787' : '#ff6b6b';
+  ctx.beginPath(); ctx.arc(cx+60,cy,30,0,Math.PI*2); ctx.fill();
+  if (who===1) { ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(cx+60,cy,34,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.fillText('👤', cx+49, cy+7);
+  
+  document.getElementById('emotionIcon').textContent = ['😊','😲','🔥','😂','💪'][Math.floor(S.time/2)%5];
+  
+  const seg = S.subs.find(t => S.time>=t.s && S.time<=t.e);
+  document.getElementById('subOverlay').innerHTML = seg ? 
+    `<div class="subtitle-text" style="background:${seg.sp==='Pessoa 1'?'rgba(108,92,231,0.9)':'rgba(255,107,107,0.9)'}">${seg.tx}</div>` : '';
+}
+
+function toggleFS() {
+  const el = document.getElementById('screen');
+  if (!document.fullscreenElement) el.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+function share(p) {
+  const u = { tiktok:'https://www.tiktok.com/upload', youtube:'https://studio.youtube.com', kwai:'https://www.kwai.com/upload' };
+  window.open(u[p], '_blank');
+  toast('📤 '+p+'!');
+}
+function publishAll() { toast('🚀 Publicando...'); setTimeout(() => toast('✅ Publicado!', 'success'), 1500); }
+
+function fmt(s) { const m=Math.floor(s/60), se=Math.floor(s%60); return m+':'+se.toString().padStart(2,'0'); }
+function toast(m, t='info') {
+  const c = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = 'toast toast-'+t; d.textContent = m;
+  c.appendChild(d);
+  setTimeout(() => { d.style.opacity='0'; setTimeout(() => d.remove(), 300); }, 2000);
+}<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
