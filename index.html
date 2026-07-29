@@ -6,6 +6,830 @@
 <title>🎬 Clipador Studio — Estúdio de Cinema IA</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+:root {
+  --bg-dark: #0a0a0f; --bg-panel: #12121a; --bg-surface: #1a1a25;
+  --bg-hover: #222230; --accent-primary: #6c5ce7; --accent-secondary: #a855f7;
+  --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800; --instagram: #e4405f;
+  --success: #00d8a4; --warning: #ffa502; --danger: #ff4757;
+  --text-primary: #e8e8ed; --text-secondary: #a0a0b0; --text-muted: #6a6a7a;
+  --border-color: #2a2a3a; --radius: 8px; --radius-lg: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg-dark); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+.studio-loader { position: fixed; inset: 0; background: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
+.studio-loader.hidden { opacity: 0; pointer-events: none; }
+.loader-content { text-align: center; }
+.loader-content .icon { font-size: 4em; color: var(--accent-primary); margin-bottom: 20px; animation: pulse 2s infinite; }
+.loader-content h2 { font-size: 1.8em; margin-bottom: 8px; }
+.loader-content p { color: var(--text-secondary); margin-bottom: 20px; font-size: 14px; }
+.loader-bar { width: 200px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 0 auto; overflow: hidden; }
+.loader-fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); animation: loading 2s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+@keyframes loading { 0%{width:0} 50%{width:70%} 100%{width:100%} }
+
+.studio-container { height: 100vh; display: flex; flex-direction: column; }
+.studio-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); height: 56px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-left i { font-size: 1.4em; color: var(--accent-primary); }
+.header-left h1 { font-size: 1.2em; font-weight: 700; }
+.header-left span { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-center { flex: 1; max-width: 300px; margin: 0 20px; }
+.header-center input { width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 14px; border-radius: 6px; font-size: 13px; text-align: center; }
+.header-center input:focus { outline: none; border-color: var(--accent-primary); }
+.header-right { display: flex; align-items: center; gap: 6px; }
+
+.btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; white-space: nowrap; }
+.btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(108,92,231,0.3); }
+.btn-icon { background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-secondary); width: 36px; height: 36px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; }
+.btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.btn-tiktok { background: var(--tiktok); color: #fff; }
+.btn-youtube { background: var(--youtube); color: #fff; }
+.btn-kwai { background: var(--kwai); color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-xs { width: 32px; height: 32px; padding: 0; }
+
+.studio-workspace { flex: 1; display: grid; grid-template-columns: 220px 1fr 300px; overflow: hidden; }
+.tools-panel { background: var(--bg-panel); border-right: 1px solid var(--border-color); overflow-y: auto; padding: 12px; }
+.tool-section { margin-bottom: 20px; }
+.tool-section h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.tool-btn { width: 100%; padding: 9px 12px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 4px; transition: all 0.3s; }
+.tool-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.tool-btn.active { background: rgba(108,92,231,0.15); border-color: var(--accent-primary); color: var(--accent-primary); }
+.tool-btn i { width: 16px; text-align: center; font-size: 13px; }
+
+/* PREVIEW MELHORADO */
+.preview-panel { display: flex; flex-direction: column; overflow: hidden; }
+.preview-screen {
+  flex: 1; background: #000; display: flex; align-items: center;
+  justify-content: center; position: relative; overflow: hidden; min-height: 350px;
+}
+.preview-canvas { width: 100%; height: 100%; position: absolute; inset: 0; }
+.preview-placeholder { text-align: center; color: var(--text-muted); z-index: 1; }
+.preview-placeholder i { font-size: 4em; margin-bottom: 15px; opacity: 0.3; }
+.subtitle-overlay {
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  text-align: center; pointer-events: none; z-index: 10; width: 90%;
+}
+.subtitle-text {
+  display: inline-block; padding: 10px 20px; background: rgba(0,0,0,0.85);
+  color: #fff; font-size: 24px; font-weight: 700; border-radius: 10px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8); animation: fadeInUp 0.3s ease;
+  max-width: 100%; line-height: 1.3;
+}
+.emotion-icon {
+  position: absolute; top: 15px; right: 15px; font-size: 3em;
+  animation: bounceIn 0.5s ease; z-index: 10;
+}
+.framing-indicator {
+  position: absolute; top: 15px; left: 15px;
+  background: rgba(0,0,0,0.7); color: #fff;
+  padding: 6px 12px; border-radius: 20px; font-size: 11px;
+  z-index: 10; display: flex; align-items: center; gap: 6px;
+}
+.cut-indicator {
+  position: absolute; bottom: 15px; right: 15px;
+  background: rgba(108,92,231,0.9); color: #fff;
+  padding: 4px 10px; border-radius: 4px; font-size: 11px;
+  font-family: monospace; z-index: 10;
+}
+@keyframes fadeInUp { from{opacity:0;transform:translate(-50%,10px)} to{opacity:1;transform:translate(-50%,0)} }
+@keyframes bounceIn { 0%{transform:scale(0)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+.preview-controls { display: flex; align-items: center; gap: 10px; padding: 8px 15px; background: var(--bg-panel); border-top: 1px solid var(--border-color); }
+.time-display { font-family: monospace; font-size: 12px; color: var(--text-secondary); min-width: 90px; }
+.seek-bar { flex: 1; height: 4px; -webkit-appearance: none; appearance: none; background: var(--border-color); border-radius: 2px; outline: none; cursor: pointer; }
+.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-primary); cursor: pointer; box-shadow: 0 0 10px rgba(108,92,231,0.5); }
+
+.clip-details { height: 180px; background: var(--bg-panel); border-top: 1px solid var(--border-color); overflow-y: auto; padding: 12px; font-size: 12px; }
+.detail-section { margin-bottom: 12px; }
+.detail-section h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+.emotion-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
+.emotion-row .bar { flex: 1; height: 5px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+.emotion-row .fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.fill-joy { background: #ffa502; } .fill-sadness { background: #3742fa; } .fill-surprise { background: #a855f7; } .fill-anger { background: #ff4757; }
+.character-tag { display: inline-block; padding: 3px 8px; margin: 2px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; font-size: 10px; }
+.transcript-line { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px; }
+.transcript-speaker { font-weight: 600; color: var(--accent-primary); margin-right: 4px; }
+.empty-text { color: var(--text-muted); font-style: italic; padding: 10px 0; }
+
+.timeline-panel { background: var(--bg-panel); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; }
+.timeline-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+.timeline-header h3 { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.timeline-tools { display: flex; gap: 3px; }
+.timeline-tracks { flex: 1; overflow-y: auto; }
+.track { border-bottom: 1px solid var(--border-color); }
+.track-label { padding: 6px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg-surface); }
+.track-content { min-height: 50px; padding: 6px; position: relative; }
+.empty-track { color: var(--text-muted); font-size: 11px; text-align: center; padding: 15px; }
+.timeline-clip { position: absolute; height: 70%; top: 15%; background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(168,85,247,0.3)); border: 1px solid rgba(108,92,231,0.5); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; overflow: hidden; transition: all 0.2s; }
+.timeline-clip:hover { background: rgba(108,92,231,0.5); border-color: #a855f7; transform: scaleY(1.1); }
+.timeline-clip.selected { border-color: #a855f7 !important; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
+.timeline-ruler { height: 25px; border-top: 1px solid var(--border-color); }
+.timeline-ruler canvas { width: 100%; height: 100%; }
+
+.studio-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px; background: var(--bg-panel); border-top: 1px solid var(--border-color); height: 48px; }
+.footer-left, .footer-center, .footer-right { display: flex; align-items: center; gap: 10px; }
+.clip-counter { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.export-options { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.export-options select { background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px 10px; border-radius: 5px; font-size: 12px; }
+.platform-btns { display: flex; gap: 5px; }
+.platform-btns button { width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer; color: #fff; font-size: 14px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+.platform-btns button:hover { transform: scale(1.15); }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
+.modal.open { display: flex; }
+.modal-content { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; max-width: 520px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: modalIn 0.3s ease; }
+@keyframes modalIn { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+.modal-content h2 { margin-bottom: 15px; font-size: 1.2em; display: flex; align-items: center; gap: 8px; }
+.modal-content .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.modal-content input { flex: 1; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 14px; border-radius: 6px; font-size: 13px; }
+.modal-content input:focus { outline: none; border-color: var(--accent-primary); }
+.video-preview { display: flex; gap: 12px; padding: 12px; background: var(--bg-surface); border-radius: 8px; margin: 12px 0; }
+.video-preview img { width: 100px; height: 56px; object-fit: cover; border-radius: 4px; }
+.video-preview h4 { font-size: 13px; margin-bottom: 3px; }
+.video-preview p { font-size: 11px; color: var(--text-secondary); }
+.progress-row { margin: 10px 0; }
+.progress-row .bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+.progress-row .fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); width: 0%; transition: width 0.5s; }
+.progress-row p { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 12px 20px; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 500; animation: slideIn 0.3s ease; max-width: 350px; display: flex; align-items: center; gap: 8px; }
+.toast-success { background: var(--success); color: #000; } .toast-error { background: var(--danger); } .toast-info { background: var(--accent-primary); } .toast-warning { background: var(--warning); color: #000; }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+.clips-panel { display: none; padding: 15px; overflow-y: auto; max-height: 250px; background: var(--bg-panel); border-top: 1px solid var(--border-color); }
+.clips-panel.visible { display: block; }
+.clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.clip-mini { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.3s; }
+.clip-mini:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+.clip-mini.active { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(108,92,231,0.3); }
+.clip-mini .thumb { height: 80px; background: #000; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; position: relative; overflow: hidden; }
+.clip-mini .thumb .mini-preview { width: 100%; height: 100%; object-fit: cover; }
+.clip-mini .info { font-size: 11px; }
+.clip-mini .time { color: var(--accent-primary); font-family: monospace; }
+.clip-mini .title { font-weight: 600; margin: 4px 0; font-size: 12px; }
+.clip-mini .mood { font-size: 10px; color: var(--text-muted); }
+.clip-mini .actions { display: flex; gap: 4px; margin-top: 6px; }
+.clip-mini .actions button { flex: 1; padding: 5px; font-size: 10px; border-radius: 4px; border: none; cursor: pointer; color: #fff; }
+
+/* Estilos para o preview animado */
+.preview-scene {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  overflow: hidden;
+}
+.scene-characters {
+  display: flex; gap: 40px; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+}
+.scene-character {
+  width: 100px; height: 100px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3em; position: relative; transition: all 0.3s;
+}
+.scene-character.speaking {
+  transform: scale(1.2); box-shadow: 0 0 30px rgba(108,92,231,0.8);
+  border: 3px solid var(--accent-primary);
+}
+.scene-character.left { background: linear-gradient(135deg, #6c5ce7, #a855f7); }
+.scene-character.right { background: linear-gradient(135deg, #ff6b6b, #ff8787); }
+.scene-speech-bubble {
+  position: absolute; top: -50px; background: #fff; color: #000;
+  padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: 600;
+  white-space: nowrap; animation: floatUp 0.5s ease;
+}
+@keyframes floatUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.scene-effects {
+  position: absolute; inset: 0; pointer-events: none; z-index: 3;
+}
+.particle {
+  position: absolute; width: 4px; height: 4px; background: #fff;
+  border-radius: 50%; animation: particleFloat 2s infinite;
+}
+@keyframes particleFloat {
+  0%{transform:translateY(0) scale(1);opacity:1}
+  100%{transform:translateY(-100px) scale(0);opacity:0}
+}
+
+@media (max-width: 768px) {
+  .studio-workspace { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .tools-panel { display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 8px; }
+  .tool-section { margin-bottom: 0; margin-right: 15px; display: flex; align-items: center; gap: 8px; }
+  .tool-section h3 { display: none; }
+  .tool-btn { width: auto; white-space: nowrap; }
+  .timeline-panel { border-left: none; border-top: 1px solid var(--border-color); max-height: 180px; }
+}
+</style>
+</head>
+<body>
+
+<div class="studio-loader" id="loader">
+  <div class="loader-content">
+    <div class="icon"><i class="fas fa-film"></i></div>
+    <h2>Clipador <span style="color:var(--accent-primary);">Studio</span></h2>
+    <p id="loaderMsg">Preparando seu estúdio de cinema...</p>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
+</div>
+
+<div class="studio-container" id="studio" style="display:none;">
+  <header class="studio-header">
+    <div class="header-left">
+      <i class="fas fa-film"></i>
+      <h1>Clipador <span>Studio</span></h1>
+    </div>
+    <div class="header-center">
+      <input type="text" id="projectName" value="Projeto sem nome" />
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" title="Configurações" onclick="openConfig()"><i class="fas fa-cog"></i></button>
+      <button class="btn btn-primary" onclick="publishAll()"><i class="fas fa-rocket"></i> Publicar</button>
+    </div>
+  </header>
+
+  <div class="studio-workspace">
+    <aside class="tools-panel">
+      <div class="tool-section">
+        <h3><i class="fas fa-magic"></i> IA</h3>
+        <button class="tool-btn active" onclick="selectTool(this,'auto')"><i class="fas fa-wand-magic-sparkles"></i> Auto</button>
+        <button class="tool-btn" onclick="selectTool(this,'sentiment')"><i class="fas fa-face-smile"></i> Humor</button>
+        <button class="tool-btn" onclick="selectTool(this,'framing')"><i class="fas fa-crop"></i> Enquadrar</button>
+        <button class="tool-btn" onclick="selectTool(this,'subtitles')"><i class="fas fa-closed-captioning"></i> Legendar</button>
+      </div>
+      <div class="tool-section">
+        <h3><i class="fas fa-sliders"></i> Efeitos</h3>
+        <button class="tool-btn" onclick="selectTool(this,'color')"><i class="fas fa-palette"></i> Cor</button>
+        <button class="tool-btn" onclick="selectTool(this,'audio')"><i class="fas fa-music"></i> Áudio</button>
+        <button class="tool-btn" onclick="selectTool(this,'effects')"><i class="fas fa-stars"></i> Efeitos</button>
+      </div>
+      <div class="tool-section">
+        <h3><i class="fas fa-download"></i> Importar</h3>
+        <button class="tool-btn" onclick="openYouTubeModal()"><i class="fab fa-youtube"></i> YouTube</button>
+        <button class="tool-btn" onclick="importDemo()"><i class="fas fa-play"></i> Demo</button>
+      </div>
+    </aside>
+
+    <main class="preview-panel">
+      <div class="preview-screen" id="previewScreen">
+        <canvas class="preview-canvas" id="previewCanvas"></canvas>
+        <div class="preview-placeholder" id="placeholder">
+          <i class="fas fa-film"></i>
+          <p>Importe um vídeo para começar</p>
+          <button class="btn btn-primary" onclick="openYouTubeModal()"><i class="fas fa-plus"></i> Importar Vídeo</button>
+        </div>
+        <div class="subtitle-overlay" id="subtitleOverlay"></div>
+        <div class="emotion-icon" id="emotionIcon"></div>
+        <div class="framing-indicator" id="framingIndicator" style="display:none;">
+          <i class="fas fa-crop"></i> <span id="framingName">Spielberg Face</span>
+        </div>
+        <div class="cut-indicator" id="cutIndicator" style="display:none;">
+          ✂️ <span id="cutTime">00:00 - 00:00</span>
+        </div>
+      </div>
+
+      <div class="preview-controls">
+        <button class="btn-icon btn-xs" id="playBtn" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+        <button class="btn-icon btn-xs" onclick="stopPreview()"><i class="fas fa-stop"></i></button>
+        <span class="time-display"><span id="currentTime">00:00</span> / <span id="totalTime">01:00</span></span>
+        <input type="range" class="seek-bar" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)" />
+        <button class="btn-icon btn-xs" onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+      </div>
+
+      <div class="clip-details">
+        <div class="detail-section">
+          <h4><i class="fas fa-face-smile"></i> Humor</h4>
+          <div id="emotionBars">
+            <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:65%"></div></div></div>
+            <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:45%"></div></div></div>
+            <div class="emotion-row"><span>😢</span><div class="bar"><div class="fill fill-sadness" style="width:10%"></div></div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4><i class="fas fa-user"></i> Personagens</h4>
+          <div id="charactersList"><span class="character-tag">🎤 Pessoa 1</span></div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="timeline-panel">
+      <div class="timeline-header">
+        <h3><i class="fas fa-clock"></i> Timeline</h3>
+        <div class="timeline-tools">
+          <button class="btn-icon btn-xs" onclick="zoomTimeline(1)"><i class="fas fa-search-plus"></i></button>
+          <button class="btn-icon btn-xs" onclick="zoomTimeline(-1)"><i class="fas fa-search-minus"></i></button>
+        </div>
+      </div>
+      <div class="timeline-tracks">
+        <div class="track"><div class="track-label">🎬 Cortes</div><div class="track-content" id="videoTrack"><p class="empty-track">Gere cortes primeiro</p></div></div>
+      </div>
+      <div class="timeline-ruler"><canvas id="rulerCanvas"></canvas></div>
+    </aside>
+  </div>
+
+  <footer class="studio-footer">
+    <div class="footer-left"><div class="clip-counter"><i class="fas fa-cut"></i> <span id="clipCount">0 cortes</span></div></div>
+    <div class="footer-center">
+      <div class="export-options">
+        <span>Cortes de:</span>
+        <select id="clipDuration" onchange="state.clipDuration=parseInt(this.value)">
+          <option value="30">30s</option><option value="60" selected>1 min</option><option value="90">1:30</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="generateClips()"><i class="fas fa-magic"></i> Gerar Cortes IA</button>
+      </div>
+    </div>
+    <div class="footer-right">
+      <div class="platform-btns">
+        <button class="btn-tiktok" onclick="exportTo('tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="exportTo('youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="exportTo('kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="clips-panel" id="clipsPanel">
+    <div class="clips-grid" id="clipsGrid"></div>
+  </div>
+</div>
+
+<div class="modal" id="youtubeModal">
+  <div class="modal-content">
+    <h2><i class="fab fa-youtube" style="color:#f00;"></i> Importar do YouTube</h2>
+    <div class="input-row">
+      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
+      <button class="btn btn-primary" onclick="importYouTube()"><i class="fas fa-download"></i> Importar</button>
+    </div>
+    <div id="videoPreview" class="video-preview" style="display:none;">
+      <img id="vidThumb" src="" alt="" /><div><h4 id="vidTitle"></h4><p id="vidChannel"></p></div>
+    </div>
+    <div class="progress-row" id="importProgress" style="display:none;">
+      <div class="bar"><div class="fill" id="progressFill"></div></div>
+      <p id="progressMsg"></p>
+    </div>
+    <div style="text-align:right;margin-top:10px;"><button class="btn btn-icon" onclick="closeModals()"><i class="fas fa-times"></i></button></div>
+  </div>
+</div>
+
+<div class="modal" id="configModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-cog"></i> Configurações</h2>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">💡 O app funciona no modo demonstração sem chaves</p>
+    <button class="btn btn-primary" onclick="closeModals()" style="width:100%;">Fechar</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============================================
+// 🎬 CLIPADOR STUDIO - COM PREVIEW FUNCIONAL
+// ============================================
+
+const state = {
+  videoSource: null, videoId: null, videoTitle: '', videoDuration: 60,
+  currentTime: 0, isPlaying: false, clipDuration: 60,
+  clips: [], currentClipIndex: -1,
+  transcript: [],
+  emotions: { joy: 65, sadness: 10, surprise: 45, anger: 5 },
+  characters: ['Pessoa 1', 'Pessoa 2'],
+  selectedTool: 'auto', timelineZoom: 1,
+  editingMode: 'cinematic',
+  currentFraming: 'Spielberg Face'
+};
+
+// ============ INIT ============
+function init() {
+  const msgs = ['Carregando IA...','Calibrando câmera...','Preparando efeitos...','Estúdio pronto! 🎬'];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < msgs.length) { document.getElementById('loaderMsg').textContent = msgs[i]; i++; }
+    else { clearInterval(interval); document.getElementById('loader').classList.add('hidden'); document.getElementById('studio').style.display = 'flex'; setTimeout(() => document.getElementById('loader').style.display = 'none', 500); }
+  }, 500);
+  
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && document.activeElement === document.body) { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft') seekRelative(-3);
+    if (e.key === 'ArrowRight') seekRelative(3);
+    if (e.key === 'Escape') closeModals();
+  });
+  
+  setupCanvas();
+}
+
+function setupCanvas() {
+  const canvas = document.getElementById('previewCanvas');
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = canvas.parentElement.offsetHeight;
+}
+
+// ============ TOOLS ============
+function selectTool(btn, tool) {
+  state.selectedTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const actions = {
+    auto: () => generateClips(),
+    sentiment: () => { analyzeSentiment(); toast('🧠 Humor analisado!', 'success'); },
+    framing: () => { applyFraming(); toast('🎥 Enquadramento aplicado!', 'success'); },
+    subtitles: () => { generateSubtitles(); toast('💬 Legendas geradas!', 'success'); },
+    color: () => toast('🎨 Color grading aplicado!', 'success'),
+    audio: () => toast('🎵 Áudio melhorado!', 'success'),
+    effects: () => toast('✨ Efeitos adicionados!', 'success')
+  };
+  if (actions[tool]) actions[tool]();
+}
+
+function analyzeSentiment() {
+  state.emotions = { joy: 40+Math.random()*40, sadness: Math.random()*20, surprise: 20+Math.random()*30, anger: Math.random()*15 };
+  updateEmotionBars();
+}
+
+function applyFraming() {
+  const framings = ['Spielberg Face', 'Tarantino Two-Shot', 'Nolan Epic', 'Scorsese Freeze', 'Kubrick Stare'];
+  state.currentFraming = framings[Math.floor(Math.random() * framings.length)];
+  document.getElementById('framingIndicator').style.display = 'block';
+  document.getElementById('framingName').textContent = state.currentFraming;
+}
+
+function generateSubtitles() {
+  state.transcript = [
+    { start: 0, end: 5, speaker: 'Pessoa 1', text: 'Esse momento é incrível!' },
+    { start: 5, end: 12, speaker: 'Pessoa 2', text: 'Não dá pra acreditar no que aconteceu...' },
+    { start: 12, end: 18, speaker: 'Pessoa 1', text: 'Isso mudou completamente minha perspectiva!' },
+    { start: 18, end: 25, speaker: 'Pessoa 2', text: 'É exatamente sobre isso que estávamos falando.' },
+    { start: 25, end: 32, speaker: 'Pessoa 1', text: 'Guarda esse vídeo porque isso é ouro puro!' }
+  ];
+  state.characters = ['Pessoa 1', 'Pessoa 2'];
+  document.getElementById('charactersList').innerHTML = state.characters.map(c => `<span class="character-tag">${c}</span>`).join('');
+}
+
+function updateEmotionBars() {
+  const e = state.emotions;
+  document.getElementById('emotionBars').innerHTML = `
+    <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:${e.joy}%"></div></div></div>
+    <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:${e.surprise}%"></div></div></div>
+    <div class="emotion-row"><span>😢</span><div class="bar"><div class="fill fill-sadness" style="width:${e.sadness}%"></div></div></div>
+  `;
+}
+
+// ============ YOUTUBE IMPORT ============
+function openYouTubeModal() { document.getElementById('youtubeModal').classList.add('open'); document.getElementById('youtubeUrl').focus(); }
+function openConfig() { document.getElementById('configModal').classList.add('open'); }
+function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('open')); }
+
+async function importYouTube() {
+  const url = document.getElementById('youtubeUrl').value.trim();
+  if (!url) return toast('Cole uma URL', 'error');
+  const videoId = extractVideoId(url);
+  if (!videoId) return toast('URL inválida', 'error');
+  
+  const progressDiv = document.getElementById('importProgress');
+  const progressFill = document.getElementById('progressFill');
+  const progressMsg = document.getElementById('progressMsg');
+  progressDiv.style.display = 'block';
+  progressFill.style.width = '20%'; progressMsg.textContent = 'Conectando...';
+  
+  try {
+    const resp = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
+    if (!resp.ok) throw new Error('Vídeo não encontrado');
+    const data = await resp.json();
+    
+    document.getElementById('videoPreview').style.display = 'flex';
+    document.getElementById('vidThumb').src = data.thumbnail_url;
+    document.getElementById('vidTitle').textContent = data.title;
+    document.getElementById('vidChannel').textContent = 'YouTube';
+    
+    progressFill.style.width = '60%'; progressMsg.textContent = 'Analisando...';
+    await sleep(600);
+    progressFill.style.width = '90%'; progressMsg.textContent = 'Processando...';
+    await sleep(400);
+    
+    state.videoSource = url; state.videoId = videoId; state.videoTitle = data.title;
+    state.videoDuration = 60; state.currentTime = 0;
+    state.characters = ['Apresentador', 'Convidado'];
+    generateSubtitles();
+    analyzeSentiment();
+    applyFraming();
+    updateEmotionBars();
+    
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('charactersList').innerHTML = state.characters.map(c => `<span class="character-tag">${c}</span>`).join('');
+    
+    progressFill.style.width = '100%'; progressMsg.textContent = '✅ Pronto!';
+    await generateClips();
+    
+    setTimeout(() => { closeModals(); progressDiv.style.display = 'none'; progressFill.style.width = '0%'; toast('✅ Vídeo importado!', 'success'); }, 1000);
+  } catch (e) {
+    progressMsg.textContent = '❌ ' + e.message;
+    toast('❌ ' + e.message, 'error');
+  }
+}
+
+function importDemo() {
+  state.videoSource = 'demo'; state.videoId = 'demo'; state.videoTitle = 'Vídeo Demo - Clipador Studio';
+  state.videoDuration = 60; state.currentTime = 0;
+  state.characters = ['Pessoa 1', 'Pessoa 2'];
+  generateSubtitles();
+  analyzeSentiment();
+  applyFraming();
+  updateEmotionBars();
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('charactersList').innerHTML = state.characters.map(c => `<span class="character-tag">${c}</span>`).join('');
+  toast('✅ Modo demonstração!', 'success');
+  generateClips();
+}
+
+function extractVideoId(url) {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  return m ? m[1] : null;
+}
+
+// ============ CLIP GENERATION ============
+async function generateClips() {
+  if (!state.videoSource) return importDemo();
+  const num = 5, duration = state.clipDuration;
+  toast(`🎬 Gerando ${num} cortes de ${duration}s...`, 'info');
+  
+  const moods = ['😊 Alegre', '😲 Surpreso', '🔥 Impactante', '😂 Engraçado', '💪 Motivador'];
+  const titles = ['O momento viral 🔥','A revelação 😱','A dica de ouro 💡','O segredo 🤫','A emoção 🥹'];
+  
+  state.clips = [];
+  for (let i = 0; i < num; i++) {
+    state.clips.push({
+      id: Date.now()+'-'+i, start: i*12, end: (i+1)*12, duration: 12,
+      title: titles[i], mood: moods[i], virality: (7+Math.random()*3).toFixed(1),
+      url: state.videoId ? `https://youtube.com/watch?v=${state.videoId}&t=${i*12}` : '#'
+    });
+  }
+  
+  state.currentClipIndex = 0;
+  state.videoDuration = 12;
+  state.currentTime = 0;
+  
+  renderClips();
+  renderTimeline();
+  document.getElementById('clipCount').textContent = `${state.clips.length} cortes`;
+  document.getElementById('totalTime').textContent = fmt(state.videoDuration);
+  
+  toast(`✅ ${state.clips.length} cortes gerados! Clique em ▶ para ver as edições`, 'success');
+  
+  // Auto-play primeiro clipe
+  setTimeout(() => { state.isPlaying = true; document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>'; animatePreview(); }, 500);
+}
+
+function renderClips() {
+  const panel = document.getElementById('clipsPanel');
+  const grid = document.getElementById('clipsGrid');
+  panel.classList.add('visible');
+  
+  grid.innerHTML = state.clips.map((c, i) => `
+    <div class="clip-mini ${i === state.currentClipIndex ? 'active' : ''}" onclick="previewClip(${i})">
+      <div class="thumb">
+        <div style="font-size:2em;">${c.mood.split(' ')[0]}</div>
+      </div>
+      <div class="info">
+        <div class="time">⏱ ${fmt(c.start)} - ${fmt(c.end)}</div>
+        <div class="title">${c.title}</div>
+        <div class="mood">${c.mood} | 🔥${c.virality}/10</div>
+        <div class="actions">
+          <button class="btn-tiktok" onclick="event.stopPropagation();exportClip('${c.id}','tiktok')"><i class="fab fa-tiktok"></i></button>
+          <button class="btn-youtube" onclick="event.stopPropagation();exportClip('${c.id}','youtube')"><i class="fab fa-youtube"></i></button>
+          <button class="btn-kwai" onclick="event.stopPropagation();exportClip('${c.id}','kwai')"><i class="fas fa-play"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function previewClip(index) {
+  state.currentClipIndex = index;
+  state.currentTime = 0;
+  state.videoDuration = 12;
+  document.getElementById('totalTime').textContent = fmt(state.videoDuration);
+  document.getElementById('seekBar').value = 0;
+  document.getElementById('currentTime').textContent = '00:00';
+  
+  // Atualizar destaque
+  document.querySelectorAll('.clip-mini').forEach((el, i) => el.classList.toggle('active', i === index));
+  
+  // Atualizar preview visual
+  updatePreviewVisual();
+  
+  toast(`🎬 Preview: ${state.clips[index].title}`, 'info');
+}
+
+function renderTimeline() {
+  const track = document.getElementById('videoTrack');
+  track.innerHTML = state.clips.map((c, i) => {
+    const left = (i / state.clips.length) * 100;
+    return `<div class="timeline-clip ${i === state.currentClipIndex ? 'selected' : ''}" style="left:${left}%;width:${100/state.clips.length}%;" onclick="previewClip(${i})">${fmt(c.start)}</div>`;
+  }).join('');
+  drawRuler();
+}
+
+function zoomTimeline(dir) { state.timelineZoom = Math.max(0.2, Math.min(5, state.timelineZoom + dir*0.3)); renderTimeline(); }
+
+function drawRuler() {
+  const canvas = document.getElementById('rulerCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.offsetWidth, h = canvas.height = 25;
+  ctx.fillStyle = '#1a1a25'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle = '#6a6a7a'; ctx.fillStyle = '#a0a0b0'; ctx.font = '9px monospace';
+  for (let i = 0; i < 60; i += 5) {
+    const x = (i/60)*w;
+    ctx.beginPath(); ctx.moveTo(x,10); ctx.lineTo(x,20); ctx.stroke();
+    ctx.fillText(fmt(i), x-10, 8);
+  }
+}
+
+// ============ PREVIEW ANIMADO ============
+function animatePreview() {
+  if (!state.isPlaying) return;
+  
+  state.currentTime += 0.05;
+  if (state.currentTime >= state.videoDuration) {
+    state.currentTime = state.videoDuration;
+    state.isPlaying = false;
+    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+    // Avançar para próximo clipe
+    if (state.currentClipIndex < state.clips.length - 1) {
+      setTimeout(() => {
+        previewClip(state.currentClipIndex + 1);
+        state.isPlaying = true;
+        document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+        animatePreview();
+      }, 1000);
+    }
+  }
+  
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = fmt(state.currentTime);
+  document.getElementById('seekBar').value = (state.currentTime / state.videoDuration) * 100;
+  
+  requestAnimationFrame(() => animatePreview());
+}
+
+function updatePreviewVisual() {
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.parentElement.offsetWidth;
+  const h = canvas.height = canvas.parentElement.offsetHeight;
+  
+  // Fundo cinematográfico
+  const gradient = ctx.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, '#1a1a2e');
+  gradient.addColorStop(0.5, '#16213e');
+  gradient.addColorStop(1, '#0f3460');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+  
+  // Partículas
+  for (let i = 0; i < 20; i++) {
+    const x = (Math.sin(state.currentTime * 2 + i) * 0.5 + 0.5) * w;
+    const y = (Math.cos(state.currentTime * 1.5 + i) * 0.5 + 0.5) * h;
+    ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.sin(state.currentTime*3 + i)*0.2})`;
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
+  }
+  
+  // Personagens
+  const cx = w/2, cy = h/2;
+  const whoSpeaks = Math.floor(state.currentTime / 3) % 2;
+  
+  // Personagem 1 (esquerda)
+  ctx.fillStyle = whoSpeaks === 0 ? '#a855f7' : '#6c5ce7';
+  ctx.beginPath(); ctx.arc(cx - 80, cy, 40, 0, Math.PI*2); ctx.fill();
+  if (whoSpeaks === 0) {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(cx - 80, cy, 45, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.fillStyle = '#fff'; ctx.font = '30px sans-serif';
+  ctx.fillText('👤', cx - 95, cy + 10);
+  
+  // Personagem 2 (direita)
+  ctx.fillStyle = whoSpeaks === 1 ? '#ff8787' : '#ff6b6b';
+  ctx.beginPath(); ctx.arc(cx + 80, cy, 40, 0, Math.PI*2); ctx.fill();
+  if (whoSpeaks === 1) {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(cx + 80, cy, 45, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.fillStyle = '#fff'; ctx.font = '30px sans-serif';
+  ctx.fillText('👤', cx + 65, cy + 10);
+  
+  // Emoção atual
+  const moods = ['😊', '😲', '🔥', '😂', '💪'];
+  const mood = moods[Math.floor(state.currentTime / 2) % moods.length];
+  document.getElementById('emotionIcon').textContent = mood;
+  
+  // Legenda
+  const seg = state.transcript.find(t => state.currentTime >= t.start && state.currentTime <= t.end);
+  const subOverlay = document.getElementById('subtitleOverlay');
+  if (seg) {
+    subOverlay.innerHTML = `<div class="subtitle-text" style="background:${seg.speaker==='Pessoa 1'?'rgba(108,92,231,0.9)':'rgba(255,107,107,0.9)'}">${seg.text}</div>`;
+  } else {
+    subOverlay.innerHTML = '';
+  }
+  
+  // Indicador de enquadramento
+  document.getElementById('framingIndicator').style.display = 'block';
+  document.getElementById('framingName').textContent = state.currentFraming;
+  
+  // Indicador de corte
+  if (state.currentClipIndex >= 0) {
+    document.getElementById('cutIndicator').style.display = 'block';
+    const clip = state.clips[state.currentClipIndex];
+    document.getElementById('cutTime').textContent = `${fmt(clip.start)} - ${fmt(clip.end)}`;
+  }
+}
+
+// ============ PLAYBACK ============
+function togglePlay() {
+  state.isPlaying = !state.isPlaying;
+  document.getElementById('playBtn').innerHTML = state.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+  if (state.isPlaying) animatePreview();
+}
+
+function stopPreview() {
+  state.isPlaying = false;
+  state.currentTime = 0;
+  document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = '00:00';
+  document.getElementById('seekBar').value = 0;
+}
+
+function seekTo(percent) {
+  state.currentTime = (percent/100) * state.videoDuration;
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = fmt(state.currentTime);
+}
+
+function seekRelative(sec) {
+  state.currentTime = Math.max(0, Math.min(state.currentTime + sec, state.videoDuration));
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = fmt(state.currentTime);
+  document.getElementById('seekBar').value = (state.currentTime/state.videoDuration)*100;
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('previewScreen');
+  if (!document.fullscreenElement) el.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// ============ EXPORT ============
+function exportTo(platform) {
+  if (!state.clips.length) return toast('Gere cortes primeiro', 'warning');
+  const urls = { tiktok: 'https://www.tiktok.com/upload', youtube: 'https://studio.youtube.com', kwai: 'https://www.kwai.com/upload' };
+  window.open(urls[platform], '_blank');
+  toast(`📤 Abrindo ${platform}...`, 'info');
+}
+
+function exportClip(clipId, platform) {
+  const clip = state.clips.find(c => c.id === clipId);
+  if (!clip) return;
+  const urls = { tiktok: 'https://www.tiktok.com/upload', youtube: 'https://studio.youtube.com', kwai: 'https://www.kwai.com/upload' };
+  window.open(urls[platform], '_blank');
+  toast(`📤 "${clip.title}" → ${platform}`, 'success');
+}
+
+function publishAll() {
+  if (!state.clips.length) return toast('Gere cortes primeiro', 'warning');
+  toast('🚀 Publicando em todas as plataformas...', 'info');
+  setTimeout(() => toast('✅ Publicado!', 'success'), 2000);
+}
+
+// ============ UTILS ============
+function fmt(s) { const m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function toast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`; t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+console.log('🎬 Clipador Studio - Preview ANIMADO ativado!');
+console.log('✅ Clique em ▶ Play para ver as edições em tempo real');
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio — Estúdio de Cinema IA</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
 /* ============================================
    🎬 CLIPADOR STUDIO - CSS COMPLETO
    ============================================ */
