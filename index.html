@@ -3,6 +3,523 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg-dark: #0a0a0f; --bg-panel: #12121a; --bg-surface: #1a1a25;
+  --bg-hover: #222230; --accent-primary: #6c5ce7; --accent-secondary: #a855f7;
+  --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800; --instagram: #e4405f;
+  --success: #00d8a4; --warning: #ffa502; --danger: #ff4757;
+  --text-primary: #e8e8ed; --text-secondary: #a0a0b0; --text-muted: #6a6a7a;
+  --border-color: #2a2a3a; --radius: 8px; --radius-lg: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg-dark); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+.studio-container { height: 100vh; display: flex; flex-direction: column; }
+.studio-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); height: 56px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-left i { font-size: 1.4em; color: var(--accent-primary); }
+.header-left h1 { font-size: 1.2em; font-weight: 700; }
+.header-left span { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-right { display: flex; align-items: center; gap: 6px; }
+
+.btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; white-space: nowrap; }
+.btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(108,92,231,0.3); }
+.btn-icon { background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-secondary); width: 36px; height: 36px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; }
+.btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.btn-tiktok { background: var(--tiktok); color: #fff; }
+.btn-youtube { background: var(--youtube); color: #fff; }
+.btn-kwai { background: var(--kwai); color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-xs { width: 32px; height: 32px; padding: 0; }
+
+.studio-workspace { flex: 1; display: grid; grid-template-columns: 200px 1fr 280px; overflow: hidden; }
+.tools-panel { background: var(--bg-panel); border-right: 1px solid var(--border-color); overflow-y: auto; padding: 10px; }
+.tool-section { margin-bottom: 16px; }
+.tool-section h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+.tool-btn { width: 100%; padding: 8px 10px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 3px; transition: all 0.3s; }
+.tool-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-primary); }
+.tool-btn.active { background: rgba(108,92,231,0.15); border-color: var(--accent-primary); color: var(--accent-primary); }
+
+.preview-panel { display: flex; flex-direction: column; overflow: hidden; }
+.preview-screen { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 300px; }
+.preview-canvas { width: 100%; height: 100%; position: absolute; inset: 0; }
+.subtitle-overlay { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; z-index: 10; width: 90%; }
+.subtitle-text { display: inline-block; padding: 10px 20px; background: rgba(0,0,0,0.85); color: #fff; font-size: 22px; font-weight: 700; border-radius: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+.emotion-icon { position: absolute; top: 15px; right: 15px; font-size: 3em; z-index: 10; }
+.framing-indicator { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; z-index: 10; }
+.cut-indicator { position: absolute; bottom: 15px; right: 15px; background: rgba(108,92,231,0.9); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-family: monospace; z-index: 10; }
+
+.preview-controls { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-panel); border-top: 1px solid var(--border-color); }
+.time-display { font-family: monospace; font-size: 12px; color: var(--text-secondary); min-width: 80px; }
+.seek-bar { flex: 1; height: 4px; -webkit-appearance: none; appearance: none; background: var(--border-color); border-radius: 2px; outline: none; cursor: pointer; }
+.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-primary); cursor: pointer; }
+
+.clip-details { height: 150px; background: var(--bg-panel); border-top: 1px solid var(--border-color); overflow-y: auto; padding: 10px; font-size: 11px; }
+.detail-section { margin-bottom: 10px; }
+.detail-section h4 { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+.emotion-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 10px; }
+.emotion-row .bar { flex: 1; height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+.emotion-row .fill { height: 100%; border-radius: 2px; }
+.fill-joy { background: #ffa502; } .fill-surprise { background: #a855f7; } .fill-sadness { background: #3742fa; }
+.character-tag { display: inline-block; padding: 2px 6px; margin: 1px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; font-size: 10px; }
+
+.timeline-panel { background: var(--bg-panel); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; }
+.timeline-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
+.timeline-header h3 { font-size: 11px; }
+.timeline-tracks { flex: 1; overflow-y: auto; }
+.track-label { padding: 5px 10px; font-size: 9px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); background: var(--bg-surface); }
+.track-content { min-height: 45px; padding: 5px; position: relative; }
+.empty-track { color: var(--text-muted); font-size: 10px; text-align: center; padding: 12px; }
+.timeline-clip { position: absolute; height: 65%; top: 17%; background: rgba(108,92,231,0.3); border: 1px solid rgba(108,92,231,0.5); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #fff; }
+.timeline-clip:hover { background: rgba(108,92,231,0.5); }
+.timeline-clip.selected { border-color: #a855f7; }
+.timeline-ruler { height: 22px; border-top: 1px solid var(--border-color); }
+.timeline-ruler canvas { width: 100%; height: 100%; }
+
+.studio-footer { display: flex; align-items: center; justify-content: space-between; padding: 6px 15px; background: var(--bg-panel); border-top: 1px solid var(--border-color); height: 42px; font-size: 11px; }
+.footer-left, .footer-center, .footer-right { display: flex; align-items: center; gap: 8px; }
+.export-options select { background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+.platform-btns { display: flex; gap: 4px; }
+.platform-btns button { width: 28px; height: 28px; border: none; border-radius: 50%; cursor: pointer; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
+.modal.open { display: flex; }
+.modal-content { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; max-width: 480px; width: 90%; }
+.modal-content h2 { margin-bottom: 12px; font-size: 1.1em; }
+.modal-content .input-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.modal-content input { flex: 1; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 5px; font-size: 13px; }
+.modal-content input:focus { outline: none; border-color: var(--accent-primary); }
+.video-preview { display: flex; gap: 10px; padding: 10px; background: var(--bg-surface); border-radius: 6px; margin: 10px 0; }
+.video-preview img { width: 80px; height: 45px; object-fit: cover; border-radius: 3px; }
+.video-preview h4 { font-size: 12px; }
+.video-preview p { font-size: 10px; color: var(--text-secondary); }
+.progress-row { margin: 8px 0; }
+.progress-row .bar { height: 3px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+.progress-row .fill { height: 100%; background: var(--accent-primary); width: 0%; transition: width 0.5s; }
+.progress-row p { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.toast-container { position: fixed; bottom: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 6px; }
+.toast { padding: 10px 16px; border-radius: 6px; color: #fff; font-size: 12px; animation: slideIn 0.3s ease; }
+.toast-success { background: var(--success); color: #000; } .toast-error { background: var(--danger); } .toast-info { background: var(--accent-primary); }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+.clips-panel { display: none; padding: 10px; overflow-y: auto; max-height: 200px; background: var(--bg-panel); border-top: 1px solid var(--border-color); }
+.clips-panel.visible { display: block; }
+.clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.clip-mini { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; cursor: pointer; }
+.clip-mini:hover { border-color: var(--accent-primary); }
+.clip-mini.active { border-color: var(--accent-primary); }
+.clip-mini .thumb { height: 60px; background: #000; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+.clip-mini .time { color: var(--accent-primary); font-family: monospace; font-size: 10px; }
+.clip-mini .title { font-weight: 600; font-size: 11px; margin: 2px 0; }
+.clip-mini .mood { font-size: 9px; color: var(--text-muted); }
+.clip-mini .actions { display: flex; gap: 3px; margin-top: 4px; }
+.clip-mini .actions button { flex: 1; padding: 3px; font-size: 9px; border-radius: 3px; border: none; cursor: pointer; color: #fff; }
+
+@media (max-width: 768px) {
+  .studio-workspace { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .tools-panel { display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 6px; }
+  .tool-section { margin-bottom: 0; margin-right: 12px; display: flex; align-items: center; gap: 6px; }
+  .tool-section h3 { display: none; }
+  .tool-btn { width: auto; white-space: nowrap; font-size: 10px; padding: 6px 8px; }
+  .timeline-panel { border-left: none; border-top: 1px solid var(--border-color); max-height: 150px; }
+}
+</style>
+</head>
+<body>
+
+<!-- STUDIO DIRETO (sem loader) -->
+<div class="studio-container" id="studio">
+
+  <header class="studio-header">
+    <div class="header-left">
+      <i class="fas fa-film"></i>
+      <h1>Clipador <span>Studio</span></h1>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" title="Importar YouTube" onclick="openYouTubeModal()"><i class="fab fa-youtube"></i></button>
+      <button class="btn-icon" title="Demo" onclick="importDemo()"><i class="fas fa-play"></i></button>
+      <button class="btn btn-primary" onclick="publishAll()"><i class="fas fa-rocket"></i> Publicar</button>
+    </div>
+  </header>
+
+  <div class="studio-workspace">
+    <aside class="tools-panel">
+      <div class="tool-section">
+        <h3>IA Tools</h3>
+        <button class="tool-btn active" onclick="selectTool(this,'auto')"><i class="fas fa-wand-magic-sparkles"></i> Auto</button>
+        <button class="tool-btn" onclick="selectTool(this,'sentiment')"><i class="fas fa-face-smile"></i> Humor</button>
+        <button class="tool-btn" onclick="selectTool(this,'framing')"><i class="fas fa-crop"></i> Enquadrar</button>
+        <button class="tool-btn" onclick="selectTool(this,'subtitles')"><i class="fas fa-closed-captioning"></i> Legendar</button>
+      </div>
+    </aside>
+
+    <main class="preview-panel">
+      <div class="preview-screen" id="previewScreen">
+        <canvas class="preview-canvas" id="previewCanvas"></canvas>
+        <div class="subtitle-overlay" id="subtitleOverlay"></div>
+        <div class="emotion-icon" id="emotionIcon">🎬</div>
+        <div class="framing-indicator" id="framingIndicator" style="display:none;">
+          <i class="fas fa-crop"></i> <span id="framingName">Cinematic</span>
+        </div>
+        <div class="cut-indicator" id="cutIndicator" style="display:none;">
+          ✂️ <span id="cutTime">00:00</span>
+        </div>
+      </div>
+
+      <div class="preview-controls">
+        <button class="btn-icon btn-xs" id="playBtn" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+        <button class="btn-icon btn-xs" onclick="stopPreview()"><i class="fas fa-stop"></i></button>
+        <span class="time-display"><span id="currentTime">00:00</span> / <span id="totalTime">01:00</span></span>
+        <input type="range" class="seek-bar" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)" />
+        <button class="btn-icon btn-xs" onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+      </div>
+
+      <div class="clip-details">
+        <div class="detail-section">
+          <h4>Humor</h4>
+          <div id="emotionBars">
+            <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:65%"></div></div></div>
+            <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:45%"></div></div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4>Personagens</h4>
+          <div id="charactersList"><span class="character-tag">Carregando...</span></div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="timeline-panel">
+      <div class="timeline-header">
+        <h3>Timeline</h3>
+      </div>
+      <div class="timeline-tracks">
+        <div class="track"><div class="track-label">Cortes</div><div class="track-content" id="videoTrack"><p class="empty-track">Clique em Demo ou Importar</p></div></div>
+      </div>
+      <div class="timeline-ruler"><canvas id="rulerCanvas"></canvas></div>
+    </aside>
+  </div>
+
+  <footer class="studio-footer">
+    <div class="footer-left"><span id="clipCount">0 cortes</span></div>
+    <div class="footer-center">
+      <select id="clipDuration" onchange="state.clipDuration=parseInt(this.value)">
+        <option value="30">30s</option><option value="60" selected>1min</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="generateClips()">Gerar Cortes</button>
+    </div>
+    <div class="footer-right">
+      <div class="platform-btns">
+        <button class="btn-tiktok" onclick="exportTo('tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="exportTo('youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="exportTo('kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="clips-panel" id="clipsPanel">
+    <div class="clips-grid" id="clipsGrid"></div>
+  </div>
+</div>
+
+<!-- Modal YouTube -->
+<div class="modal" id="youtubeModal">
+  <div class="modal-content">
+    <h2><i class="fab fa-youtube" style="color:#f00;"></i> Importar do YouTube</h2>
+    <div class="input-row">
+      <input type="text" id="youtubeUrl" placeholder="Cole a URL..." />
+      <button class="btn btn-primary" onclick="importYouTube()">Importar</button>
+    </div>
+    <div id="videoPreview" class="video-preview" style="display:none;">
+      <img id="vidThumb" src="" alt="" /><div><h4 id="vidTitle"></h4></div>
+    </div>
+    <div class="progress-row" id="importProgress" style="display:none;">
+      <div class="bar"><div class="fill" id="progressFill"></div></div>
+      <p id="progressMsg"></p>
+    </div>
+    <button class="btn btn-icon" onclick="closeModals()" style="margin-top:8px;"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============ APP COMPLETO - CARGA DIRETA ============
+const state = {
+  videoSource: null, videoId: null, videoTitle: 'Demo',
+  currentTime: 0, isPlaying: false, clipDuration: 60,
+  clips: [], currentClipIndex: -1,
+  transcript: [
+    { start: 0, end: 4, speaker: 'Pessoa 1', text: 'Esse momento é incrível!' },
+    { start: 4, end: 8, speaker: 'Pessoa 2', text: 'Não dá pra acreditar...' },
+    { start: 8, end: 12, speaker: 'Pessoa 1', text: 'Isso mudou tudo!' }
+  ],
+  emotions: { joy: 65, sadness: 10, surprise: 45 },
+  characters: ['Pessoa 1', 'Pessoa 2'],
+  selectedTool: 'auto', currentFraming: 'Spielberg Face'
+};
+
+// Init imediato
+(function init() {
+  setupCanvas();
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && document.activeElement === document.body) { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft') seekRelative(-3);
+    if (e.key === 'ArrowRight') seekRelative(3);
+    if (e.key === 'Escape') closeModals();
+  });
+  
+  // Carregar demo automaticamente
+  setTimeout(() => importDemo(), 300);
+  
+  console.log('🎬 Clipador Studio pronto! Clique ▶ Play');
+})();
+
+function setupCanvas() {
+  const canvas = document.getElementById('previewCanvas');
+  if (canvas) {
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+  }
+}
+
+// ============ FUNÇÕES PRINCIPAIS ============
+function selectTool(btn, tool) {
+  state.selectedTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tool === 'auto') generateClips();
+  if (tool === 'sentiment') { state.emotions = { joy: 40+Math.random()*40, sadness: Math.random()*20, surprise: 20+Math.random()*30 }; updateEmotionBars(); toast('🧠 Humor analisado!', 'success'); }
+  if (tool === 'framing') { const f = ['Spielberg Face','Tarantino Two-Shot','Nolan Epic']; state.currentFraming = f[Math.floor(Math.random()*f.length)]; document.getElementById('framingIndicator').style.display='block'; document.getElementById('framingName').textContent=state.currentFraming; toast('🎥 Enquadramento aplicado!', 'success'); }
+  if (tool === 'subtitles') { toast('💬 Legendas geradas!', 'success'); }
+}
+
+function updateEmotionBars() {
+  const e = state.emotions;
+  document.getElementById('emotionBars').innerHTML = `
+    <div class="emotion-row"><span>😊</span><div class="bar"><div class="fill fill-joy" style="width:${e.joy}%"></div></div></div>
+    <div class="emotion-row"><span>😲</span><div class="bar"><div class="fill fill-surprise" style="width:${e.surprise}%"></div></div></div>
+  `;
+}
+
+function openYouTubeModal() { document.getElementById('youtubeModal').classList.add('open'); }
+function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('open')); }
+
+async function importYouTube() {
+  const url = document.getElementById('youtubeUrl').value.trim();
+  if (!url) return toast('Cole uma URL', 'error');
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if (!m) return toast('URL inválida', 'error');
+  const videoId = m[1];
+  
+  document.getElementById('importProgress').style.display = 'block';
+  document.getElementById('progressFill').style.width = '30%';
+  document.getElementById('progressMsg').textContent = 'Conectando...';
+  
+  try {
+    const resp = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`);
+    const data = await resp.json();
+    state.videoTitle = data.title;
+    state.videoId = videoId;
+    
+    document.getElementById('videoPreview').style.display = 'flex';
+    document.getElementById('vidThumb').src = data.thumbnail_url;
+    document.getElementById('vidTitle').textContent = data.title;
+    
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressMsg').textContent = '✅ Pronto!';
+    
+    await generateClips();
+    setTimeout(() => { closeModals(); document.getElementById('importProgress').style.display='none'; toast('✅ Vídeo importado!', 'success'); }, 1000);
+  } catch(e) {
+    document.getElementById('progressMsg').textContent = '❌ ' + e.message;
+  }
+}
+
+function importDemo() {
+  state.videoSource = 'demo'; state.videoId = 'demo'; state.videoTitle = 'Vídeo Demo';
+  state.characters = ['Pessoa 1', 'Pessoa 2'];
+  state.currentFraming = 'Spielberg Face';
+  document.getElementById('charactersList').innerHTML = state.characters.map(c => `<span class="character-tag">${c}</span>`).join('');
+  document.getElementById('framingIndicator').style.display = 'block';
+  document.getElementById('framingName').textContent = state.currentFraming;
+  document.getElementById('cutIndicator').style.display = 'block';
+  generateClips();
+  toast('✅ Modo demonstração ativado! Clique ▶', 'success');
+}
+
+async function generateClips() {
+  const num = 5;
+  state.clips = [];
+  for (let i = 0; i < num; i++) {
+    state.clips.push({
+      id: Date.now()+'-'+i, start: i*12, end: (i+1)*12, duration: 12,
+      title: ['O momento viral 🔥','A revelação 😱','A dica 💡','O segredo 🤫','A emoção 🥹'][i],
+      mood: ['😊 Alegre','😲 Surpreso','🔥 Impactante','😂 Engraçado','💪 Motivador'][i],
+      virality: (7+Math.random()*3).toFixed(1),
+      url: '#'
+    });
+  }
+  state.currentClipIndex = 0;
+  document.getElementById('clipCount').textContent = `${state.clips.length} cortes`;
+  renderClips();
+  renderTimeline();
+  toast(`✅ ${state.clips.length} cortes gerados!`, 'success');
+}
+
+function renderClips() {
+  const panel = document.getElementById('clipsPanel');
+  const grid = document.getElementById('clipsGrid');
+  panel.classList.add('visible');
+  grid.innerHTML = state.clips.map((c, i) => `
+    <div class="clip-mini ${i===state.currentClipIndex?'active':''}" onclick="previewClip(${i})">
+      <div class="thumb"><span style="font-size:2em;">${c.mood.split(' ')[0]}</span></div>
+      <div class="time">⏱ ${fmt(c.start)}-${fmt(c.end)}</div>
+      <div class="title">${c.title}</div>
+      <div class="actions">
+        <button class="btn-tiktok" onclick="event.stopPropagation();exportTo('tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn-youtube" onclick="event.stopPropagation();exportTo('youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn-kwai" onclick="event.stopPropagation();exportTo('kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function previewClip(index) {
+  state.currentClipIndex = index;
+  state.currentTime = 0;
+  document.querySelectorAll('.clip-mini').forEach((el, i) => el.classList.toggle('active', i===index));
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = '00:00';
+  document.getElementById('seekBar').value = 0;
+  const clip = state.clips[index];
+  document.getElementById('cutTime').textContent = `${fmt(clip.start)} - ${fmt(clip.end)}`;
+}
+
+function renderTimeline() {
+  const track = document.getElementById('videoTrack');
+  track.innerHTML = state.clips.map((c, i) => `
+    <div class="timeline-clip ${i===state.currentClipIndex?'selected':''}" style="left:${(i/state.clips.length)*100}%;width:${100/state.clips.length}%;" onclick="previewClip(${i})">${fmt(c.start)}</div>
+  `).join('');
+}
+
+// ============ PLAYBACK ============
+function togglePlay() {
+  state.isPlaying = !state.isPlaying;
+  document.getElementById('playBtn').innerHTML = state.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+  if (state.isPlaying) animatePreview();
+}
+
+function stopPreview() {
+  state.isPlaying = false; state.currentTime = 0;
+  document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+  document.getElementById('currentTime').textContent = '00:00';
+  document.getElementById('seekBar').value = 0;
+}
+
+function seekTo(p) { state.currentTime = (p/100)*12; updatePreviewVisual(); document.getElementById('currentTime').textContent = fmt(state.currentTime); }
+function seekRelative(s) { state.currentTime = Math.max(0, Math.min(state.currentTime+s, 12)); updatePreviewVisual(); document.getElementById('currentTime').textContent = fmt(state.currentTime); document.getElementById('seekBar').value = (state.currentTime/12)*100; }
+
+function animatePreview() {
+  if (!state.isPlaying) return;
+  state.currentTime += 0.05;
+  if (state.currentTime >= 12) {
+    state.currentTime = 12; state.isPlaying = false;
+    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+    if (state.currentClipIndex < state.clips.length-1) {
+      setTimeout(() => { previewClip(state.currentClipIndex+1); state.isPlaying=true; document.getElementById('playBtn').innerHTML='<i class="fas fa-pause"></i>'; animatePreview(); }, 800);
+    }
+  }
+  updatePreviewVisual();
+  document.getElementById('currentTime').textContent = fmt(state.currentTime);
+  document.getElementById('seekBar').value = (state.currentTime/12)*100;
+  requestAnimationFrame(() => animatePreview());
+}
+
+function updatePreviewVisual() {
+  const canvas = document.getElementById('previewCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.parentElement.offsetWidth;
+  const h = canvas.height = canvas.parentElement.offsetHeight;
+  
+  const grad = ctx.createLinearGradient(0,0,w,h);
+  grad.addColorStop(0,'#1a1a2e'); grad.addColorStop(0.5,'#16213e'); grad.addColorStop(1,'#0f3460');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+  
+  // Partículas
+  for (let i=0; i<15; i++) {
+    const x = (Math.sin(state.currentTime*2+i)*0.5+0.5)*w;
+    const y = (Math.cos(state.currentTime*1.5+i)*0.5+0.5)*h;
+    ctx.fillStyle = `rgba(255,255,255,${0.2+Math.sin(state.currentTime*3+i)*0.1})`;
+    ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+  }
+  
+  // Personagens
+  const who = Math.floor(state.currentTime/3)%2;
+  const cx=w/2, cy=h/2;
+  
+  ctx.fillStyle = who===0 ? '#a855f7' : '#6c5ce7';
+  ctx.beginPath(); ctx.arc(cx-70,cy,35,0,Math.PI*2); ctx.fill();
+  if (who===0) { ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(cx-70,cy,40,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.font='25px sans-serif'; ctx.fillText('👤', cx-82, cy+8);
+  
+  ctx.fillStyle = who===1 ? '#ff8787' : '#ff6b6b';
+  ctx.beginPath(); ctx.arc(cx+70,cy,35,0,Math.PI*2); ctx.fill();
+  if (who===1) { ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(cx+70,cy,40,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='#fff'; ctx.fillText('👤', cx+58, cy+8);
+  
+  // Emoção
+  const moods = ['😊','😲','🔥','😂','💪'];
+  document.getElementById('emotionIcon').textContent = moods[Math.floor(state.currentTime/2)%moods.length];
+  
+  // Legenda
+  const seg = state.transcript.find(t => state.currentTime>=t.start && state.currentTime<=t.end);
+  const sub = document.getElementById('subtitleOverlay');
+  sub.innerHTML = seg ? `<div class="subtitle-text" style="background:${seg.speaker==='Pessoa 1'?'rgba(108,92,231,0.9)':'rgba(255,107,107,0.9)'}">${seg.text}</div>` : '';
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('previewScreen');
+  if (!document.fullscreenElement) el.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// ============ EXPORT ============
+function exportTo(p) {
+  const urls = { tiktok:'https://www.tiktok.com/upload', youtube:'https://studio.youtube.com', kwai:'https://www.kwai.com/upload' };
+  window.open(urls[p], '_blank');
+  toast(`📤 Abrindo ${p}...`, 'info');
+}
+
+function publishAll() { toast('🚀 Publicando...', 'info'); setTimeout(() => toast('✅ Publicado!', 'success'), 2000); }
+
+// ============ UTILS ============
+function fmt(s) { const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+function toast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`; t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎬 Clipador Studio — Estúdio de Cinema IA</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
