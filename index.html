@@ -3,6 +3,238 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipador PRO</title>
+<style>
+:root{--bg:#0a0a0f;--surface:#13131a;--border:#252530;--text:#e8e8ed;--muted:#7a7a85;--accent:#6c5ce7;--success:#00d8a4;--danger:#ff4757;--warning:#ffa502;--tiktok:#ff0050;--youtube:#ff0000;--kwai:#ff7800}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.nav{display:flex;gap:4px;margin-bottom:30px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
+.nav-btn{flex:1;padding:12px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{background:var(--accent);color:#fff}
+.header{text-align:center;padding:30px 0}
+.header h1{font-size:2.5em;background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.card-header{font-weight:600;font-size:16px;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+.input-group{display:flex;gap:12px;flex-wrap:wrap}
+.input-group>*{flex:1;min-width:200px}
+input,select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-size:14px;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+.btn{padding:12px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff}
+.btn-tiktok{background:var(--tiktok);color:#fff}
+.btn-youtube{background:var(--youtube);color:#fff}
+.btn-kwai{background:var(--kwai);color:#fff}
+.btn-sm{padding:8px 14px;font-size:12px}
+.clips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.clip-card{background:#1a1a24;border:1px solid var(--border);border-radius:12px;padding:16px}
+.clip-preview{width:100%;height:180px;background:var(--bg);border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:3em;cursor:pointer;position:relative}
+.clip-number{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.clip-time{font-family:monospace;font-size:12px;color:var(--accent);margin-bottom:6px}
+.clip-title{font-size:14px;font-weight:500;margin-bottom:8px}
+.clip-subtitle{font-size:11px;color:var(--muted);margin-bottom:12px;max-height:60px;overflow:hidden}
+.clip-actions{display:flex;gap:6px;flex-wrap:wrap}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.stat-value{font-size:2em;font-weight:700;background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:11px;color:var(--muted)}
+.schedule-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:8px}
+.platform-badge{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase}
+.platform-tiktok{background:var(--tiktok);color:#fff}
+.platform-youtube{background:var(--youtube);color:#fff}
+.platform-kwai{background:var(--kwai);color:#fff}
+.history-table{width:100%;border-collapse:collapse;font-size:13px}
+.history-table th{text-align:left;padding:12px;color:var(--muted);font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.history-table td{padding:12px;border-bottom:1px solid var(--border)}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.status-posted{background:var(--success)}
+.status-scheduled{background:var(--warning)}
+.toast{position:fixed;bottom:20px;right:20px;padding:16px 24px;border-radius:8px;color:#fff;font-weight:500;z-index:2000;animation:slideUp 0.3s ease}
+.toast-success{background:var(--success);color:#000}
+.toast-info{background:var(--accent)}
+@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(max-width:768px){.clips-grid{grid-template-columns:1fr}.nav{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>🎬 Clipador PRO</h1><p>Corte • Legende • Agende • Publique</p></div>
+
+<div class="nav">
+<button class="nav-btn active" data-tab="cortar">✂️ Cortar</button>
+<button class="nav-btn" data-tab="agendar">📅 Agendar</button>
+<button class="nav-btn" data-tab="historico">📊 Histórico</button>
+</div>
+
+<div id="tab-cortar" class="tab-content active">
+<div class="card">
+<div class="card-header">🔗 Processar Vídeo</div>
+<div class="input-group">
+<input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
+<select id="numClips"><option value="3">3 cortes</option><option value="5" selected>5 cortes</option><option value="7">7 cortes</option></select>
+<button class="btn btn-primary" id="processBtn">⚡ Gerar Cortes</button>
+</div>
+<div style="margin-top:8px;font-size:11px;color:var(--muted);">🎯 Modo demonstração: gera clipes de exemplo automaticamente</div>
+</div>
+<div id="clipsContainer" class="clips-grid"></div>
+</div>
+
+<div id="tab-agendar" class="tab-content">
+<div class="stats-row">
+<div class="stat-card"><div class="stat-value" id="statAgendados">0</div><div class="stat-label">Agendados</div></div>
+<div class="stat-card"><div class="stat-value" id="statPublicados">0</div><div class="stat-label">Publicados</div></div>
+<div class="stat-card"><div class="stat-value" id="statProximo">--</div><div class="stat-label">Próximo</div></div>
+</div>
+<div class="card">
+<div class="card-header">📅 Agendar Post</div>
+<div class="input-group">
+<select id="scheduleClip"><option value="">Selecione...</option></select>
+<select id="schedulePlatform"><option value="tiktok">TikTok</option><option value="youtube">YouTube</option><option value="kwai">Kwai</option></select>
+<input type="datetime-local" id="scheduleTime" />
+<button class="btn btn-primary" id="scheduleBtn">📅 Agendar</button>
+</div>
+</div>
+<div id="scheduleList"></div>
+</div>
+
+<div id="tab-historico" class="tab-content">
+<div class="card">
+<div class="card-header">📊 Histórico</div>
+<select id="historyFilter" style="margin-bottom:15px;"><option value="hoje">Hoje</option><option value="semana">Semana</option><option value="mes">Mês</option><option value="todos">Todos</option></select>
+<table class="history-table"><thead><tr><th>Status</th><th>Clipe</th><th>Plataforma</th><th>Data</th><th>Hora</th></tr></thead>
+<tbody id="historyBody"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Nenhum registro</td></tr></tbody></table>
+</div>
+</div>
+</div>
+
+<script>
+(function(){
+const S={
+clips:JSON.parse(localStorage.getItem('cp_clips')||'[]'),
+schedule:JSON.parse(localStorage.getItem('cp_schedule')||'[]'),
+history:JSON.parse(localStorage.getItem('cp_history')||'[]')
+};
+function save(k){localStorage.setItem('cp_'+k,JSON.stringify(S[k]))}
+function switchTab(n){
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById('tab-'+n).classList.add('active');
+document.querySelector('[data-tab="'+n+'"]').classList.add('active');
+if(n==='agendar')renderAgendamento();
+if(n==='historico')renderHistorico();
+}
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',function(){switchTab(this.dataset.tab)}));
+
+document.getElementById('processBtn').addEventListener('click',function(){
+const url=document.getElementById('youtubeUrl').value.trim();
+const num=parseInt(document.getElementById('numClips').value);
+if(!url)return toast('Cole uma URL');
+const vid=url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+if(!vid)return toast('URL inválida');
+const videoId=vid[1];
+
+fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v='+videoId+'&format=json')
+.then(r=>r.json())
+.then(meta=>{
+const titulos=['O momento mais viral','A revelação chocante','A dica que ninguém contou','O segredo revelado','A parte mais emocionante','A resposta inesperada','O melhor conselho'];
+const legendas=['Trecho imperdível desta entrevista','Momento de ouro do podcast','Isso vai bombar nos shorts','Corte perfeito para viralizar'];
+S.clips=Array.from({length:num},(_,i)=>({
+id:Date.now()+'-'+i,videoId,videoTitle:meta.title,
+inicio:(i+1)*120,fim:(i+1)*120+45,
+titulo:titulos[i%titulos.length],
+legenda:legendas[i%legendas.length],
+virality:Math.floor(Math.random()*3)+7,
+youtubeUrl:'https://youtube.com/watch?v='+videoId+'&t='+((i+1)*120),
+createdAt:new Date().toISOString()
+}));
+save('clips');renderClips();toast('✅ '+num+' clipes gerados!','success');
+document.getElementById('youtubeUrl').value='';
+}).catch(()=>toast('Vídeo não encontrado'));
+});
+
+function renderClips(){
+const c=document.getElementById('clipsContainer');
+if(!S.clips.length){c.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;">Cole um link e clique em Gerar Cortes</p>';return}
+c.innerHTML=S.clips.map((cl,i)=>`
+<div class="clip-card">
+<div class="clip-preview" onclick="window.open('${cl.youtubeUrl}','_blank')"><div class="clip-number">${i+1}</div>▶</div>
+<div class="clip-time">⏱ ${fmt(cl.inicio)}-${fmt(cl.fim)} | 🔥${cl.virality}/10</div>
+<div class="clip-title">${esc(cl.titulo)}</div>
+<div class="clip-subtitle">${esc(cl.legenda)}</div>
+<div class="clip-actions">
+<button class="btn btn-tiktok btn-sm sbtn" data-id="${cl.id}" data-p="tiktok">📱</button>
+<button class="btn btn-youtube btn-sm sbtn" data-id="${cl.id}" data-p="youtube">▶</button>
+<button class="btn btn-kwai btn-sm sbtn" data-id="${cl.id}" data-p="kwai">🎬</button>
+<button class="btn btn-sm cbtn" data-url="${cl.youtubeUrl}" style="background:var(--surface);color:var(--text);">📋</button>
+</div>
+</div>`).join('');
+c.querySelectorAll('.sbtn').forEach(b=>b.addEventListener('click',function(){share(this.dataset.id,this.dataset.p)}));
+c.querySelectorAll('.cbtn').forEach(b=>b.addEventListener('click',function(){navigator.clipboard.writeText(this.dataset.url);toast('📋 Copiado!','success')}));
+}
+
+function share(id,p){
+const cl=S.clips.find(c=>c.id===id);if(!cl)return;
+S.history.unshift({id:Date.now().toString(),clipId:id,clipTitle:cl.titulo,platform:p,status:'posted',date:new Date().toISOString()});
+save('history');
+window.open({tiktok:'https://www.tiktok.com/upload',youtube:'https://studio.youtube.com',kwai:'https://www.kwai.com/upload'}[p]||cl.youtubeUrl,'_blank');
+toast('📤 '+p+'!','info');
+}
+
+function renderAgendamento(){
+const sel=document.getElementById('scheduleClip');
+sel.innerHTML='<option value="">Selecione...</option>';
+S.clips.forEach(c=>sel.innerHTML+='<option value="'+c.id+'">'+esc(c.titulo).substring(0,50)+'</option>');
+const now=new Date();
+const fut=S.schedule.filter(s=>new Date(s.scheduleTime)>now).sort((a,b)=>new Date(a.scheduleTime)-new Date(b.scheduleTime));
+const list=document.getElementById('scheduleList');
+if(!fut.length){list.innerHTML='<p style="color:var(--muted);padding:20px;">Nenhum post agendado</p>'}
+else{list.innerHTML='<div class="card-header">📅 Agendados</div>'+fut.map(s=>{const cl=S.clips.find(c=>c.id===s.clipId);const d=new Date(s.scheduleTime);return'<div class="schedule-item"><span class="platform-badge platform-'+s.platform+'">'+s.platform+'</span><span style="flex:1;font-size:13px;">'+esc(cl?.titulo||'')+'</span><span style="font-size:12px;color:var(--muted);">'+d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</span><button class="btn btn-sm" style="background:var(--danger);color:#fff;" data-x="'+s.id+'">✕</button></div>'}).join('');
+list.querySelectorAll('[data-x]').forEach(b=>b.addEventListener('click',function(){S.schedule=S.schedule.filter(s=>s.id!==this.dataset.x);save('schedule');renderAgendamento();toast('Cancelado','info')}))}
+const hoje=S.history.filter(h=>new Date(h.date).toDateString()===now.toDateString());
+document.getElementById('statAgendados').textContent=fut.length;
+document.getElementById('statPublicados').textContent=hoje.length;
+document.getElementById('statProximo').textContent=fut[0]?new Date(fut[0].scheduleTime).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'--';
+}
+
+document.getElementById('scheduleBtn').addEventListener('click',function(){
+const cid=document.getElementById('scheduleClip').value,p=document.getElementById('schedulePlatform').value,t=document.getElementById('scheduleTime').value;
+if(!cid||!t)return toast('Preencha tudo');
+S.schedule.push({id:Date.now().toString(),clipId:cid,platform:p,scheduleTime:new Date(t).toISOString(),status:'scheduled'});
+save('schedule');
+S.history.unshift({id:Date.now().toString(),clipId:cid,clipTitle:S.clips.find(c=>c.id===cid)?.titulo||'',platform:p,status:'scheduled',date:new Date().toISOString()});
+save('history');renderAgendamento();toast('✅ Agendado!','success');
+});
+
+setInterval(()=>{const now=new Date();S.schedule.forEach(s=>{if(new Date(s.scheduleTime)<=now&&s.status==='scheduled'){s.status='posted';const h=S.history.find(h=>h.clipId===s.clipId&&h.status==='scheduled');if(h)h.status='posted';save('schedule');save('history');toast('📤 Post automático: '+s.platform+'!','success')}})},60000);
+
+function renderHistorico(){
+const f=document.getElementById('historyFilter').value,now=new Date();
+let fl=[...S.history];
+if(f==='hoje')fl=fl.filter(h=>new Date(h.date).toDateString()===now.toDateString());
+else if(f==='semana')fl=fl.filter(h=>new Date(h.date)>=new Date(now-7*24*60*60*1000));
+else if(f==='mes')fl=fl.filter(h=>new Date(h.date).getMonth()===now.getMonth());
+const tb=document.getElementById('historyBody');
+if(!fl.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);">Nenhum</td></tr>';return}
+tb.innerHTML=fl.map(h=>{const d=new Date(h.date);return'<tr><td><span class="status-dot status-'+h.status+'"></span>'+(h.status==='posted'?'Publicado':'Agendado')+'</td><td>'+esc(h.clipTitle||'').substring(0,40)+'</td><td><span class="platform-badge platform-'+h.platform+'">'+h.platform+'</span></td><td>'+d.toLocaleDateString('pt-BR')+'</td><td>'+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</td></tr>'}).join('');
+}
+document.getElementById('historyFilter').addEventListener('change',renderHistorico);
+
+function fmt(s){const m=Math.floor(s/60),se=Math.floor(s%60);return m+':'+se.toString().padStart(2,'0')}
+function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+function toast(msg,type){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
+
+renderClips();
+})();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clipador PRO — Estúdio Completo</title>
 <style>
 :root {
