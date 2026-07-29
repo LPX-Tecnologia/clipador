@@ -20,7 +20,6 @@
   --tiktok: #ff0050;
   --youtube: #ff0000;
   --kwai: #ff7800;
-  --radius: 12px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,10 +33,9 @@ body {
 
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-/* Navegação */
 .nav {
   display: flex; gap: 4px; margin-bottom: 30px;
-  background: var(--surface); border-radius: var(--radius);
+  background: var(--surface); border-radius: 12px;
   padding: 4px; border: 1px solid var(--border);
 }
 
@@ -51,7 +49,6 @@ body {
 .nav-btn:hover { color: var(--text); }
 .nav-btn.active { background: var(--accent); color: white; }
 
-/* Header */
 .header {
   text-align: center; padding: 30px 0 20px;
 }
@@ -65,10 +62,9 @@ body {
 
 .header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
 
-/* Cards */
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+  border-radius: 12px; padding: 24px; margin-bottom: 20px;
 }
 
 .card-header {
@@ -76,7 +72,6 @@ body {
   display: flex; align-items: center; gap: 8px;
 }
 
-/* Inputs */
 .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
 .input-group > * { flex: 1; min-width: 200px; }
 
@@ -116,7 +111,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 
 .btn-sm { padding: 8px 14px; font-size: 12px; }
 
-/* Clips Grid */
 .clips-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -126,7 +120,7 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 
 .clip-card {
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
+  border-radius: 12px; padding: 16px;
   transition: all 0.3s;
 }
 
@@ -138,10 +132,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
   align-items: center; justify-content: center;
   font-size: 3em; cursor: pointer; position: relative;
   overflow: hidden;
-}
-
-.clip-preview video {
-  width: 100%; height: 100%; object-fit: cover;
 }
 
 .clip-number {
@@ -170,7 +160,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
   display: flex; gap: 6px; flex-wrap: wrap;
 }
 
-/* Schedule */
 .schedule-item {
   display: flex; align-items: center; gap: 12px;
   padding: 12px; background: var(--bg); border-radius: 8px;
@@ -186,7 +175,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 .platform-youtube { background: var(--youtube); color: white; }
 .platform-kwai { background: var(--kwai); color: white; }
 
-/* History Table */
 .history-table {
   width: 100%; border-collapse: collapse; font-size: 13px;
 }
@@ -210,7 +198,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 .status-scheduled { background: var(--warning); }
 .status-failed { background: var(--danger); }
 
-/* Modal */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
@@ -221,11 +208,10 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 
 .modal {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 30px;
+  border-radius: 12px; padding: 30px;
   max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
 }
 
-/* Stats */
 .stats-row {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px; margin-bottom: 20px;
@@ -233,7 +219,7 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 
 .stat-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px; text-align: center;
+  border-radius: 12px; padding: 16px; text-align: center;
 }
 
 .stat-value {
@@ -245,7 +231,6 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 
 .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-/* Toast */
 .toast {
   position: fixed; bottom: 20px; right: 20px;
   padding: 16px 24px; border-radius: 8px; color: white;
@@ -309,10 +294,10 @@ label {
 
   <!-- Navegação -->
   <div class="nav">
-    <button class="nav-btn active" onclick="switchTab('cortar')">✂️ Cortar Vídeo</button>
-    <button class="nav-btn" onclick="switchTab('agendar')">📅 Agendamento</button>
-    <button class="nav-btn" onclick="switchTab('historico')">📊 Histórico</button>
-    <button class="nav-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+    <button class="nav-btn active" data-tab="cortar">✂️ Cortar Vídeo</button>
+    <button class="nav-btn" data-tab="agendar">📅 Agendamento</button>
+    <button class="nav-btn" data-tab="historico">📊 Histórico</button>
+    <button class="nav-btn" data-tab="config">⚙️ Configurações</button>
   </div>
 
   <!-- Aba: Cortar Vídeo -->
@@ -327,7 +312,7 @@ label {
           <option value="7">7 cortes</option>
           <option value="10">10 cortes</option>
         </select>
-        <button class="btn btn-primary" onclick="processarVideo()">
+        <button class="btn btn-primary" id="processBtn">
           ⚡ Analisar e Cortar
         </button>
       </div>
@@ -340,7 +325,7 @@ label {
     <div id="videoInfo" style="display:none;">
       <div class="card">
         <div class="card-header" id="videoTitle">Analisando...</div>
-        <div class="progress-bar" style="height:6px;background:var(--border);border-radius:3px;margin:10px 0;">
+        <div style="height:6px;background:var(--border);border-radius:3px;margin:10px 0;">
           <div id="progressFill" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.5s;"></div>
         </div>
         <div id="progressText" style="font-size:12px;color:var(--muted);"></div>
@@ -379,10 +364,7 @@ label {
           <option value="kwai">Kwai</option>
         </select>
         <input type="datetime-local" id="scheduleTime" />
-        <button class="btn btn-primary" onclick="agendarPost()">📅 Agendar</button>
-      </div>
-      <div style="margin-top: 8px; font-size: 11px; color: var(--muted);">
-        ⚠️ Horário de Brasília (GMT-3). Posts automáticos simulados.
+        <button class="btn btn-primary" id="scheduleBtn">📅 Agendar</button>
       </div>
     </div>
 
@@ -395,7 +377,7 @@ label {
       <div class="card-header">📊 Histórico de Publicações</div>
       
       <div class="input-group" style="margin-bottom:15px;">
-        <select id="historyFilter" onchange="renderHistorico()">
+        <select id="historyFilter">
           <option value="hoje">Hoje</option>
           <option value="semana">Esta Semana</option>
           <option value="mes">Este Mês</option>
@@ -404,7 +386,7 @@ label {
         </select>
       </div>
 
-      <div id="historyContent">
+      <div style="overflow-x:auto;">
         <table class="history-table">
           <thead>
             <tr>
@@ -440,7 +422,7 @@ label {
         <input type="password" id="geminiKey" placeholder="AIza..." />
       </div>
 
-      <button class="btn btn-success btn-sm" onclick="detectarModelos()" style="margin-bottom:12px;">
+      <button class="btn btn-success btn-sm" id="detectBtn" style="margin-bottom:12px;">
         🔍 Detectar modelos
       </button>
 
@@ -468,7 +450,7 @@ label {
         <input type="text" id="kwaiAccount" placeholder="@seuperfil" />
       </div>
 
-      <button class="btn btn-primary" onclick="salvarConfig()">💾 Salvar Tudo</button>
+      <button class="btn btn-primary" id="saveConfigBtn">💾 Salvar Tudo</button>
     </div>
   </div>
 </div>
@@ -493,17 +475,28 @@ label {
     localStorage.setItem(`cp_${k}`, JSON.stringify(state[k]));
   }
 
-  // ============ UI TABS ============
-  window.switchTab = function(tab) {
+  // ============ NAVIGATION ============
+  function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    event.target.classList.add('active');
     
-    if (tab === 'agendar') renderAgendamento();
-    if (tab === 'historico') renderHistorico();
-    if (tab === 'config') carregarConfig();
-  };
+    const tab = document.getElementById(`tab-${tabName}`);
+    if (tab) tab.classList.add('active');
+    
+    const btn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (btn) btn.classList.add('active');
+    
+    if (tabName === 'agendar') renderAgendamento();
+    if (tabName === 'historico') renderHistorico();
+    if (tabName === 'config') carregarConfig();
+  }
+
+  // Event listeners para navegação
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
 
   // ============ CONFIG ============
   function carregarConfig() {
@@ -528,7 +521,7 @@ label {
     });
   }
 
-  window.detectarModelos = async function() {
+  document.getElementById('detectBtn').addEventListener('click', async function() {
     const key = document.getElementById('geminiKey').value.trim();
     if (!key) return showToast('Digite a chave primeiro', 'error');
     
@@ -548,20 +541,19 @@ label {
       localStorage.setItem('cp_models', JSON.stringify(models));
       updateModelSelect();
       
-      div.innerHTML = `✅ ${models.length} modelos encontrados`;
+      div.innerHTML = `✅ ${models.length} modelos encontrados. Testando...`;
       
-      // Testar primeiro
       for (const model of models.slice(0, 5)) {
         try {
           const t = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({contents:[{parts:[{text:'OK'}]}]})
+            body: JSON.stringify({contents:[{parts:[{text:'Say OK'}]}]})
           });
           if (t.ok) {
             state.config.selectedModel = model;
             document.getElementById('selectedModel').value = model;
-            div.innerHTML += `<br>✅ Modelo: ${model}`;
+            div.innerHTML += `<br>✅ Funcionando: ${model}`;
             break;
           }
         } catch(e) {}
@@ -569,9 +561,9 @@ label {
     } catch(e) {
       div.innerHTML = `❌ ${e.message}`;
     }
-  };
+  });
 
-  window.salvarConfig = function() {
+  document.getElementById('saveConfigBtn').addEventListener('click', function() {
     state.config.geminiKey = document.getElementById('geminiKey').value.trim();
     state.config.selectedModel = document.getElementById('selectedModel').value;
     state.config.tiktokAccount = document.getElementById('tiktokAccount').value.trim();
@@ -580,7 +572,7 @@ label {
     save('config');
     updateApiIndicator();
     showToast('✅ Configurações salvas!', 'success');
-  };
+  });
 
   function updateApiIndicator() {
     const dot = document.getElementById('apiDot');
@@ -595,7 +587,7 @@ label {
   }
 
   // ============ PROCESSAR VÍDEO ============
-  window.processarVideo = async function() {
+  document.getElementById('processBtn').addEventListener('click', async function() {
     const url = document.getElementById('youtubeUrl').value.trim();
     const numClips = parseInt(document.getElementById('numClips').value);
     
@@ -619,15 +611,26 @@ label {
       document.getElementById('progressText').textContent = 'Analisando com IA...';
       
       // IA
-      const model = state.config.selectedModel || 'gemini-2.0-flash';
-      const prompt = `Analise: "${meta.title}"
-Link: https://youtube.com/watch?v=${videoId}
+      const model = state.config.selectedModel || 'gemma-4-26b-a4b-it';
+      
+      const prompt = `You are a video editor. Analyze this YouTube video and suggest ${numClips} viral short clips.
 
-Selecione EXATAMENTE ${numClips} momentos para shorts virais (30-60s cada).
+Video title: "${meta.title}"
+Video ID: ${videoId}
 
-Responda APENAS JSON:
-[{"inicio":120.5,"fim":175.0,"titulo_gancho":"Título viral","legenda":"Legenda do trecho","virality":8.5}]`;
+For each clip, provide:
+- Start and end timestamps (30-60 seconds each)
+- A catchy title for the short
+- A subtitle/caption for the video
+- Virality score (1-10)
 
+IMPORTANT: Return ONLY a valid JSON array. No markdown, no code blocks, no explanations. Just the raw JSON.
+
+Format:
+[{"inicio":120.5,"fim":175.0,"titulo_gancho":"Title here","legenda":"Caption here","virality":8.5}]`;
+
+      console.log('Usando modelo:', model);
+      
       const aiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${state.config.geminiKey}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -637,13 +640,42 @@ Responda APENAS JSON:
         })
       });
       
+      if (!aiResp.ok) {
+        const errData = await aiResp.json();
+        throw new Error(errData.error?.message || 'Erro na API');
+      }
+      
       const aiData = await aiResp.json();
       let text = aiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      text = text.replace(/```json|```/g, '').trim();
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) throw new Error('IA não retornou JSON');
       
-      const clipsData = JSON.parse(jsonMatch[0]);
+      console.log('Resposta bruta:', text);
+      
+      // Limpar resposta
+      text = text.replace(/```json\s*|```\s*/g, '');
+      text = text.replace(/\/\/.*$/gm, '');
+      text = text.trim();
+      
+      // Encontrar JSON
+      let jsonStr = text;
+      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[0];
+      }
+      
+      console.log('JSON extraído:', jsonStr);
+      
+      let clipsData;
+      try {
+        clipsData = JSON.parse(jsonStr);
+      } catch(parseError) {
+        console.error('Erro ao parsear JSON:', parseError);
+        console.error('Texto que falhou:', jsonStr);
+        throw new Error('IA retornou formato inválido. Tente novamente.');
+      }
+      
+      if (!Array.isArray(clipsData) || clipsData.length === 0) {
+        throw new Error('Nenhum clipe encontrado');
+      }
       
       document.getElementById('progressFill').style.width = '80%';
       document.getElementById('progressText').textContent = 'Gerando clipes...';
@@ -655,7 +687,7 @@ Responda APENAS JSON:
         videoTitle: meta.title,
         inicio: c.inicio || 0,
         fim: c.fim || 60,
-        titulo: c.titulo_gancho || 'Clipe',
+        titulo: c.titulo_gancho || 'Clipe sem título',
         legenda: c.legenda || '',
         virality: c.virality || 7.5,
         youtubeUrl: `https://youtube.com/watch?v=${videoId}&t=${Math.floor(c.inicio||0)}`,
@@ -671,11 +703,11 @@ Responda APENAS JSON:
       showToast(`✅ ${state.clips.length} clipes prontos!`, 'success');
       
     } catch(e) {
-      console.error(e);
+      console.error('Erro completo:', e);
       document.getElementById('progressText').textContent = `❌ ${e.message}`;
       showToast('❌ ' + e.message, 'error');
     }
-  };
+  });
 
   function renderClips() {
     const container = document.getElementById('clipsContainer');
@@ -694,23 +726,35 @@ Responda APENAS JSON:
         <div class="clip-title">${esc(c.titulo)}</div>
         <div class="clip-subtitle">${esc(c.legenda).substring(0,100)}...</div>
         <div class="clip-actions">
-          <button class="btn btn-tiktok btn-sm" onclick="compartilhar('${c.id}','tiktok')">📱 TikTok</button>
-          <button class="btn btn-youtube btn-sm" onclick="compartilhar('${c.id}','youtube')">▶ YouTube</button>
-          <button class="btn btn-kwai btn-sm" onclick="compartilhar('${c.id}','kwai')">🎬 Kwai</button>
-          <button class="btn btn-sm" style="background:var(--surface);color:var(--text);" onclick="copiarLink('${c.youtubeUrl}')">📋</button>
+          <button class="btn btn-tiktok btn-sm" data-action="share" data-clip="${c.id}" data-platform="tiktok">📱 TikTok</button>
+          <button class="btn btn-youtube btn-sm" data-action="share" data-clip="${c.id}" data-platform="youtube">▶ YouTube</button>
+          <button class="btn btn-kwai btn-sm" data-action="share" data-clip="${c.id}" data-platform="kwai">🎬 Kwai</button>
+          <button class="btn btn-sm" style="background:var(--surface);color:var(--text);" data-action="copy" data-url="${c.youtubeUrl}">📋</button>
         </div>
       </div>
     `).join('');
+    
+    // Event listeners para botões de compartilhar
+    container.querySelectorAll('[data-action="share"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        compartilharClip(this.dataset.clip, this.dataset.platform);
+      });
+    });
+    
+    container.querySelectorAll('[data-action="copy"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        copiarLink(this.dataset.url);
+      });
+    });
   }
 
-  // ============ COMPARTILHAR ============
-  window.compartilhar = function(clipId, platform) {
+  function compartilharClip(clipId, platform) {
     const clip = state.clips.find(c => c.id === clipId);
     if (!clip) return;
     
     const urls = {
-      tiktok: 'https://www.tiktok.com/upload?from=web',
-      youtube: 'https://studio.youtube.com/channel/UC/videos/upload',
+      tiktok: 'https://www.tiktok.com/upload',
+      youtube: 'https://studio.youtube.com',
       kwai: 'https://www.kwai.com/upload'
     };
     
@@ -725,24 +769,22 @@ Responda APENAS JSON:
     });
     save('history');
     
-    showToast(`📤 Abrindo ${platform}...`, 'info');
+    showToast(`📤 Compartilhando no ${platform}...`, 'info');
     window.open(urls[platform] || clip.youtubeUrl, '_blank');
-  };
+  }
 
-  window.copiarLink = function(url) {
+  function copiarLink(url) {
     navigator.clipboard.writeText(url).then(() => showToast('📋 Link copiado!', 'success'));
-  };
+  }
 
   // ============ AGENDAMENTO ============
   function renderAgendamento() {
-    // Atualizar select de clipes
     const select = document.getElementById('scheduleClip');
     select.innerHTML = '<option value="">Selecione um clipe...</option>';
     state.clips.forEach(c => {
       select.innerHTML += `<option value="${c.id}">${esc(c.titulo).substring(0,50)}</option>`;
     });
     
-    // Atualizar lista
     const list = document.getElementById('scheduleList');
     const now = new Date();
     
@@ -761,12 +803,18 @@ Responda APENAS JSON:
             <span class="platform-badge platform-${s.platform}">${s.platform}</span>
             <span style="flex:1;font-size:13px;">${esc(clip?.titulo || 'Clipe')}</span>
             <span style="font-size:12px;color:var(--muted);">${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
-            <button class="btn btn-sm" style="background:var(--danger);color:white;" onclick="cancelarAgendamento('${s.id}')">✕</button>
+            <button class="btn btn-sm" style="background:var(--danger);color:white;" data-cancel="${s.id}">✕</button>
           </div>`;
       }).join('');
+      
+      // Event listeners para cancelar
+      list.querySelectorAll('[data-cancel]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          cancelarAgendamento(this.dataset.cancel);
+        });
+      });
     }
     
-    // Estatísticas
     const hoje = state.history.filter(h => new Date(h.date).toDateString() === now.toDateString());
     document.getElementById('statAgendados').textContent = futuros.length;
     document.getElementById('statPublicados').textContent = hoje.length;
@@ -774,7 +822,7 @@ Responda APENAS JSON:
       new Date(futuros[0].scheduleTime).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '--';
   }
 
-  window.agendarPost = function() {
+  document.getElementById('scheduleBtn').addEventListener('click', function() {
     const clipId = document.getElementById('scheduleClip').value;
     const platform = document.getElementById('schedulePlatform').value;
     const time = document.getElementById('scheduleTime').value;
@@ -804,21 +852,20 @@ Responda APENAS JSON:
     
     renderAgendamento();
     showToast('✅ Post agendado!', 'success');
-  };
+  });
 
-  window.cancelarAgendamento = function(id) {
+  function cancelarAgendamento(id) {
     state.schedule = state.schedule.filter(s => s.id !== id);
     save('schedule');
     renderAgendamento();
     showToast('Agendamento cancelado', 'info');
-  };
+  }
 
   // Verificar agendamentos a cada minuto
   setInterval(() => {
     const now = new Date();
     state.schedule.forEach(s => {
       if (new Date(s.scheduleTime) <= now && s.status === 'scheduled') {
-        // Simular postagem
         s.status = 'posted';
         
         const histEntry = state.history.find(h => h.clipId === s.clipId && h.status === 'scheduled');
@@ -832,11 +879,11 @@ Responda APENAS JSON:
   }, 60000);
 
   // ============ HISTÓRICO ============
-  window.renderHistorico = function() {
+  function renderHistorico() {
     const filter = document.getElementById('historyFilter')?.value || 'todos';
     const now = new Date();
     
-    let filtered = state.history;
+    let filtered = [...state.history];
     
     if (filter === 'hoje') {
       filtered = filtered.filter(h => new Date(h.date).toDateString() === now.toDateString());
@@ -867,7 +914,9 @@ Responda APENAS JSON:
           <td>${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
         </tr>`;
     }).join('');
-  };
+  }
+
+  document.getElementById('historyFilter').addEventListener('change', renderHistorico);
 
   // ============ UTILS ============
   function extractVideoId(url) {
@@ -898,754 +947,9 @@ Responda APENAS JSON:
   updateApiIndicator();
   renderClips();
 
-  // Carregar configurações se existirem
   if (!state.config.geminiKey) {
     switchTab('config');
   }
-
-})();
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clipador — Cortador de Shorts com IA</title>
-<style>
-:root {
-  --bg: #0a0a0f;
-  --surface: #13131a;
-  --border: #252530;
-  --text: #e8e8ed;
-  --muted: #7a7a85;
-  --accent: #6c5ce7;
-  --accent2: #a855f7;
-  --success: #00d8a4;
-  --danger: #ff4757;
-  --warning: #ffa502;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  min-height: 100vh;
-  line-height: 1.6;
-}
-
-.container { max-width: 900px; margin: 0 auto; padding: 20px; }
-
-.header {
-  text-align: center; padding: 40px 0;
-  border-bottom: 1px solid var(--border); margin-bottom: 30px;
-}
-
-.header h1 {
-  font-size: 2.5em;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header p { color: var(--muted); margin-top: 10px; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 24px; margin-bottom: 20px;
-}
-
-.input-group { display: flex; gap: 12px; }
-
-input, select {
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--text); padding: 12px 16px; border-radius: 8px;
-  font-size: 14px; width: 100%;
-}
-
-input:focus, select:focus {
-  outline: none; border-color: var(--accent);
-}
-
-.btn {
-  padding: 12px 24px; border: none; border-radius: 8px;
-  font-weight: 600; cursor: pointer; font-size: 14px;
-  transition: all 0.3s; white-space: nowrap;
-}
-
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-}
-
-.btn-secondary {
-  background: transparent; border: 1px solid var(--border); color: var(--text);
-}
-
-.btn-test {
-  background: var(--success); color: #000; font-size: 12px; padding: 8px 16px;
-}
-
-.btn-test:hover { opacity: 0.9; }
-
-.video-item {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px; margin-bottom: 16px;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.badge {
-  padding: 4px 12px; border-radius: 20px;
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-}
-
-.badge-processing { background: #2a2a35; color: var(--warning); }
-.badge-completed { background: #1a2a25; color: var(--success); }
-.badge-error { background: #2a1a1a; color: var(--danger); }
-
-.progress-bar {
-  height: 6px; background: var(--border); border-radius: 3px;
-  overflow: hidden; margin: 15px 0;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  transition: width 0.5s ease;
-}
-
-.clips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 12px; margin-top: 15px;
-}
-
-.clip-card {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 12px;
-}
-
-.clip-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-
-.clip-thumbnail {
-  width: 100%; height: 140px; background: var(--surface);
-  border-radius: 6px; margin-bottom: 10px; display: flex;
-  align-items: center; justify-content: center;
-  font-size: 3em; cursor: pointer; position: relative;
-}
-
-.clip-time {
-  font-family: 'Courier New', monospace; font-size: 11px;
-  color: var(--accent); margin-bottom: 6px;
-}
-
-.clip-title {
-  font-size: 13px; font-weight: 500; margin-bottom: 10px;
-}
-
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
-  z-index: 1000; align-items: center; justify-content: center;
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 30px; max-width: 500px; width: 90%;
-  max-height: 90vh; overflow-y: auto;
-}
-
-.toast {
-  position: fixed; bottom: 20px; right: 20px;
-  padding: 16px 24px; border-radius: 8px; color: white;
-  font-weight: 500; z-index: 2000; animation: slideUp 0.3s ease;
-}
-
-.toast-success { background: var(--success); color: #000; }
-.toast-error { background: var(--danger); }
-.toast-info { background: var(--accent); }
-
-@keyframes slideUp {
-  from { transform: translateY(100px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.spinner {
-  width: 20px; height: 20px; border: 2px solid var(--border);
-  border-top-color: var(--accent); border-radius: 50%;
-  animation: spin 0.8s linear infinite; display: inline-block;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.empty-state {
-  text-align: center; padding: 60px 20px; color: var(--muted);
-}
-
-.api-indicator {
-  display: inline-block; width: 8px; height: 8px;
-  border-radius: 50%; margin-right: 6px;
-}
-
-.api-indicator.online { background: var(--success); box-shadow: 0 0 6px var(--success); }
-.api-indicator.offline { background: var(--danger); }
-
-label {
-  display: block; margin-bottom: 6px;
-  color: var(--muted); font-size: 13px; font-weight: 500;
-}
-
-.form-group { margin-bottom: 16px; }
-
-.model-list {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 12px; margin: 10px 0;
-  max-height: 200px; overflow-y: auto; font-size: 12px;
-}
-
-.model-item {
-  padding: 6px 8px; border-radius: 4px; margin: 2px 0;
-  font-family: 'Courier New', monospace;
-}
-
-.model-item.supported { color: var(--success); background: rgba(0,216,164,0.1); }
-.model-item.unsupported { color: var(--muted); }
-
-@media (max-width: 600px) {
-  .header h1 { font-size: 1.8em; }
-  .input-group { flex-direction: column; }
-  .clips-grid { grid-template-columns: 1fr; }
-}
-</style>
-</head>
-<body>
-
-<div class="container">
-  <div class="header">
-    <h1>🎬 Clipador PRO</h1>
-    <p>Transforme vídeos do YouTube em shorts viralizáveis com IA</p>
-  </div>
-
-  <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <strong>🔗 Novo Vídeo</strong>
-      <span style="font-size: 12px; color: var(--muted);">
-        <span class="api-indicator" id="apiDot"></span>
-        <span id="apiLabel">API não configurada</span>
-      </span>
-    </div>
-    
-    <div class="input-group">
-      <input type="text" id="youtubeUrl" placeholder="Cole a URL do YouTube..." />
-      <button class="btn btn-primary" id="processBtn">
-        ⚡ Processar
-      </button>
-    </div>
-    
-    <div style="margin-top: 10px; font-size: 12px;">
-      <a href="#" onclick="openSettings()" style="color: var(--accent);">
-        ⚙️ Configurar API Gemini (grátis)
-      </a>
-    </div>
-  </div>
-
-  <div id="videoList">
-    <div class="empty-state">
-      <p style="font-size: 48px;">📹</p>
-      <p>Nenhum vídeo processado ainda</p>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal">
-    <h2>⚙️ Configurações da API</h2>
-    
-    <div style="background: #1a2a25; border: 1px solid var(--success); border-radius: 8px; padding: 12px; margin: 15px 0;">
-      <strong>🌟 Google Gemini - 100% GRÁTIS</strong><br>
-      <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--accent); font-size: 13px;">
-        → Clique aqui para criar sua chave gratuita
-      </a>
-      <br><br>
-      <span style="font-size: 12px; color: var(--muted);">
-        ⚠️ IMPORTANTE: Ao criar a chave, selecione "Create API key in new project"
-      </span>
-    </div>
-    
-    <div class="form-group">
-      <label>Sua chave API do Gemini</label>
-      <input type="password" id="geminiKey" placeholder="AIza..." />
-    </div>
-    
-    <button class="btn btn-test" onclick="detectModels()" style="width: 100%; margin-bottom: 15px;">
-      🔍 Detectar modelos disponíveis
-    </button>
-    
-    <div id="testResult" style="font-size: 13px; margin-bottom: 15px;"></div>
-    
-    <div class="form-group">
-      <label>Modelo selecionado</label>
-      <select id="selectedModel">
-        <option value="">Auto-detectar</option>
-      </select>
-    </div>
-    
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-      <button class="btn btn-secondary" onclick="closeSettings()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveSettings()">💾 Salvar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function() {
-  'use strict';
-
-  // ============ STATE ============
-  const videos = JSON.parse(localStorage.getItem('clipador_videos') || '[]');
-  const config = JSON.parse(localStorage.getItem('clipador_config') || '{}');
-
-  if (!config.geminiKey) config.geminiKey = '';
-  if (!config.selectedModel) config.selectedModel = '';
-
-  // DOM
-  const youtubeInput = document.getElementById('youtubeUrl');
-  const processBtn = document.getElementById('processBtn');
-  const videoList = document.getElementById('videoList');
-  const settingsModal = document.getElementById('settingsModal');
-
-  // ============ FUNCTIONS ============
-  function updateApiIndicator() {
-    const dot = document.getElementById('apiDot');
-    const label = document.getElementById('apiLabel');
-    if (config.geminiKey && config.selectedModel) {
-      dot.className = 'api-indicator online';
-      label.textContent = `Gemini (${config.selectedModel})`;
-    } else if (config.geminiKey) {
-      dot.className = 'api-indicator online';
-      label.textContent = 'Gemini (auto)';
-    } else {
-      dot.className = 'api-indicator offline';
-      label.textContent = 'API não configurada';
-    }
-  }
-
-  function saveVideos() {
-    localStorage.setItem('clipador_videos', JSON.stringify(videos));
-  }
-
-  function saveConfig() {
-    localStorage.setItem('clipador_config', JSON.stringify(config));
-  }
-
-  function openSettings() {
-    document.getElementById('geminiKey').value = config.geminiKey;
-    document.getElementById('selectedModel').value = config.selectedModel;
-    document.getElementById('testResult').innerHTML = '';
-    updateModelSelect();
-    settingsModal.classList.add('open');
-  }
-
-  function closeSettings() {
-    settingsModal.classList.remove('open');
-  }
-
-  function updateModelSelect() {
-    const select = document.getElementById('selectedModel');
-    const savedModels = JSON.parse(localStorage.getItem('clipador_models') || '[]');
-    
-    while (select.options.length > 1) {
-      select.remove(1);
-    }
-    
-    savedModels.forEach(model => {
-      const option = document.createElement('option');
-      option.value = model;
-      option.textContent = model;
-      if (model === config.selectedModel) option.selected = true;
-      select.appendChild(option);
-    });
-  }
-
-  window.saveSettings = function() {
-    config.geminiKey = document.getElementById('geminiKey').value.trim();
-    config.selectedModel = document.getElementById('selectedModel').value;
-    saveConfig();
-    updateApiIndicator();
-    closeSettings();
-    showToast('✅ Configurações salvas!', 'success');
-  };
-
-  window.detectModels = async function() {
-    const key = document.getElementById('geminiKey').value.trim();
-    if (!key) return showToast('Digite sua chave API primeiro', 'error');
-    
-    const resultDiv = document.getElementById('testResult');
-    resultDiv.innerHTML = '<span style="color: var(--warning);">🔄 Detectando modelos disponíveis...</span>';
-    
-    try {
-      const listResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
-      );
-      
-      if (!listResponse.ok) {
-        const error = await listResponse.json();
-        throw new Error(error.error?.message || 'Erro ao listar modelos');
-      }
-      
-      const listData = await listResponse.json();
-      
-      if (!listData.models || listData.models.length === 0) {
-        throw new Error('Nenhum modelo encontrado');
-      }
-      
-      const supportedModels = listData.models
-        .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
-        .map(m => m.name.replace('models/', ''))
-        .filter(m => !m.includes('image') && !m.includes('vision') && !m.includes('tts') && !m.includes('robot'));
-      
-      if (supportedModels.length === 0) {
-        throw new Error('Nenhum modelo de texto encontrado');
-      }
-      
-      localStorage.setItem('clipador_models', JSON.stringify(supportedModels));
-      updateModelSelect();
-      
-      resultDiv.innerHTML = '<div style="margin-bottom:10px;"><strong>Testando modelos...</strong></div>';
-      
-      let workingModel = null;
-      
-      for (const model of supportedModels.slice(0, 10)) {
-        try {
-          const testResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: 'Say OK' }] }]
-              })
-            }
-          );
-          
-          if (testResponse.ok) {
-            const testData = await testResponse.json();
-            if (testData.candidates) {
-              resultDiv.innerHTML += `<div class="model-item supported">✅ ${model} - FUNCIONANDO</div>`;
-              if (!workingModel) {
-                workingModel = model;
-                config.selectedModel = model;
-                document.getElementById('selectedModel').value = model;
-              }
-            }
-          } else {
-            const err = await testResponse.json();
-            if (err.error?.status === 'RESOURCE_EXHAUSTED') {
-              resultDiv.innerHTML += `<div class="model-item unsupported">⏳ ${model} - Cota esgotada</div>`;
-            } else {
-              resultDiv.innerHTML += `<div class="model-item unsupported">❌ ${model}</div>`;
-            }
-          }
-        } catch (e) {
-          resultDiv.innerHTML += `<div class="model-item unsupported">⚠️ ${model} - Erro</div>`;
-        }
-      }
-      
-      if (workingModel) {
-        config.geminiKey = key;
-        saveConfig();
-        updateApiIndicator();
-        resultDiv.innerHTML += `<div style="margin-top:10px; color: var(--success);">✅ Modelo: <strong>${workingModel}</strong></div>`;
-      } else {
-        resultDiv.innerHTML += `<div style="margin-top:10px; color: var(--warning);">⚠️ Nenhum modelo disponível. Sua cota pode estar esgotada.</div>`;
-      }
-      
-    } catch (error) {
-      resultDiv.innerHTML = `<span style="color: var(--danger);">❌ ${error.message}</span>`;
-    }
-  };
-
-  window.processVideo = async function(video) {
-    try {
-      updateProgress(video.id, 20, 'Obtendo informações...');
-      const resp = await fetch(`https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${video.videoId}&format=json`);
-      if (!resp.ok) throw new Error('Vídeo não encontrado');
-      const data = await resp.json();
-      video.title = data.title;
-      saveVideos();
-      renderVideos();
-      
-      updateProgress(video.id, 50, 'Analisando com IA...');
-      
-      // Determinar modelo
-      let modelToUse = config.selectedModel;
-      if (!modelToUse) {
-        const savedModels = JSON.parse(localStorage.getItem('clipador_models') || '[]');
-        modelToUse = savedModels[0] || 'gemini-2.0-flash';
-      }
-      
-      const prompt = `Aja como editor profissional de YouTube Shorts.
-
-Vídeo: "${video.title}"
-Link: https://youtube.com/watch?v=${video.videoId}
-
-Sugira 3-5 momentos ideais para shorts virais (30-60 segundos cada).
-
-REGRAS:
-1. Responda APENAS com o JSON, sem texto antes ou depois
-2. Use este formato exato:
-[{"inicio":120.5,"fim":175.0,"titulo_gancho":"Título viral","virality":8.5}]
-
-Baseie os timestamps em um podcast/entrevista típico.`;
-
-      console.log(`Usando modelo: ${modelToUse}`);
-      
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${config.geminiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 1000
-            }
-          })
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || 'Erro na API');
-      }
-
-      const result = await response.json();
-      
-      if (!result.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw new Error('Resposta inválida da API');
-      }
-      
-      let text = result.candidates[0].content.parts[0].text;
-      console.log('Resposta bruta:', text);
-      
-      // Limpar texto: remover markdown, comentários, etc
-      text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-      text = text.replace(/\/\/.*/g, '');
-      text = text.replace(/\/\*[\s\S]*?\*\//g, '');
-      
-      // Encontrar JSON
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) throw new Error('JSON não encontrado na resposta');
-      
-      let clips;
-      try {
-        clips = JSON.parse(jsonMatch[0]);
-      } catch (e) {
-        console.error('JSON inválido:', jsonMatch[0]);
-        throw new Error('Formato JSON inválido na resposta');
-      }
-      
-      if (!Array.isArray(clips) || clips.length === 0) {
-        throw new Error('Nenhum clipe encontrado');
-      }
-      
-      updateProgress(video.id, 90, 'Finalizando...');
-      
-      video.clips = clips.map((clip, i) => ({
-        id: `${video.id}-${i}`,
-        inicio: clip.inicio || 0,
-        fim: clip.fim || 60,
-        titulo: clip.titulo_gancho || 'Clipe sem título',
-        virality: clip.virality || 7.5,
-        youtubeUrl: `https://youtube.com/watch?v=${video.videoId}&t=${Math.floor(clip.inicio || 0)}`
-      }));
-      
-      video.status = 'completed';
-      video.progress = 100;
-      video.etapa = 'Concluído!';
-      saveVideos();
-      renderVideos();
-      showToast(`✅ ${video.clips.length} shorts encontrados!`, 'success');
-      
-    } catch (error) {
-      console.error('Erro:', error);
-      video.status = 'error';
-      video.etapa = error.message;
-      saveVideos();
-      renderVideos();
-      showToast('❌ ' + error.message, 'error');
-    }
-  };
-
-  function updateProgress(videoId, progress, etapa) {
-    const video = videos.find(v => v.id === videoId);
-    if (video) {
-      video.progress = progress;
-      video.etapa = etapa;
-      saveVideos();
-      renderVideos();
-    }
-  }
-
-  function extractVideoId(url) {
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
-    return match ? match[1] : null;
-  }
-
-  processBtn.addEventListener('click', async () => {
-    const url = youtubeInput.value.trim();
-    if (!url) return showToast('Cole uma URL do YouTube', 'error');
-    if (!config.geminiKey) {
-      showToast('Configure sua chave Gemini primeiro', 'error');
-      return openSettings();
-    }
-    
-    const videoId = extractVideoId(url);
-    if (!videoId) return showToast('URL inválida', 'error');
-    
-    const video = {
-      id: Date.now().toString(),
-      url,
-      videoId,
-      title: 'Analisando...',
-      status: 'processing',
-      progress: 0,
-      etapa: 'Iniciando...',
-      clips: [],
-      createdAt: new Date().toISOString()
-    };
-    
-    videos.unshift(video);
-    saveVideos();
-    renderVideos();
-    youtubeInput.value = '';
-    
-    await processVideo(video);
-  });
-
-  function renderVideos() {
-    if (videos.length === 0) {
-      videoList.innerHTML = `
-        <div class="empty-state">
-          <p style="font-size: 48px;">📹</p>
-          <p>Nenhum vídeo processado ainda</p>
-          <p style="font-size: 13px;">Cole um link do YouTube acima</p>
-        </div>`;
-      return;
-    }
-
-    videoList.innerHTML = videos.map(v => `
-      <div class="video-item">
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-          <div>
-            <strong>${esc(v.title)}</strong>
-            <div style="font-size: 12px; color: var(--muted);">${v.url}</div>
-            <div style="font-size: 11px; color: var(--muted);">${new Date(v.createdAt).toLocaleString('pt-BR')}</div>
-          </div>
-          <span class="badge badge-${v.status}">
-            ${v.status === 'processing' ? '<span class="spinner"></span>' : ''}
-            ${v.status === 'processing' ? 'Processando' : ''}
-            ${v.status === 'completed' ? '✅ Pronto' : ''}
-            ${v.status === 'error' ? '❌ Erro' : ''}
-          </span>
-        </div>
-        
-        ${v.status === 'processing' ? `
-          <div style="margin-bottom: 8px; font-size: 13px; color: var(--muted);">${v.etapa}</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${v.progress}%"></div>
-          </div>
-        ` : ''}
-        
-        ${v.clips.length > 0 ? `
-          <div class="clips-grid">
-            ${v.clips.map(c => `
-              <div class="clip-card">
-                <div class="clip-thumbnail" onclick="window.open('${c.youtubeUrl}', '_blank')">▶</div>
-                <div class="clip-time">⏱ ${fmt(c.inicio)} - ${fmt(c.fim)}</div>
-                <div class="clip-title">${esc(c.titulo)}</div>
-                <div style="display: flex; gap: 6px;">
-                  <button class="btn btn-primary" style="flex:1; padding:8px; font-size:12px;" onclick="window.open('${c.youtubeUrl}', '_blank')">▶ Assistir</button>
-                  <button class="btn btn-secondary" style="padding:8px; font-size:12px;" onclick="copyLink('${c.youtubeUrl}')">📋</button>
-                </div>
-                <div style="font-size: 11px; color: var(--accent); margin-top: 6px;">🔥 Viral: ${c.virality}/10</div>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-        
-        ${v.status === 'error' ? `
-          <div style="color: var(--danger); padding: 12px; background: rgba(255,71,87,0.1); border-radius: 8px; margin-top: 10px;">
-            ❌ ${v.etapa}
-          </div>
-        ` : ''}
-        
-        <button class="btn btn-secondary" style="margin-top: 10px; font-size: 12px;" onclick="deleteVideo('${v.id}')">🗑 Excluir</button>
-      </div>
-    `).join('');
-  }
-
-  function fmt(s) {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  }
-
-  function esc(t) {
-    const d = document.createElement('div');
-    d.textContent = t;
-    return d.innerHTML;
-  }
-
-  window.deleteVideo = function(id) {
-    if (confirm('Excluir?')) {
-      const idx = videos.findIndex(v => v.id === id);
-      if (idx > -1) {
-        videos.splice(idx, 1);
-        saveVideos();
-        renderVideos();
-      }
-    }
-  };
-
-  window.copyLink = function(url) {
-    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copiado!', 'success'));
-  };
-
-  function showToast(msg, type) {
-    const t = document.createElement('div');
-    t.className = `toast toast-${type}`;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-  }
-
-  // Expor funções globais
-  window.openSettings = openSettings;
-  window.closeSettings = closeSettings;
-
-  // Init
-  updateApiIndicator();
-  if (!config.geminiKey) setTimeout(openSettings, 500);
-  renderVideos();
 
 })();
 </script>
