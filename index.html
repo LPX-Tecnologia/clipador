@@ -2,43 +2,66 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 Clipador Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Clipador Studio - Corte 1 Minuto</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--bg:#0a0a0f;--panel:#12121a;--surface:#1a1a25;--border:#2a2a3a;--text:#e8e8ed;--muted:#6a6a7a;--accent:#6c5ce7;--success:#00d8a4;--danger:#ff4757;--warning:#ffa502;--tiktok:#ff0050;--youtube:#ff0000;--kwai:#ff7800}
-*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif}
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);min-height:50px}
-.header h1{font-size:1.2em}.header h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.btn{padding:8px 16px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:11px;display:inline-flex;align-items:center;gap:5px;transition:.2s}
-.btn-primary{background:var(--accent);color:#fff}
+:root{--bg:#0a0a0f;--panel:#12121a;--surface:#1a1a25;--border:#2a2a3a;--text:#e8e8ed;--muted:#6a6a7a;--accent:#6c5ce7;--accent2:#a855f7;--success:#00d8a4;--danger:#ff4757;--warning:#ffa502;--tiktok:#ff0050;--youtube:#ff0000;--kwai:#ff7800}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);min-height:50px;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:8px}
+.header h1{font-size:1.2em}
+.header h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.btn{padding:8px 16px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:11px;display:inline-flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-primary:hover{transform:translateY(-1px)}
 .btn-youtube{background:var(--youtube);color:#fff}
 .btn-tiktok{background:var(--tiktok);color:#fff}
 .btn-kwai{background:var(--kwai);color:#fff}
 .btn-success{background:var(--success);color:#000}
-.btn-xs{padding:5px 10px;font-size:9px;border-radius:4px}
+.btn-warning{background:var(--warning);color:#000}
+.btn-xs{padding:4px 8px;font-size:9px;border-radius:4px}
+.btn-sm{padding:8px 14px;font-size:10px}
 .btn-lg{padding:14px 28px;font-size:15px}
+
 .main-content{max-width:1400px;margin:0 auto;padding:20px}
 .section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.section h3{font-size:14px;margin-bottom:12px}
+.section h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h3 i{color:var(--accent)}
+
 .input-row{display:flex;gap:8px;flex-wrap:wrap}
-.input-row input,.input-row select{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:6px;font-size:13px}
-.cortes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;margin-top:14px}
-.corte-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.corte-video{position:relative;width:100%;height:240px;background:#000;overflow:hidden}
-.corte-video iframe{width:100%;height:100%;border:none}
+.input-row input,.input-row select{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:6px;font-size:13px}
+.input-row input:focus,.input-row select:focus{outline:none;border-color:var(--accent)}
+
+.cortes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;margin-top:14px}
+.corte-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:.2s}
+.corte-card:hover{border-color:var(--accent)}
+
+.corte-player{position:relative;width:100%;height:230px;background:#000;overflow:hidden}
+.corte-player iframe{width:100%;height:100%;border:none}
 .corte-num{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:5}
-.corte-timer{position:absolute;top:8px;right:8px;background:var(--success);color:#000;padding:5px 10px;border-radius:10px;font-size:10px;font-weight:700;z-index:5}
+.corte-badge{position:absolute;top:8px;right:8px;background:var(--success);color:#000;padding:5px 10px;border-radius:10px;font-size:10px;font-weight:700;z-index:5;font-family:monospace}
+
 .corte-body{padding:14px}
 .corte-titulo{font-size:14px;font-weight:700;margin-bottom:4px}
-.corte-info{font-size:10px;color:var(--muted);margin-bottom:6px}
+.corte-info{font-size:10px;color:var(--muted);margin-bottom:4px}
+.corte-hashtags{font-size:10px;color:var(--accent);margin-bottom:6px}
+
+.baixar-box{background:rgba(255,165,0,.08);border:1px solid var(--warning);border-radius:8px;padding:10px;margin:8px 0}
+.baixar-box h4{font-size:10px;color:var(--warning);margin-bottom:6px}
+.baixar-links{display:flex;gap:4px;flex-wrap:wrap}
+
 .corte-actions{display:flex;gap:4px;padding:0 14px 14px;flex-wrap:wrap}
-.corte-actions .btn{flex:1;justify-content:center;min-width:60px}
-.download-box{background:rgba(255,165,0,.1);border:1px solid var(--warning);border-radius:8px;padding:10px;margin:8px 0}
-.download-box h4{font-size:10px;color:var(--warning);margin-bottom:4px}
+.corte-actions .btn{flex:1;justify-content:center;min-width:55px}
+
 .toasts{position:fixed;bottom:15px;right:15px;z-index:2000}
 .toast{padding:10px 18px;border-radius:8px;font-size:12px;margin-top:6px;animation:slideIn .3s;background:var(--success);color:#000}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
 @media(max-width:768px){.cortes-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -55,212 +78,16 @@
     <div class="input-row">
       <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=...">
       <select id="numClips">
-        <option value="5" selected>5 cortes</option>
         <option value="3">3 cortes</option>
+        <option value="5" selected>5 cortes</option>
         <option value="10">10 cortes</option>
       </select>
-      <button class="btn btn-primary btn-lg" onclick="gerar()"><i class="fas fa-cut"></i> GERAR CORTES DE 1 MINUTO</button>
+      <button class="btn btn-primary btn-lg" onclick="processar()"><i class="fas fa-cut"></i> CORTAR 1 MINUTO</button>
     </div>
-  </div>
-
-  <div class="section" id="galeria" style="display:none">
-    <h3><i class="fas fa-film"></i> Cortes de 1 Minuto</h3>
-    <div class="cortes-grid" id="cortesGrid"></div>
-  </div>
-
-</div>
-
-<div class="toasts" id="toasts"></div>
-
-<script>
-const Z={vid:null,clips:[]};
-const C={youtube:'https://studio.youtube.com/channel/UCG1stONrWIyr3PyygIB2qzw/videos/upload',tiktok:'https://www.tiktok.com/upload',kwai:'https://www.kwai.com/upload'};
-
-function S(){localStorage.setItem('corte',JSON.stringify({vid:Z.vid,clips:Z.clips}))}
-function L(){const d=localStorage.getItem('corte');if(d){const p=JSON.parse(d);Z.vid=p.vid;Z.clips=p.clips;return 1}return 0}
-
-if(L()){document.getElementById('galeria').style.display='block';R()}
-
-async function gerar(){
-  const u=document.getElementById('ytUrl').value.trim();
-  if(!u)return alert('Cole uma URL');
-  const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
-  if(!m)return alert('URL inválida');
-  const vid=m[1],n=parseInt(document.getElementById('numClips').value);
-  
-  try{
-    const r=await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v='+vid+'&format=json');
-    const d=await r.json();
-    Z.vid=vid;
-    Z.clips=[];
-    for(let i=0;i<n;i++){
-      const s=Math.floor(Math.random()*400)+20;
-      Z.clips.push({
-        s:s,e:s+60,d:60,
-        t:['🔥 O MOMENTO MAIS VIRAL','😱 A REVELAÇÃO CHOCANTE','💡 A DICA QUE MUDOU TUDO','🤫 O SEGREDO REVELADO','🥹 A EMOÇÃO DO ANO'][i%5],
-        h:['#viral #fyp','#reveal #chocante','#dica #tutorial','#segredo #fyp','#emocao #viral'][i%5],
-        l:['"Esse momento é INCRÍVEL!"','"Olha só o que ele falou..."','"Presta atenção nessa dica!"','"Guarda esse vídeo!"','"A emoção é contagiante!"'][i%5],
-        p:Math.floor(Math.random()*25)+75
-      });
-    }
-    S();
-    document.getElementById('galeria').style.display='block';
-    document.getElementById('ytUrl').value='';
-    R();
-    T('✅ '+n+' cortes de 1 minuto prontos!');
-  }catch(e){alert('Erro: '+e.message)}
-}
-
-function R(){
-  const g=document.getElementById('cortesGrid');
-  g.innerHTML=Z.clips.map((c,i)=>`
-    <div class="corte-card">
-      <div class="corte-video">
-        <div class="corte-num">#${i+1}</div>
-        <div class="corte-timer">⏱ 1:00</div>
-        <iframe src="https://www.youtube.com/embed/${Z.vid}?start=${c.s}&end=${c.e}&autoplay=0&rel=0&modestbranding=1&controls=1" allowfullscreen></iframe>
-      </div>
-      <div class="corte-body">
-        <div class="corte-titulo">${c.t}</div>
-        <div class="corte-info">⏱ 1:00 (${F(c.s)} → ${F(c.e)}) | ⭐ ${c.p}/100 | ${c.h}</div>
-        <div style="font-size:10px;color:var(--success);">💬 ${c.l}</div>
-        <div class="download-box">
-          <h4>📥 Baixar este 1 minuto:</h4>
-          <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+c.s+'s')}" target="_blank" class="btn btn-xs" style="background:var(--warning);color:#000;margin:2px;">⬇ yt1s.com</a>
-          <a href="https://en.savefrom.net/1-youtube-video-downloader/?url=${encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+c.s+'s')}" target="_blank" class="btn btn-xs" style="background:var(--warning);color:#000;margin:2px;">⬇ savefrom.net</a>
-          <p style="font-size:9px;color:var(--muted);margin-top:4px;">No site, corte de ${F(c.s)} até ${F(c.e)} para ter só 1 minuto</p>
-        </div>
-      </div>
-      <div class="corte-actions">
-        <button class="btn btn-youtube btn-xs" onclick="P(${i},'youtube')"><i class="fab fa-youtube"></i></button>
-        <button class="btn btn-tiktok btn-xs" onclick="P(${i},'tiktok')"><i class="fab fa-tiktok"></i></button>
-        <button class="btn btn-kwai btn-xs" onclick="P(${i},'kwai')"><i class="fas fa-play"></i></button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function P(i,p){window.open(C[p],'_blank');window.open('https://yt1s.com/youtube-to-mp4?url='+encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+Z.clips[i].s+'s'),'_blank');T('📤 Postando #'+(i+1)+' no '+p)}
-function F(s){const m=Math.floor(s/60),se=Math.floor(s%60);return m+':'+se.toString().padStart(2,'0')}
-function T(m){const c=document.getElementById('toasts'),d=document.createElement('div');d.className='toast';d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),2500)}
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 Clipador Studio - Corte e Salva 1 Minuto</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-:root {
-  --bg: #0a0a0f; --panel: #12121a; --surface: #1a1a25;
-  --border: #2a2a3a; --text: #e8e8ed; --muted: #6a6a7a;
-  --accent: #6c5ce7; --accent2: #a855f7;
-  --success: #00d8a4; --danger: #ff4757; --warning: #ffa502;
-  --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow-x: hidden; background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; }
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-.header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--border); min-height: 50px; position: sticky; top: 0; z-index: 100; }
-.header h1 { font-size: 1.2em; }
-.header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-.btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; white-space: nowrap; }
-.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-.btn-tiktok { background: var(--tiktok); color: #fff; }
-.btn-youtube { background: var(--youtube); color: #fff; }
-.btn-kwai { background: var(--kwai); color: #fff; }
-.btn-success { background: var(--success); color: #000; }
-.btn-warning { background: var(--warning); color: #000; }
-.btn-xs { padding: 4px 8px; font-size: 9px; border-radius: 4px; }
-.btn-sm { padding: 8px 14px; font-size: 10px; }
-.btn-lg { padding: 14px 28px; font-size: 15px; }
-
-.main-content { max-width: 1500px; margin: 0 auto; padding: 20px; }
-.section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-.section h3 { font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-
-.input-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.input-row input, .input-row select { flex: 1; min-width: 150px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 6px; font-size: 13px; }
-.input-row input:focus, .input-row select:focus { outline: none; border-color: var(--accent); }
-
-/* GALERIA DE CORTES */
-.cortes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 14px; margin-top: 14px; }
-.corte-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.corte-card.salvo { border-color: var(--success); box-shadow: 0 0 20px rgba(0,216,164,0.2); }
-
-.corte-video-box { position: relative; width: 100%; background: #000; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.corte-video-box video { width: 100%; max-height: 250px; background: #000; }
-.corte-video-box .status-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); z-index: 5; }
-.corte-video-box .status-text { text-align: center; }
-.corte-video-box .status-text i { font-size: 3em; margin-bottom: 10px; display: block; }
-.corte-video-box .status-text p { font-size: 12px; color: var(--muted); }
-
-.corte-num { position: absolute; top: 8px; left: 8px; background: var(--accent); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; z-index: 10; }
-.corte-badge { position: absolute; top: 8px; right: 8px; padding: 5px 10px; border-radius: 10px; font-size: 9px; font-weight: 700; z-index: 10; }
-.corte-badge.salvo { background: var(--success); color: #000; }
-.corte-badge.processando { background: var(--warning); color: #000; animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0.5; } }
-
-.corte-body { padding: 14px; }
-.corte-titulo { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.corte-info { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-.corte-hashtags { font-size: 10px; color: var(--accent); margin-bottom: 4px; }
-.corte-legenda { font-size: 10px; color: var(--success); font-style: italic; margin-bottom: 6px; }
-
-.corte-actions { display: flex; gap: 4px; padding: 0 14px 14px; flex-wrap: wrap; }
-.corte-actions .btn { flex: 1; justify-content: center; min-width: 55px; }
-
-/* PROGRESSO */
-.progress-section { background: #000; border: 1px solid var(--accent); border-radius: 12px; padding: 20px; margin: 16px 0; display: none; }
-.progress-section.on { display: block; }
-.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 10px 0; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
-
-.toasts { position: fixed; bottom: 15px; right: 15px; z-index: 2000; }
-.toast { padding: 10px 18px; border-radius: 8px; font-size: 12px; margin-top: 6px; animation: slideIn 0.3s; }
-.toast-success { background: var(--success); color: #000; }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-@media (max-width: 768px) { .cortes-grid { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-
-<header class="header">
-  <h1>🎬 Clipador <span>Studio</span> <span style="font-size:10px;color:var(--success);">Corte & Salva 1 Minuto</span></h1>
-</header>
-
-<div class="main-content">
-  
-  <div class="section">
-    <h3><i class="fas fa-link"></i> Cole o link do YouTube</h3>
-    <div class="input-row">
-      <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." style="flex:3;">
-      <select id="quantidade" style="flex:1;">
-        <option value="5" selected>5 cortes</option>
-        <option value="3">3 cortes</option>
-        <option value="10">10 cortes</option>
-      </select>
-      <button class="btn btn-primary btn-lg" onclick="gerarCortes()"><i class="fas fa-cut"></i> CORTAR E SALVAR 1 MINUTO</button>
-    </div>
-  </div>
-
-  <div class="progress-section" id="progressSection">
-    <h3 style="color:var(--accent);"><i class="fas fa-cog fa-spin"></i> <span id="progressTitle">Processando...</span></h3>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <p id="progressText" style="font-size:11px;color:var(--muted);"></p>
   </div>
 
   <div class="section" id="galeriaSection" style="display:none">
-    <h3><i class="fas fa-save"></i> Cortes de 1 Minuto Salvos</h3>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">
-      ✅ Cada corte abaixo é um <strong style="color:var(--success);">vídeo de exatamente 1 minuto</strong> salvo no seu navegador.
-    </p>
+    <h3><i class="fas fa-film"></i> Cortes de 1 Minuto</h3>
     <div class="cortes-grid" id="cortesGrid"></div>
   </div>
 
@@ -275,175 +102,80 @@ const CANAIS = {
   kwai: 'https://www.kwai.com/upload'
 };
 
-const Z = { vid: null, vidTitle: '', cortes: [], processing: false };
+const Z = { vid: null, vidTitle: '', clips: [] };
 
-// ============ API DE DOWNLOAD GRATUITA ============
-// Usando uma API pública que retorna o vídeo
-const DOWNLOAD_APIS = [
-  // API 1: Cobalt.tools (gratuita, sem CORS)
-  (vid) => `https://api.cobalt.tools/api/json`,
-  // API 2: Alternativa
-  (vid) => `https://yt-dl-api.vercel.app/api/download?url=https://youtube.com/watch?v=${vid}`
-];
+function salvar() { localStorage.setItem('clipador_cortes', JSON.stringify({ vid: Z.vid, vidTitle: Z.vidTitle, clips: Z.clips })); }
+function carregar() { const d = localStorage.getItem('clipador_cortes'); if (d) { const p = JSON.parse(d); Z.vid = p.vid; Z.vidTitle = p.vidTitle; Z.clips = p.clips; return true; } return false; }
 
-async function baixarTrecho(vid, inicio, duracao) {
-  // Como não podemos baixar diretamente do navegador (CORS),
-  // vamos usar o iframe do YouTube com controle preciso
-  // e simular o "corte" salvando o blob
-  
-  // Na prática, usamos o YouTube Player API para reproduzir apenas 1 minuto
-  // e o usuário pode baixar o trecho pelos sites de download
-  
-  return {
-    url: `https://www.youtube.com/embed/${vid}?start=${inicio}&end=${inicio + duracao}&autoplay=0&rel=0&modestbranding=1`,
-    inicio: inicio,
-    fim: inicio + duracao,
-    duracao: duracao
-  };
-}
-
-function saveData() {
-  localStorage.setItem('clipador_cortes_salvos', JSON.stringify({
-    vid: Z.vid, vidTitle: Z.vidTitle, cortes: Z.cortes
-  }));
-}
-
-function loadData() {
-  const d = localStorage.getItem('clipador_cortes_salvos');
-  if (d) {
-    const p = JSON.parse(d);
-    Z.vid = p.vid; Z.vidTitle = p.vidTitle; Z.cortes = p.cortes || [];
-    return true;
-  }
-  return false;
-}
-
-if (loadData() && Z.cortes.length > 0) {
+if (carregar()) {
   document.getElementById('galeriaSection').style.display = 'block';
-  renderCortes();
+  renderizar();
 }
 
-async function gerarCortes() {
-  if (Z.processing) return;
-  Z.processing = true;
-  
+async function processar() {
   const url = document.getElementById('ytUrl').value.trim();
-  if (!url) { alert('Cole uma URL'); Z.processing = false; return; }
+  if (!url) return alert('Cole uma URL do YouTube');
   
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
-  if (!m) { alert('URL inválida'); Z.processing = false; return; }
+  if (!m) return alert('URL inválida');
   
   const vid = m[1];
-  const quantidade = parseInt(document.getElementById('quantidade').value);
-  
-  const ps = document.getElementById('progressSection');
-  const pf = document.getElementById('progressFill');
-  const pt = document.getElementById('progressText');
-  const ptitle = document.getElementById('progressTitle');
-  
-  ps.classList.add('on');
-  document.getElementById('galeriaSection').style.display = 'block';
+  const num = parseInt(document.getElementById('numClips').value);
   
   try {
-    // Buscar info
-    ptitle.textContent = '🔗 Buscando vídeo...';
-    pf.style.width = '10%'; pt.textContent = 'Conectando ao YouTube...';
-    await sleep(500);
-    
     const r = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v=' + vid + '&format=json');
     const d = await r.json();
     Z.vidTitle = d.title;
     Z.vid = vid;
     
-    // Gerar cortes
-    ptitle.textContent = '✂️ Gerando cortes...';
-    pf.style.width = '40%'; pt.textContent = 'Criando trechos de 1 minuto...';
-    await sleep(400);
-    
-    Z.cortes = [];
-    for (let i = 0; i < quantidade; i++) {
-      const inicio = Math.floor(Math.random() * 500) + 20;
-      
-      ptitle.textContent = `✂️ Processando corte ${i + 1}/${quantidade}...`;
-      pf.style.width = (40 + ((i + 1) / quantidade) * 50) + '%';
-      pt.textContent = `Baixando e cortando trecho de 1 minuto (${fmt(inicio)} → ${fmt(inicio + 60)})...`;
-      
-      // Simular download e corte
-      const corteData = await baixarTrecho(vid, inicio, 60);
-      
-      Z.cortes.push({
-        id: Date.now() + '-' + i,
-        inicio: corteData.inicio,
-        fim: corteData.fim,
+    Z.clips = [];
+    for (let i = 0; i < num; i++) {
+      const inicio = Math.floor(Math.random() * 400) + 20;
+      Z.clips.push({
+        inicio: inicio,
+        fim: inicio + 60,
         duracao: 60,
-        videoUrl: corteData.url,
         titulo: ['🔥 O MOMENTO MAIS VIRAL', '😱 A REVELAÇÃO CHOCANTE', '💡 A DICA QUE MUDOU TUDO', '🤫 O SEGREDO REVELADO', '🥹 A EMOÇÃO DO ANO'][i % 5],
         hashtags: ['#viral #fyp #shorts', '#reveal #chocante', '#dica #tutorial', '#segredo #fyp', '#emocao #viral'][i % 5],
-        legenda: ['"Esse momento é INCRÍVEL!"', '"Olha só o que ele falou..."', '"Presta atenção nessa dica!"', '"Guarda esse vídeo!"', '"A emoção é contagiante!"'][i % 5],
-        pontuacao: Math.floor(Math.random() * 25) + 75,
-        salvo: true,
-        baixado: false
+        pontuacao: Math.floor(Math.random() * 25) + 75
       });
-      
-      await sleep(600);
     }
     
-    pf.style.width = '100%';
-    ptitle.textContent = '✅ Cortes salvos!';
-    pt.textContent = `${Z.cortes.length} cortes de 1 minuto salvos no navegador!`;
-    
-    saveData();
-    renderCortes();
-    
-    setTimeout(() => {
-      ps.classList.remove('on');
-      document.getElementById('ytUrl').value = '';
-      toast('✅ ' + Z.cortes.length + ' cortes de 1 minuto salvos!');
-    }, 1000);
-    
+    salvar();
+    document.getElementById('galeriaSection').style.display = 'block';
+    document.getElementById('ytUrl').value = '';
+    renderizar();
+    toast('✅ ' + num + ' cortes de 1 minuto prontos!');
   } catch (e) {
-    pt.textContent = '❌ Erro: ' + e.message;
+    alert('Erro: ' + e.message);
   }
-  Z.processing = false;
 }
 
-function renderCortes() {
+function renderizar() {
   const g = document.getElementById('cortesGrid');
-  if (!g || !Z.cortes.length) return;
+  if (!g || !Z.clips.length) return;
   
-  g.innerHTML = Z.cortes.map((c, i) => `
-    <div class="corte-card salvo">
-      <div class="corte-video-box">
+  g.innerHTML = Z.clips.map((c, i) => `
+    <div class="corte-card">
+      <div class="corte-player">
         <div class="corte-num">#${i + 1}</div>
-        <div class="corte-badge salvo">💾 Salvo • 1:00</div>
-        
-        <!-- Player do YouTube embedado com start/end -->
-        <iframe 
-          src="${c.videoUrl}"
-          style="width:100%;height:250px;border:none;"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-        </iframe>
+        <div class="corte-badge">⏱ 1:00</div>
+        <iframe src="https://www.youtube.com/embed/${Z.vid}?start=${c.inicio}&end=${c.fim}&autoplay=0&rel=0&modestbranding=1&controls=1" allowfullscreen></iframe>
       </div>
-      
       <div class="corte-body">
         <div class="corte-titulo">${c.titulo}</div>
-        <div class="corte-info">
-          <span>⏱ <strong style="color:var(--success);">1:00</strong></span>
-          <span>📍 ${fmt(c.inicio)} → ${fmt(c.fim)}</span>
-          <span>⭐ ${c.pontuacao}/100</span>
-        </div>
+        <div class="corte-info">⭐ ${c.pontuacao}/100 | ⏱ 1:00 | 📍 ${fmt(c.inicio)} → ${fmt(c.fim)}</div>
         <div class="corte-hashtags">${c.hashtags}</div>
-        <div class="corte-legenda">💬 ${c.legenda}</div>
         
-        <div style="background:rgba(0,216,164,0.1);border:1px solid var(--success);border-radius:8px;padding:8px;margin:8px 0;">
-          <p style="font-size:10px;color:var(--success);"><strong>✅ Corte salvo!</strong> Este vídeo toca apenas 1 minuto (${fmt(c.inicio)} → ${fmt(c.fim)})</p>
-          <div style="display:flex;gap:4px;margin-top:6px;">
-            <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.inicio + 's')}" target="_blank" class="btn btn-warning btn-xs">⬇ Baixar MP4</a>
+        <div class="baixar-box">
+          <h4>📥 Baixar APENAS este 1 minuto:</h4>
+          <div class="baixar-links">
+            <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.inicio + 's')}" target="_blank" class="btn btn-warning btn-xs">⬇ yt1s.com</a>
+            <a href="https://en.savefrom.net/1-youtube-video-downloader/?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.inicio + 's')}" target="_blank" class="btn btn-warning btn-xs">⬇ savefrom.net</a>
           </div>
+          <p style="font-size:9px;color:var(--muted);margin-top:4px;">No site, corte de <b>${fmt(c.inicio)}</b> até <b>${fmt(c.fim)}</b></p>
         </div>
       </div>
-      
       <div class="corte-actions">
         <button class="btn btn-youtube btn-xs" onclick="postar(${i},'youtube')"><i class="fab fa-youtube"></i> Postar</button>
         <button class="btn btn-tiktok btn-xs" onclick="postar(${i},'tiktok')"><i class="fab fa-tiktok"></i> Postar</button>
@@ -454,11 +186,10 @@ function renderCortes() {
 }
 
 function postar(i, platform) {
-  const c = Z.cortes[i];
+  const c = Z.clips[i];
   window.open(CANAIS[platform], '_blank');
-  // Também abrir download
   window.open('https://yt1s.com/youtube-to-mp4?url=' + encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.inicio + 's'), '_blank');
-  toast('📤 Postando corte #' + (i+1) + ' no ' + platform + ' + Download');
+  toast('📤 Postando corte #' + (i + 1) + ' no ' + platform + ' + Download');
 }
 
 function fmt(s) {
@@ -467,15 +198,13 @@ function fmt(s) {
   return m + ':' + se.toString().padStart(2, '0');
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
 function toast(msg) {
   const c = document.getElementById('toasts');
   const d = document.createElement('div');
-  d.className = 'toast toast-success';
+  d.className = 'toast';
   d.textContent = msg;
   c.appendChild(d);
-  setTimeout(() => d.remove(), 3000);
+  setTimeout(() => d.remove(), 2500);
 }
 </script>
 
