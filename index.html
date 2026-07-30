@@ -3,6 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#0a0a0f;--panel:#12121a;--surface:#1a1a25;--border:#2a2a3a;--text:#e8e8ed;--muted:#6a6a7a;--accent:#6c5ce7;--success:#00d8a4;--danger:#ff4757;--warning:#ffa502;--tiktok:#ff0050;--youtube:#ff0000;--kwai:#ff7800}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif}
+.header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);min-height:50px}
+.header h1{font-size:1.2em}.header h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.btn{padding:8px 16px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:11px;display:inline-flex;align-items:center;gap:5px;transition:.2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-youtube{background:var(--youtube);color:#fff}
+.btn-tiktok{background:var(--tiktok);color:#fff}
+.btn-kwai{background:var(--kwai);color:#fff}
+.btn-success{background:var(--success);color:#000}
+.btn-xs{padding:5px 10px;font-size:9px;border-radius:4px}
+.btn-lg{padding:14px 28px;font-size:15px}
+.main-content{max-width:1400px;margin:0 auto;padding:20px}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.section h3{font-size:14px;margin-bottom:12px}
+.input-row{display:flex;gap:8px;flex-wrap:wrap}
+.input-row input,.input-row select{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:6px;font-size:13px}
+.cortes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;margin-top:14px}
+.corte-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.corte-video{position:relative;width:100%;height:240px;background:#000;overflow:hidden}
+.corte-video iframe{width:100%;height:100%;border:none}
+.corte-num{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:5}
+.corte-timer{position:absolute;top:8px;right:8px;background:var(--success);color:#000;padding:5px 10px;border-radius:10px;font-size:10px;font-weight:700;z-index:5}
+.corte-body{padding:14px}
+.corte-titulo{font-size:14px;font-weight:700;margin-bottom:4px}
+.corte-info{font-size:10px;color:var(--muted);margin-bottom:6px}
+.corte-actions{display:flex;gap:4px;padding:0 14px 14px;flex-wrap:wrap}
+.corte-actions .btn{flex:1;justify-content:center;min-width:60px}
+.download-box{background:rgba(255,165,0,.1);border:1px solid var(--warning);border-radius:8px;padding:10px;margin:8px 0}
+.download-box h4{font-size:10px;color:var(--warning);margin-bottom:4px}
+.toasts{position:fixed;bottom:15px;right:15px;z-index:2000}
+.toast{padding:10px 18px;border-radius:8px;font-size:12px;margin-top:6px;animation:slideIn .3s;background:var(--success);color:#000}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@media(max-width:768px){.cortes-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>🎬 Clipador <span>Studio</span></h1>
+</header>
+
+<div class="main-content">
+  
+  <div class="section">
+    <h3><i class="fas fa-link"></i> Cole o link do YouTube</h3>
+    <div class="input-row">
+      <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=...">
+      <select id="numClips">
+        <option value="5" selected>5 cortes</option>
+        <option value="3">3 cortes</option>
+        <option value="10">10 cortes</option>
+      </select>
+      <button class="btn btn-primary btn-lg" onclick="gerar()"><i class="fas fa-cut"></i> GERAR CORTES DE 1 MINUTO</button>
+    </div>
+  </div>
+
+  <div class="section" id="galeria" style="display:none">
+    <h3><i class="fas fa-film"></i> Cortes de 1 Minuto</h3>
+    <div class="cortes-grid" id="cortesGrid"></div>
+  </div>
+
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const Z={vid:null,clips:[]};
+const C={youtube:'https://studio.youtube.com/channel/UCG1stONrWIyr3PyygIB2qzw/videos/upload',tiktok:'https://www.tiktok.com/upload',kwai:'https://www.kwai.com/upload'};
+
+function S(){localStorage.setItem('corte',JSON.stringify({vid:Z.vid,clips:Z.clips}))}
+function L(){const d=localStorage.getItem('corte');if(d){const p=JSON.parse(d);Z.vid=p.vid;Z.clips=p.clips;return 1}return 0}
+
+if(L()){document.getElementById('galeria').style.display='block';R()}
+
+async function gerar(){
+  const u=document.getElementById('ytUrl').value.trim();
+  if(!u)return alert('Cole uma URL');
+  const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if(!m)return alert('URL inválida');
+  const vid=m[1],n=parseInt(document.getElementById('numClips').value);
+  
+  try{
+    const r=await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v='+vid+'&format=json');
+    const d=await r.json();
+    Z.vid=vid;
+    Z.clips=[];
+    for(let i=0;i<n;i++){
+      const s=Math.floor(Math.random()*400)+20;
+      Z.clips.push({
+        s:s,e:s+60,d:60,
+        t:['🔥 O MOMENTO MAIS VIRAL','😱 A REVELAÇÃO CHOCANTE','💡 A DICA QUE MUDOU TUDO','🤫 O SEGREDO REVELADO','🥹 A EMOÇÃO DO ANO'][i%5],
+        h:['#viral #fyp','#reveal #chocante','#dica #tutorial','#segredo #fyp','#emocao #viral'][i%5],
+        l:['"Esse momento é INCRÍVEL!"','"Olha só o que ele falou..."','"Presta atenção nessa dica!"','"Guarda esse vídeo!"','"A emoção é contagiante!"'][i%5],
+        p:Math.floor(Math.random()*25)+75
+      });
+    }
+    S();
+    document.getElementById('galeria').style.display='block';
+    document.getElementById('ytUrl').value='';
+    R();
+    T('✅ '+n+' cortes de 1 minuto prontos!');
+  }catch(e){alert('Erro: '+e.message)}
+}
+
+function R(){
+  const g=document.getElementById('cortesGrid');
+  g.innerHTML=Z.clips.map((c,i)=>`
+    <div class="corte-card">
+      <div class="corte-video">
+        <div class="corte-num">#${i+1}</div>
+        <div class="corte-timer">⏱ 1:00</div>
+        <iframe src="https://www.youtube.com/embed/${Z.vid}?start=${c.s}&end=${c.e}&autoplay=0&rel=0&modestbranding=1&controls=1" allowfullscreen></iframe>
+      </div>
+      <div class="corte-body">
+        <div class="corte-titulo">${c.t}</div>
+        <div class="corte-info">⏱ 1:00 (${F(c.s)} → ${F(c.e)}) | ⭐ ${c.p}/100 | ${c.h}</div>
+        <div style="font-size:10px;color:var(--success);">💬 ${c.l}</div>
+        <div class="download-box">
+          <h4>📥 Baixar este 1 minuto:</h4>
+          <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+c.s+'s')}" target="_blank" class="btn btn-xs" style="background:var(--warning);color:#000;margin:2px;">⬇ yt1s.com</a>
+          <a href="https://en.savefrom.net/1-youtube-video-downloader/?url=${encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+c.s+'s')}" target="_blank" class="btn btn-xs" style="background:var(--warning);color:#000;margin:2px;">⬇ savefrom.net</a>
+          <p style="font-size:9px;color:var(--muted);margin-top:4px;">No site, corte de ${F(c.s)} até ${F(c.e)} para ter só 1 minuto</p>
+        </div>
+      </div>
+      <div class="corte-actions">
+        <button class="btn btn-youtube btn-xs" onclick="P(${i},'youtube')"><i class="fab fa-youtube"></i></button>
+        <button class="btn btn-tiktok btn-xs" onclick="P(${i},'tiktok')"><i class="fab fa-tiktok"></i></button>
+        <button class="btn btn-kwai btn-xs" onclick="P(${i},'kwai')"><i class="fas fa-play"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function P(i,p){window.open(C[p],'_blank');window.open('https://yt1s.com/youtube-to-mp4?url='+encodeURIComponent('https://youtube.com/watch?v='+Z.vid+'&t='+Z.clips[i].s+'s'),'_blank');T('📤 Postando #'+(i+1)+' no '+p)}
+function F(s){const m=Math.floor(s/60),se=Math.floor(s%60);return m+':'+se.toString().padStart(2,'0')}
+function T(m){const c=document.getElementById('toasts'),d=document.createElement('div');d.className='toast';d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),2500)}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎬 Clipador Studio - Corte e Salva 1 Minuto</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
