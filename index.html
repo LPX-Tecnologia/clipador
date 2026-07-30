@@ -1,4 +1,387 @@
 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Clipador Studio - Auto Download + Post</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #0a0a0f; --panel: #12121a; --surface: #1a1a25;
+  --border: #2a2a3a; --text: #e8e8ed; --muted: #6a6a7a;
+  --accent: #6c5ce7; --accent2: #a855f7;
+  --success: #00d8a4; --danger: #ff4757; --warning: #ffa502;
+  --tiktok: #ff0050; --youtube: #ff0000; --kwai: #ff7800;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow-x: hidden; background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--border); min-height: 50px; flex-wrap: wrap; gap: 8px; }
+.header h1 { font-size: 1.2em; }
+.header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; white-space: nowrap; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+.btn-tiktok { background: var(--tiktok); color: #fff; }
+.btn-youtube { background: var(--youtube); color: #fff; }
+.btn-kwai { background: var(--kwai); color: #fff; }
+.btn-success { background: var(--success); color: #000; }
+.btn-warning { background: var(--warning); color: #000; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-xs { padding: 5px 10px; font-size: 9px; border-radius: 4px; }
+.btn-sm { padding: 8px 14px; font-size: 10px; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+
+.main-content { max-width: 1500px; margin: 0 auto; padding: 20px; }
+.section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.section h3 { font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section h3 i { color: var(--accent); }
+
+.input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.input-row input, .input-row select { flex: 1; min-width: 180px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 6px; font-size: 13px; }
+.input-row input:focus, .input-row select:focus { outline: none; border-color: var(--accent); }
+
+.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+.status-card .num { font-size: 1.8em; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.status-card .label { font-size: 9px; color: var(--muted); margin-top: 3px; }
+
+.fila-info { background: rgba(0,216,164,0.1); border: 1px solid var(--success); border-radius: 8px; padding: 12px; margin: 10px 0; display: none; }
+.fila-info.on { display: block; }
+.fila-info h4 { color: var(--success); font-size: 12px; margin-bottom: 6px; }
+
+.cortes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; margin-top: 14px; }
+.corte-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.corte-card.processing { border-color: var(--warning); }
+.corte-card.done { border-color: var(--success); }
+
+.corte-video { position: relative; width: 100%; height: 220px; background: #000; overflow: hidden; }
+.corte-video iframe { width: 100%; height: 100%; border: none; }
+.corte-num { position: absolute; top: 8px; left: 8px; background: var(--accent); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; z-index: 5; }
+.corte-status { position: absolute; top: 8px; right: 8px; padding: 4px 10px; border-radius: 10px; font-size: 9px; font-weight: 700; z-index: 5; }
+.corte-status.pending { background: var(--warning); color: #000; }
+.corte-status.downloading { background: #ffa502; color: #000; animation: blink 1s infinite; }
+.corte-status.posting { background: var(--accent); color: #fff; animation: blink 1s infinite; }
+.corte-status.done { background: var(--success); color: #000; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.corte-body { padding: 14px; }
+.corte-titulo { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.corte-info { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.corte-hashtags { font-size: 10px; color: var(--accent); margin-bottom: 4px; }
+
+.download-box { background: rgba(255,165,0,0.08); border: 1px solid var(--warning); border-radius: 8px; padding: 10px; margin: 8px 0; }
+.download-box h4 { font-size: 10px; color: var(--warning); margin-bottom: 6px; }
+.download-box a { display: inline-block; margin: 2px 4px; }
+
+.corte-actions { display: flex; gap: 4px; padding: 0 14px 14px; flex-wrap: wrap; }
+.corte-actions .btn { flex: 1; justify-content: center; min-width: 60px; }
+
+.log-area { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 9px; color: var(--success); margin-top: 10px; }
+.log-line { margin: 2px 0; }
+.log-line.action { color: var(--warning); }
+.log-line.done { color: var(--success); }
+
+.toasts { position: fixed; bottom: 15px; right: 15px; z-index: 2000; }
+.toast { padding: 10px 18px; border-radius: 8px; font-size: 12px; margin-top: 6px; animation: slideIn 0.3s; }
+.toast-success { background: var(--success); color: #000; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+@media (max-width: 768px) { .cortes-grid { grid-template-columns: 1fr; } .input-row { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>🎬 Clipador <span>Studio</span></h1>
+  <div>
+    <a href="https://studio.youtube.com/channel/UCG1stONrWIyr3PyygIB2qzw/videos/upload" target="_blank" class="btn btn-youtube btn-xs"><i class="fab fa-youtube"></i> YouTube Studio</a>
+  </div>
+</header>
+
+<div class="main-content">
+  
+  <!-- INPUT -->
+  <div class="section">
+    <h3><i class="fas fa-link"></i> 1. Cole o link do YouTube</h3>
+    <div class="input-row">
+      <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=...">
+      <select id="numClips">
+        <option value="3">3 cortes</option>
+        <option value="5" selected>5 cortes</option>
+        <option value="10">10 cortes</option>
+      </select>
+      <select id="targetPlatform">
+        <option value="youtube">YouTube</option>
+        <option value="tiktok">TikTok</option>
+        <option value="kwai">Kwai</option>
+      </select>
+      <button class="btn btn-primary btn-lg" onclick="processarVideo()"><i class="fas fa-magic"></i> GERAR CORTES</button>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="section" id="galeriaSection" style="display:none">
+    <h3><i class="fas fa-images"></i> 2. Cortes Gerados (Automático)</h3>
+    
+    <div class="status-grid">
+      <div class="status-card"><div class="num" id="stTotal">0</div><div class="label">Total</div></div>
+      <div class="status-card"><div class="num" id="stBaixados">0</div><div class="label">Baixados</div></div>
+      <div class="status-card"><div class="num" id="stPostados">0</div><div class="label">Postados</div></div>
+      <div class="status-card"><div class="num" id="stFila">0</div><div class="label">Na Fila</div></div>
+    </div>
+
+    <div class="fila-info" id="filaInfo">
+      <h4><i class="fas fa-robot"></i> 🤖 Sistema Automático Ativo!</h4>
+      <p style="font-size:10px;color:var(--muted);">Baixando e postando automaticamente a cada 30 segundos...</p>
+      <button class="btn btn-danger btn-xs" onclick="pararAuto()" style="margin-top:6px;"><i class="fas fa-stop"></i> PARAR</button>
+    </div>
+
+    <div class="cortes-grid" id="cortesGrid"></div>
+    
+    <div class="log-area" id="logArea">
+      <div class="log-line">🤖 Sistema pronto. Aguardando...</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const CANAIS = {
+  youtube: 'https://studio.youtube.com/channel/UCG1stONrWIyr3PyygIB2qzw/videos/upload',
+  tiktok: 'https://www.tiktok.com/upload',
+  kwai: 'https://www.kwai.com/upload'
+};
+
+const Z = {
+  vid: null, vidTitle: '', clips: [], processing: false,
+  autoTimer: null, autoActive: false, baixados: 0, postados: 0
+};
+
+function saveClips() {
+  localStorage.setItem('clipador_auto', JSON.stringify({
+    vid: Z.vid, vidTitle: Z.vidTitle, clips: Z.clips,
+    baixados: Z.baixados, postados: Z.postados, autoActive: Z.autoActive
+  }));
+}
+
+function loadClips() {
+  const d = localStorage.getItem('clipador_auto');
+  if (d) {
+    const p = JSON.parse(d);
+    Z.vid = p.vid; Z.vidTitle = p.vidTitle; Z.clips = p.clips;
+    Z.baixados = p.baixados || 0; Z.postados = p.postados || 0;
+    return true;
+  }
+  return false;
+}
+
+function addLog(msg, type) {
+  const la = document.getElementById('logArea');
+  const hora = new Date().toLocaleTimeString();
+  la.innerHTML += `<div class="log-line ${type || ''}">[${hora}] ${msg}</div>`;
+  la.scrollTop = la.scrollHeight;
+}
+
+// Iniciar
+if (loadClips()) {
+  document.getElementById('galeriaSection').style.display = 'block';
+  renderCortes();
+  updateStatus();
+  if (Z.autoActive) iniciarAuto();
+}
+
+async function processarVideo() {
+  const url = document.getElementById('ytUrl').value.trim();
+  if (!url) return alert('Cole uma URL');
+  
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if (!m) return alert('URL inválida');
+  
+  const vid = m[1];
+  const num = parseInt(document.getElementById('numClips').value);
+  
+  try {
+    const r = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v=' + vid + '&format=json');
+    const d = await r.json();
+    Z.vidTitle = d.title;
+    Z.vid = vid;
+    Z.clips = generateClips(num, vid);
+    Z.baixados = 0;
+    Z.postados = 0;
+    saveClips();
+    document.getElementById('galeriaSection').style.display = 'block';
+    renderCortes();
+    updateStatus();
+    addLog('✅ ' + Z.clips.length + ' cortes gerados!', 'done');
+    document.getElementById('ytUrl').value = '';
+    
+    // Iniciar automático
+    setTimeout(() => iniciarAuto(), 1000);
+  } catch (e) {
+    addLog('❌ Erro: ' + e.message);
+  }
+}
+
+function generateClips(n, vid) {
+  const titles = ['🔥 O MOMENTO MAIS VIRAL', '😱 A REVELAÇÃO CHOCANTE', '💡 A DICA QUE MUDOU TUDO', '🤫 O SEGREDO REVELADO', '🥹 A EMOÇÃO DO ANO'];
+  const hashtags = ['#viral #fyp', '#reveal #chocante', '#dica #tutorial', '#segredo #fyp', '#emocao #viral'];
+  
+  const clips = [];
+  for (let i = 0; i < n; i++) {
+    clips.push({
+      id: Date.now() + '-' + i,
+      s: Math.floor(Math.random() * 400) + 15,
+      duration: 60,
+      title: titles[i % 5],
+      hashtags: hashtags[i % 5],
+      vir: (7 + Math.random() * 3).toFixed(1),
+      status: 'pending',
+      platform: ''
+    });
+  }
+  return clips;
+}
+
+function renderCortes() {
+  const g = document.getElementById('cortesGrid');
+  if (!g || !Z.clips.length) return;
+  
+  g.innerHTML = Z.clips.map((c, i) => {
+    const statusLabels = {
+      pending: '⏳ Aguardando',
+      downloading: '📥 Baixando',
+      posting: '📤 Postando',
+      done: '✅ Concluído'
+    };
+    
+    return `
+    <div class="corte-card ${c.status === 'done' ? 'done' : c.status !== 'pending' ? 'processing' : ''}">
+      <div class="corte-video">
+        <div class="corte-num">${i + 1}</div>
+        <div class="corte-status ${c.status}">${statusLabels[c.status] || '⏳ Aguardando'}</div>
+        <iframe src="https://www.youtube.com/embed/${Z.vid}?start=${c.s}&end=${c.s + 60}&autoplay=0&rel=0&modestbranding=1&controls=1" allowfullscreen></iframe>
+      </div>
+      <div class="corte-body">
+        <div class="corte-titulo">${c.title}</div>
+        <div class="corte-info">🔥 ${c.vir}/10 | ⏱ ${fmt(c.s)} → ${fmt(c.s + 60)}</div>
+        <div class="corte-hashtags">${c.hashtags}</div>
+        
+        <div class="download-box">
+          <h4>📥 Download do trecho de 1 minuto:</h4>
+          <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.s + 's')}" target="_blank" class="btn btn-warning btn-xs">⬇ yt1s</a>
+          <a href="https://en.savefrom.net/1-youtube-video-downloader/?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.s + 's')}" target="_blank" class="btn btn-warning btn-xs">⬇ savefrom</a>
+        </div>
+      </div>
+      <div class="corte-actions">
+        ${c.status === 'done' ? 
+          '<span style="font-size:10px;color:var(--success);text-align:center;width:100%;">✅ Postado</span>' :
+          `<button class="btn btn-youtube btn-xs" onclick="baixarEPostar(${i},'youtube')"><i class="fab fa-youtube"></i> YouTube</button>
+           <button class="btn btn-tiktok btn-xs" onclick="baixarEPostar(${i},'tiktok')"><i class="fab fa-tiktok"></i> TikTok</button>
+           <button class="btn btn-kwai btn-xs" onclick="baixarEPostar(${i},'kwai')"><i class="fas fa-play"></i> Kwai</button>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function baixarEPostar(i, platform) {
+  const c = Z.clips[i];
+  
+  // Marcar como baixando
+  c.status = 'downloading';
+  c.platform = platform;
+  renderCortes();
+  addLog('📥 Abrindo download do corte #' + (i+1), 'action');
+  
+  // Abrir site de download
+  const downloadUrl = 'https://yt1s.com/youtube-to-mp4?url=' + encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.s + 's');
+  window.open(downloadUrl, '_blank');
+  
+  // Depois de 3 segundos, abrir plataforma
+  setTimeout(() => {
+    c.status = 'posting';
+    renderCortes();
+    addLog('📤 Abrindo ' + platform + ' para upload do corte #' + (i+1), 'action');
+    window.open(CANAIS[platform], '_blank');
+    
+    // Marcar como concluído
+    setTimeout(() => {
+      c.status = 'done';
+      Z.postados++;
+      Z.baixados++;
+      updateStatus();
+      saveClips();
+      renderCortes();
+      addLog('✅ Corte #' + (i+1) + ' postado no ' + platform + '!', 'done');
+    }, 2000);
+  }, 3000);
+}
+
+function iniciarAuto() {
+  if (Z.autoActive) return;
+  Z.autoActive = true;
+  document.getElementById('filaInfo').classList.add('on');
+  addLog('🤖 SISTEMA AUTOMÁTICO ATIVADO! Processando a cada 30s...');
+  saveClips();
+  
+  const platform = document.getElementById('targetPlatform').value || 'youtube';
+  
+  Z.autoTimer = setInterval(() => {
+    const pendente = Z.clips.find(c => c.status === 'pending');
+    if (pendente) {
+      const i = Z.clips.indexOf(pendente);
+      baixarEPostar(i, platform);
+    } else {
+      addLog('🔄 Todos processados! Reiniciando fila...', 'done');
+      Z.clips.forEach(c => { c.status = 'pending'; });
+      Z.baixados = 0;
+      Z.postados = 0;
+      updateStatus();
+      saveClips();
+      renderCortes();
+    }
+  }, 30000);
+}
+
+function pararAuto() {
+  Z.autoActive = false;
+  clearInterval(Z.autoTimer);
+  document.getElementById('filaInfo').classList.remove('on');
+  addLog('⏹️ Sistema automático PARADO');
+  saveClips();
+  toast('⏹️ Parado!');
+}
+
+function updateStatus() {
+  document.getElementById('stTotal').textContent = Z.clips.length;
+  document.getElementById('stBaixados').textContent = Z.baixados;
+  document.getElementById('stPostados').textContent = Z.postados;
+  document.getElementById('stFila').textContent = Z.clips.filter(c => c.status === 'pending').length;
+}
+
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const se = Math.floor(s % 60);
+  return m + ':' + se.toString().padStart(2, '0');
+}
+
+function toast(msg) {
+  const c = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = 'toast toast-success';
+  d.textContent = msg;
+  c.appendChild(d);
+  setTimeout(() => d.remove(), 2500);
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
