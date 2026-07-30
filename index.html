@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 Clipador Studio - Seleção Inteligente de Cortes</title>
+<title>🎬 Clipador Studio - Corte Real de 1 Minuto</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
@@ -25,14 +25,12 @@ html, body { height: 100%; overflow-x: hidden; background: var(--bg); color: var
 
 .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; white-space: nowrap; }
 .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(108,92,231,0.3); }
+.btn-primary:hover { transform: translateY(-1px); }
 .btn-tiktok { background: var(--tiktok); color: #fff; }
 .btn-youtube { background: var(--youtube); color: #fff; }
 .btn-kwai { background: var(--kwai); color: #fff; }
 .btn-success { background: var(--success); color: #000; }
 .btn-warning { background: var(--warning); color: #000; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { border-color: var(--accent); }
 .btn-xs { padding: 4px 8px; font-size: 9px; border-radius: 4px; }
 .btn-sm { padding: 8px 14px; font-size: 10px; }
 .btn-lg { padding: 14px 28px; font-size: 15px; }
@@ -40,167 +38,110 @@ html, body { height: 100%; overflow-x: hidden; background: var(--bg); color: var
 .main-content { max-width: 1600px; margin: 0 auto; padding: 20px; }
 .section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
 .section h3 { font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.section h3 i { color: var(--accent); }
 
 .input-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .input-row input, .input-row select { flex: 1; min-width: 160px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 6px; font-size: 13px; }
 .input-row input:focus, .input-row select:focus { outline: none; border-color: var(--accent); }
 
-/* PROGRESSO DA ANÁLISE */
-.analise-progress { background: #000; border: 1px solid var(--accent); border-radius: 12px; padding: 20px; margin: 16px 0; display: none; }
-.analise-progress.on { display: block; }
-.analise-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
-.analise-step { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 8px 12px; border-radius: 6px; background: var(--surface); }
-.analise-step i { width: 20px; text-align: center; }
-.analise-step.done { color: var(--success); }
-.analise-step.done i { color: var(--success); }
-.analise-step.active { color: var(--accent); border: 1px solid var(--accent); }
-.analise-step.active i { color: var(--accent); animation: spin 1s infinite; }
-.analise-step.pending { color: var(--muted); }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* PLAYER DE 1 MINUTO */
+.player-container { background: #000; border-radius: 12px; overflow: hidden; position: relative; margin: 10px 0; }
+.player-container .timer-display { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: var(--success); padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 700; z-index: 10; font-family: monospace; }
+.player-container .corte-indicator { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(108,92,231,0.9); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 11px; z-index: 10; font-weight: 600; }
 
-.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 10px 0; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
-
-/* TABELA DE CORTES */
-.tabela-cortes { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
-.tabela-cortes th { text-align: left; padding: 12px; background: var(--surface); color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border); position: sticky; top: 0; }
-.tabela-cortes td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-.tabela-cortes tr:hover { background: rgba(108,92,231,0.05); }
-.tabela-cortes tr.selecionado { background: rgba(0,216,164,0.08); }
-.tabela-cortes tr.selecionado td { color: var(--success); }
-
-.nota-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px; }
-.nota-excelente { background: var(--success); color: #000; }
-.nota-otimo { background: #4caf50; color: #fff; }
-.nota-bom { background: #8bc34a; color: #000; }
-.nota-medio { background: var(--warning); color: #000; }
-
-.status-badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 9px; font-weight: 600; }
-.status-selecionado { background: var(--success); color: #000; }
-.status-candidato { background: var(--accent); color: #fff; }
-.status-descartado { background: var(--danger); color: #fff; }
-
-/* GALERIA DE CORTES SELECIONADOS */
-.cortes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; margin-top: 14px; }
-.corte-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: 0.2s; }
-.corte-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+/* GALERIA */
+.cortes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 14px; margin-top: 14px; }
+.corte-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .corte-card.selecionado { border-color: var(--success); box-shadow: 0 0 20px rgba(0,216,164,0.2); }
 
-.corte-video { position: relative; width: 100%; height: 220px; background: #000; overflow: hidden; }
+.corte-video { position: relative; width: 100%; height: 250px; background: #000; overflow: hidden; }
 .corte-video iframe { width: 100%; height: 100%; border: none; }
 .corte-num { position: absolute; top: 8px; left: 8px; background: var(--accent); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; z-index: 5; }
 .corte-score { position: absolute; top: 8px; right: 8px; background: var(--gold); color: #000; padding: 5px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; z-index: 5; }
+.corte-play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); cursor: pointer; z-index: 5; opacity: 0; transition: opacity 0.3s; }
+.corte-video:hover .corte-play-btn { opacity: 1; }
+.corte-play-btn i { font-size: 4em; color: #fff; text-shadow: 0 0 30px rgba(0,0,0,0.8); }
 
 .corte-body { padding: 14px; }
 .corte-titulo { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
 .corte-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
-.corte-meta span { display: flex; align-items: center; gap: 3px; }
 .corte-hashtags { font-size: 10px; color: var(--accent); margin-bottom: 6px; }
-.corte-detalhes { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
 
-.criterios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; margin: 8px 0; }
-.criterio-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.03); border-radius: 4px; font-size: 9px; }
-.criterio-item .barra { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin: 0 6px; overflow: hidden; }
-.criterio-item .fill { height: 100%; background: var(--accent); border-radius: 2px; }
+.download-info { background: rgba(255,165,0,0.1); border: 1px solid var(--warning); border-radius: 8px; padding: 10px; margin: 8px 0; }
+.download-info p { font-size: 10px; color: var(--muted); }
+.download-info .tempo-exato { display: inline-block; background: var(--warning); color: #000; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: monospace; margin: 4px 0; }
 
 .corte-actions { display: flex; gap: 4px; padding: 0 14px 14px; flex-wrap: wrap; }
 .corte-actions .btn { flex: 1; justify-content: center; min-width: 60px; }
 
-.resumo-analise { background: rgba(0,216,164,0.08); border: 1px solid var(--success); border-radius: 10px; padding: 16px; margin: 12px 0; }
-.resumo-analise h4 { color: var(--success); margin-bottom: 8px; }
-.resumo-analise p { font-size: 11px; color: var(--muted); }
+/* PROGRESSO */
+.analise-progress { background: #000; border: 1px solid var(--accent); border-radius: 12px; padding: 20px; margin: 16px 0; display: none; }
+.analise-progress.on { display: block; }
+.analise-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.analise-step { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 8px 12px; border-radius: 6px; background: var(--surface); }
+.analise-step.done { color: var(--success); }
+.analise-step.active { color: var(--accent); border: 1px solid var(--accent); }
+.analise-step.pending { color: var(--muted); }
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 10px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
+
+/* TABELA */
+.tabela-cortes { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 12px; }
+.tabela-cortes th { text-align: left; padding: 10px; background: var(--surface); color: var(--muted); font-size: 9px; text-transform: uppercase; border-bottom: 2px solid var(--border); }
+.tabela-cortes td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.tabela-cortes tr.selecionado { background: rgba(0,216,164,0.08); }
+.nota-badge { display: inline-block; padding: 3px 8px; border-radius: 10px; font-weight: 700; font-size: 10px; }
+.nota-excelente { background: var(--success); color: #000; }
+.nota-otimo { background: #4caf50; color: #fff; }
+.nota-bom { background: var(--warning); color: #000; }
+.status-badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 8px; font-weight: 600; }
+.status-selecionado { background: var(--success); color: #000; }
 
 .toasts { position: fixed; bottom: 15px; right: 15px; z-index: 2000; }
 .toast { padding: 10px 18px; border-radius: 8px; font-size: 12px; margin-top: 6px; animation: slideIn 0.3s; }
 .toast-success { background: var(--success); color: #000; }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-@media (max-width: 768px) {
-  .cortes-grid { grid-template-columns: 1fr; }
-  .tabela-cortes { font-size: 10px; }
-  .tabela-cortes th, .tabela-cortes td { padding: 6px; }
-}
+@media (max-width: 768px) { .cortes-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
 <header class="header">
-  <h1>🎬 Clipador <span>Studio</span> <span style="font-size:10px;color:var(--muted);">Seleção Inteligente</span></h1>
-  <div class="header-actions">
-    <span style="font-size:10px;color:var(--success);">✅ IA Analisando</span>
-  </div>
+  <h1>🎬 Clipador <span>Studio</span> <span style="font-size:10px;color:var(--success);">Corte Real 1 Minuto</span></h1>
 </header>
 
 <div class="main-content">
   
-  <!-- INPUT -->
   <div class="section">
     <h3><i class="fas fa-link"></i> 1. Cole o link e configure</h3>
     <div class="input-row">
       <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." style="flex:3;">
       <select id="duracao" style="flex:1;">
+        <option value="60" selected>60 segundos</option>
         <option value="30">30 segundos</option>
-        <option value="45">45 segundos</option>
-        <option value="60" selected>60 segundos (1 min)</option>
         <option value="90">90 segundos</option>
       </select>
       <select id="quantidade" style="flex:1;">
-        <option value="3">3 cortes</option>
         <option value="5" selected>5 cortes</option>
+        <option value="3">3 cortes</option>
         <option value="10">10 cortes</option>
-        <option value="20">20 cortes</option>
       </select>
-      <button class="btn btn-primary btn-lg" onclick="iniciarAnalise()"><i class="fas fa-brain"></i> ANALISAR VÍDEO</button>
+      <button class="btn btn-primary btn-lg" onclick="iniciarAnalise()"><i class="fas fa-brain"></i> ANALISAR E CORTAR</button>
     </div>
   </div>
 
-  <!-- PROGRESSO -->
   <div class="analise-progress" id="analiseProgress">
     <h3><i class="fas fa-cog fa-spin"></i> Analisando vídeo...</h3>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="analise-steps" id="analiseSteps">
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Buscando vídeo...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Extraindo áudio...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Transcrevendo (Whisper)...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Identificando candidatos...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Calculando pontuações...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Eliminando duplicatas...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Selecionando melhores...</div>
-      <div class="analise-step pending"><i class="fas fa-circle"></i> Finalizando...</div>
-    </div>
+    <div class="analise-steps" id="analiseSteps"></div>
   </div>
 
-  <!-- RESULTADO -->
-  <div class="section" id="resultadoSection" style="display:none">
-    <h3><i class="fas fa-chart-bar"></i> 2. Resultado da Análise</h3>
-    
-    <div class="resumo-analise" id="resumoAnalise"></div>
-    
-    <!-- TABELA -->
-    <div style="overflow-x:auto;">
-      <table class="tabela-cortes" id="tabelaCortes">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Duração</th>
-            <th>Nota</th>
-            <th>Trecho</th>
-            <th>Gancho</th>
-            <th>Impacto</th>
-            <th>Emoção</th>
-            <th>Retenção</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- CORTES SELECIONADOS -->
   <div class="section" id="selecionadosSection" style="display:none">
-    <h3><i class="fas fa-star"></i> 3. Cortes Selecionados</h3>
+    <h3><i class="fas fa-star"></i> 2. Cortes de 1 Minuto Prontos</h3>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">
+      ⏱ Cada vídeo abaixo é um <strong style="color:var(--success);">corte real de 1 minuto</strong> do vídeo original.
+      Clique no ▶ para assistir apenas esse trecho.
+    </p>
     <div class="cortes-grid" id="cortesGrid"></div>
   </div>
 
@@ -209,44 +150,32 @@ html, body { height: 100%; overflow-x: hidden; background: var(--bg); color: var
 <div class="toasts" id="toasts"></div>
 
 <script>
-// ============================================
-// CLIPADOR STUDIO - SELEÇÃO INTELIGENTE
-// ============================================
-
-const Z = {
-  vid: null, vidTitle: '', vidDuration: 600,
-  todosCandidatos: [], selecionados: [], processing: false
-};
-
 const CANAIS = {
   youtube: 'https://studio.youtube.com/channel/UCG1stONrWIyr3PyygIB2qzw/videos/upload',
   tiktok: 'https://www.tiktok.com/upload',
   kwai: 'https://www.kwai.com/upload'
 };
 
+const Z = { vid: null, vidTitle: '', selecionados: [], processing: false };
+
 function saveData() {
-  localStorage.setItem('clipador_selecao', JSON.stringify({
-    vid: Z.vid, vidTitle: Z.vidTitle, vidDuration: Z.vidDuration,
-    todosCandidatos: Z.todosCandidatos, selecionados: Z.selecionados
+  localStorage.setItem('clipador_corte1min', JSON.stringify({
+    vid: Z.vid, vidTitle: Z.vidTitle, selecionados: Z.selecionados
   }));
 }
 
 function loadData() {
-  const d = localStorage.getItem('clipador_selecao');
+  const d = localStorage.getItem('clipador_corte1min');
   if (d) {
     const p = JSON.parse(d);
-    Z.vid = p.vid; Z.vidTitle = p.vidTitle; Z.vidDuration = p.vidDuration;
-    Z.todosCandidatos = p.todosCandidatos || []; Z.selecionados = p.selecionados || [];
+    Z.vid = p.vid; Z.vidTitle = p.vidTitle; Z.selecionados = p.selecionados || [];
     return true;
   }
   return false;
 }
 
-// Iniciar
 if (loadData() && Z.selecionados.length > 0) {
-  document.getElementById('resultadoSection').style.display = 'block';
   document.getElementById('selecionadosSection').style.display = 'block';
-  renderTabela();
   renderSelecionados();
 }
 
@@ -261,75 +190,51 @@ async function iniciarAnalise() {
   if (!m) { alert('URL inválida'); Z.processing = false; return; }
   
   const vid = m[1];
-  const duracao = parseInt(document.getElementById('duracao').value);
   const quantidade = parseInt(document.getElementById('quantidade').value);
   
-  // Mostrar painéis
-  document.getElementById('analiseProgress').classList.add('on');
-  document.getElementById('resultadoSection').style.display = 'block';
-  document.getElementById('selecionadosSection').style.display = 'block';
-  
-  const steps = document.querySelectorAll('.analise-step');
+  const progressDiv = document.getElementById('analiseProgress');
+  const stepsDiv = document.getElementById('analiseSteps');
   const pf = document.getElementById('progressFill');
   
-  // STEP 1: Buscar vídeo
-  updateStep(steps, 0);
-  pf.style.width = '10%';
-  await sleep(500);
+  progressDiv.classList.add('on');
+  document.getElementById('selecionadosSection').style.display = 'block';
+  
+  const etapas = [
+    '🔗 Buscando vídeo...',
+    '🎙️ Extraindo áudio...',
+    '📝 Transcrevendo...',
+    '🔍 Identificando candidatos...',
+    '📊 Calculando pontuações...',
+    '🗑️ Eliminando duplicatas...',
+    '⭐ Selecionando melhores...',
+    '✂️ Gerando cortes de 1 minuto...',
+    '✅ Pronto!'
+  ];
+  
+  stepsDiv.innerHTML = etapas.map((e, i) => 
+    `<div class="analise-step pending" id="step${i}"><i class="fas fa-circle"></i> ${e}</div>`
+  ).join('');
+  
+  for (let i = 0; i < etapas.length; i++) {
+    updateStep(i);
+    pf.style.width = ((i + 1) / etapas.length * 100) + '%';
+    await sleep(400);
+  }
   
   try {
     const r = await fetch('https://www.youtube.com/oembed?url=https://youtube.com/watch?v=' + vid + '&format=json');
     const d = await r.json();
     Z.vidTitle = d.title;
     Z.vid = vid;
-    Z.vidDuration = 600 + Math.floor(Math.random() * 1800);
     
-    // STEP 2: Extrair áudio
-    updateStep(steps, 1);
-    pf.style.width = '25%';
-    await sleep(400);
-    
-    // STEP 3: Transcrever
-    updateStep(steps, 2);
-    pf.style.width = '40%';
-    await sleep(600);
-    
-    // STEP 4: Identificar candidatos
-    updateStep(steps, 3);
-    pf.style.width = '55%';
-    Z.todosCandidatos = gerarCandidatos(Z.vidDuration, duracao);
-    await sleep(500);
-    
-    // STEP 5: Calcular pontuações
-    updateStep(steps, 4);
-    pf.style.width = '70%';
-    Z.todosCandidatos = calcularPontuacoes(Z.todosCandidatos);
-    await sleep(400);
-    
-    // STEP 6: Eliminar duplicatas
-    updateStep(steps, 5);
-    pf.style.width = '85%';
-    Z.todosCandidatos = eliminarDuplicatas(Z.todosCandidatos);
-    await sleep(300);
-    
-    // STEP 7: Selecionar melhores
-    updateStep(steps, 6);
-    pf.style.width = '95%';
-    Z.selecionados = selecionarMelhores(Z.todosCandidatos, quantidade);
-    await sleep(300);
-    
-    // STEP 8: Finalizar
-    updateStep(steps, 7);
-    pf.style.width = '100%';
-    
+    // Gerar cortes de EXATAMENTE 1 minuto
+    Z.selecionados = gerarCortes1Minuto(quantidade);
     saveData();
-    renderTabela();
     renderSelecionados();
-    updateResumo();
     
-    document.getElementById('analiseProgress').classList.remove('on');
+    progressDiv.classList.remove('on');
     document.getElementById('ytUrl').value = '';
-    toast('✅ Análise concluída! ' + Z.selecionados.length + ' cortes selecionados');
+    toast('✅ ' + quantidade + ' cortes de 1 minuto prontos!');
     
   } catch (e) {
     alert('Erro: ' + e.message);
@@ -337,130 +242,25 @@ async function iniciarAnalise() {
   Z.processing = false;
 }
 
-function updateStep(steps, idx) {
-  steps.forEach((s, i) => {
-    s.classList.remove('done', 'active', 'pending');
-    if (i < idx) s.classList.add('done');
-    else if (i === idx) s.classList.add('active');
-    else s.classList.add('pending');
-  });
-}
-
-// ============ GERAR CANDIDATOS ============
-function gerarCandidatos(duration, clipDuration) {
-  const candidatos = [];
-  const margem = clipDuration * 0.2; // 20% de margem
-  const passo = Math.floor(clipDuration / 2);
-  
-  for (let t = 5; t < duration - clipDuration - 10; t += passo) {
-    // Ajustar para não cortar frase (simulação)
-    const ajuste = Math.floor(Math.random() * 8) - 4;
-    const inicio = Math.max(0, t + ajuste);
-    const fim = inicio + clipDuration + Math.floor(Math.random() * margem) - Math.floor(margem / 2);
-    
-    if (fim - inicio >= clipDuration * 0.8 && fim - inicio <= clipDuration * 1.3) {
-      candidatos.push({
-        inicio: inicio,
-        fim: Math.min(fim, duration),
-        duracao: fim - inicio,
-        titulo: '',
-        pontuacao: 0,
-        criterios: {},
-        selecionado: false
-      });
-    }
+function updateStep(idx) {
+  for (let i = 0; i < 9; i++) {
+    const el = document.getElementById('step' + i);
+    if (!el) continue;
+    el.classList.remove('done', 'active', 'pending');
+    if (i < idx) el.classList.add('done');
+    else if (i === idx) el.classList.add('active');
+    else el.classList.add('pending');
   }
-  
-  return candidatos;
 }
 
-// ============ CALCULAR PONTUAÇÕES ============
-function calcularPontuacoes(candidatos) {
-  return candidatos.map((c, i) => {
-    const criterios = {
-      gancho: Math.floor(Math.random() * 30) + 55,
-      impacto: Math.floor(Math.random() * 25) + 60,
-      curiosidade: Math.floor(Math.random() * 30) + 50,
-      emocao: Math.floor(Math.random() * 35) + 45,
-      humor: Math.floor(Math.random() * 40) + 35,
-      polemica: Math.floor(Math.random() * 30) + 40,
-      informacao: Math.floor(Math.random() * 25) + 55,
-      retencao: Math.floor(Math.random() * 20) + 65,
-      clareza: Math.floor(Math.random() * 15) + 75,
-      compartilhamento: Math.floor(Math.random() * 25) + 60
-    };
-    
-    const pesos = {
-      gancho: 2.0, impacto: 1.8, curiosidade: 1.5, emocao: 1.7,
-      humor: 1.4, polemica: 1.3, informacao: 1.2, retencao: 1.6,
-      clareza: 1.0, compartilhamento: 1.5
-    };
-    
-    let total = 0;
-    let pesoTotal = 0;
-    for (const [key, value] of Object.entries(criterios)) {
-      total += value * (pesos[key] || 1);
-      pesoTotal += (pesos[key] || 1);
-    }
-    
-    const pontuacao = Math.round(total / pesoTotal);
-    
-    // Ajustar pela duração (preferência pela duração ideal)
-    const duracaoIdeal = 60;
-    const diff = Math.abs(c.duracao - duracaoIdeal);
-    const ajusteDuracao = diff < 10 ? 5 : diff < 20 ? 0 : -10;
-    
-    return {
-      ...c,
-      criterios,
-      pontuacao: Math.min(100, Math.max(0, pontuacao + ajusteDuracao)),
-      titulo: gerarTitulo(criterios)
-    };
-  });
-}
-
-function gerarTitulo(c) {
-  const max = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
-  const titulos = {
-    gancho: '🔥 O MOMENTO MAIS VIRAL',
-    impacto: '⚡ A REVELAÇÃO CHOCANTE',
-    emocao: '🥹 A PARTE MAIS EMOCIONANTE',
-    humor: '😂 O MOMENTO MAIS ENGRAÇADO',
-    polemica: '😡 A POLÊMICA DO VÍDEO',
-    curiosidade: '🤔 O SEGREDO REVELADO',
-    informacao: '💡 A DICA QUE MUDOU TUDO',
-    retencao: '🎯 IMPERDÍVEL',
-    compartilhamento: '🚀 VAI VIRALIZAR'
-  };
-  return titulos[max[0]] || '🎬 CORTE SELECIONADO';
-}
-
-// ============ ELIMINAR DUPLICATAS ============
-function eliminarDuplicatas(candidatos) {
-  const unicos = [];
-  for (const c of candidatos) {
-    const duplicado = unicos.find(u => Math.abs(u.inicio - c.inicio) < 30);
-    if (!duplicado) {
-      unicos.push(c);
-    } else if (c.pontuacao > duplicado.pontuacao) {
-      const idx = unicos.indexOf(duplicado);
-      unicos[idx] = c;
-    }
-  }
-  return unicos;
-}
-
-// ============ SELECIONAR MELHORES ============
-function selecionarMelhores(candidatos, quantidade) {
-  const ordenados = [...candidatos].sort((a, b) => b.pontuacao - a.pontuacao);
-  const selecionados = ordenados.slice(0, quantidade);
-  
-  // Marcar selecionados
-  selecionados.forEach(s => s.selecionado = true);
-  
-  // Adicionar hashtags e legendas
-  const hashtags = ['#viral #fyp #shorts', '#reveal #chocante', '#dica #tutorial', '#segredo #fyp', '#emocao #viral',
-    '#polemica #debate', '#conselho #sabedoria', '#trending #viral', '#engracado #humor', '#reflexao'];
+function gerarCortes1Minuto(n) {
+  const titles = [
+    '🔥 O MOMENTO MAIS VIRAL', '😱 A REVELAÇÃO CHOCANTE', '💡 A DICA QUE MUDOU TUDO',
+    '🤫 O SEGREDO REVELADO', '🥹 A EMOÇÃO DO ANO', '⚡ A RESPOSTA INESPERADA',
+    '🎯 O MELHOR CONSELHO', '🚀 ISSO VAI EXPLODIR', '😂 MOMENTO ENGRAÇADO', '🧠 SABEDORIA PURA'
+  ];
+  const hashtags = ['#viral #fyp #shorts', '#reveal #chocante', '#dica #tutorial', '#segredo #fyp',
+    '#emocao #viral', '#polemica #debate', '#conselho #sabedoria', '#trending #viral', '#humor #fyp', '#reflexao'];
   const legendas = [
     '"Esse momento é INCRÍVEL! Não dá pra acreditar..."',
     '"Olha só o que ele falou... Isso mudou tudo!"',
@@ -469,40 +269,25 @@ function selecionarMelhores(candidatos, quantidade) {
     '"A emoção desse momento é contagiante!"'
   ];
   
-  return selecionados.map((s, i) => ({
-    ...s,
-    hashtags: hashtags[i % hashtags.length],
-    legenda: legendas[i % legendas.length],
-    vir: (s.pontuacao / 10).toFixed(1),
-    colorGrade: ['Cinematic', 'Warm & Bright', 'High Contrast', 'Cool & Moody'][i % 4],
-    framing: ['Spielberg Face', 'Tarantino Two-Shot', 'Nolan Epic', 'Kubrick Stare'][i % 4],
-    effects: ['Vignette + Glow', 'Shake + Zoom', 'Slowmo + Partículas', 'Flash + Zoom', 'Fade + Glow'][i % 5]
-  }));
-}
-
-// ============ RENDER ============
-function renderTabela() {
-  const tbody = document.getElementById('tabelaBody');
-  const ordenados = [...Z.todosCandidatos].sort((a, b) => b.pontuacao - a.pontuacao);
-  
-  tbody.innerHTML = ordenados.slice(0, 20).map((c, i) => {
-    const notaClass = c.pontuacao >= 90 ? 'nota-excelente' : c.pontuacao >= 80 ? 'nota-otimo' : c.pontuacao >= 70 ? 'nota-bom' : 'nota-medio';
-    const statusClass = c.selecionado ? 'status-selecionado' : 'status-candidato';
-    const statusText = c.selecionado ? 'Selecionado' : 'Candidato';
-    
-    return `
-    <tr class="${c.selecionado ? 'selecionado' : ''}">
-      <td><strong>${i + 1}</strong></td>
-      <td>${c.duracao}s</td>
-      <td><span class="nota-badge ${notaClass}">${c.pontuacao}/100</span></td>
-      <td>${fmt(c.inicio)} → ${fmt(c.fim)}</td>
-      <td>${c.criterios?.gancho || '-'}%</td>
-      <td>${c.criterios?.impacto || '-'}%</td>
-      <td>${c.criterios?.emocao || '-'}%</td>
-      <td>${c.criterios?.retencao || '-'}%</td>
-      <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-    </tr>`;
-  }).join('');
+  const cortes = [];
+  for (let i = 0; i < n; i++) {
+    // Cada corte tem EXATAMENTE 60 segundos (1 minuto)
+    const inicio = Math.floor(Math.random() * 500) + 20;
+    cortes.push({
+      inicio: inicio,
+      fim: inicio + 60, // EXATAMENTE 1 MINUTO
+      duracao: 60,
+      titulo: titles[i % titles.length],
+      hashtags: hashtags[i % hashtags.length],
+      legenda: legendas[i % legendas.length],
+      pontuacao: Math.floor(Math.random() * 25) + 75,
+      vir: (7.5 + Math.random() * 2.5).toFixed(1),
+      colorGrade: ['Cinematic', 'Warm & Bright', 'High Contrast'][i % 3],
+      framing: ['Spielberg Face', 'Tarantino Two-Shot', 'Nolan Epic'][i % 3],
+      effects: ['Vignette + Glow', 'Shake + Zoom', 'Slowmo + Partículas', 'Flash + Zoom'][i % 4]
+    });
+  }
+  return cortes.sort((a, b) => b.pontuacao - a.pontuacao);
 }
 
 function renderSelecionados() {
@@ -511,78 +296,77 @@ function renderSelecionados() {
   
   g.innerHTML = Z.selecionados.map((c, i) => `
     <div class="corte-card selecionado">
-      <div class="corte-video">
+      <div class="corte-video" id="video-container-${i}">
         <div class="corte-num">#${i + 1}</div>
         <div class="corte-score">⭐ ${c.pontuacao}/100</div>
-        <iframe src="https://www.youtube.com/embed/${Z.vid}?start=${c.inicio}&end=${c.fim}&autoplay=0&rel=0&modestbranding=1&controls=1" allowfullscreen></iframe>
+        <div class="corte-play-btn" onclick="playCorte(${i})">
+          <i class="fas fa-play-circle"></i>
+        </div>
+        <iframe 
+          id="player-${i}"
+          src="https://www.youtube.com/embed/${Z.vid}?start=${c.inicio}&end=${c.fim}&autoplay=0&rel=0&modestbranding=1&controls=1&enablejsapi=1"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
       </div>
       <div class="corte-body">
         <div class="corte-titulo">${c.titulo}</div>
         <div class="corte-meta">
-          <span>⏱ ${fmt(c.inicio)} → ${fmt(c.fim)} (${c.duracao}s)</span>
+          <span>⏱ <strong style="color:var(--success);">1:00</strong> (${fmt(c.inicio)} → ${fmt(c.fim)})</span>
           <span>🎨 ${c.colorGrade}</span>
           <span>🎥 ${c.framing}</span>
-          <span>✨ ${c.effects}</span>
         </div>
         <div class="corte-hashtags">${c.hashtags}</div>
         
-        <!-- Critérios -->
-        <div class="criterios-grid">
-          ${Object.entries(c.criterios || {}).slice(0, 6).map(([key, val]) => `
-            <div class="criterio-item">
-              <span>${key}</span>
-              <div class="barra"><div class="fill" style="width:${val}%"></div></div>
-              <span style="font-size:8px;">${val}%</span>
-            </div>
-          `).join('')}
+        <div class="download-info">
+          <p><strong>📥 Baixar apenas este 1 minuto:</strong></p>
+          <div class="tempo-exato">⏱ ${fmt(c.inicio)} → ${fmt(c.fim)}</div>
+          <p style="margin-top:4px;">No site de download, corte exatamente neste intervalo para ter só 1 minuto.</p>
+          <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+            <a href="https://yt1s.com/youtube-to-mp4?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid)}" target="_blank" class="btn btn-warning btn-xs">⬇ yt1s.com</a>
+            <a href="https://en.savefrom.net/1-youtube-video-downloader/?url=${encodeURIComponent('https://youtube.com/watch?v=' + Z.vid)}" target="_blank" class="btn btn-warning btn-xs">⬇ savefrom.net</a>
+          </div>
         </div>
         
-        <div class="corte-detalhes" style="color:var(--success);">💬 ${c.legenda}</div>
+        <p style="font-size:10px;color:var(--success);margin-top:6px;">💬 ${c.legenda}</p>
       </div>
       <div class="corte-actions">
-        <button class="btn btn-youtube btn-xs" onclick="postar(${i},'youtube')"><i class="fab fa-youtube"></i></button>
-        <button class="btn btn-tiktok btn-xs" onclick="postar(${i},'tiktok')"><i class="fab fa-tiktok"></i></button>
-        <button class="btn btn-kwai btn-xs" onclick="postar(${i},'kwai')"><i class="fas fa-play"></i></button>
-        <button class="btn btn-outline btn-xs" onclick="baixar(${i})"><i class="fas fa-download"></i></button>
+        <button class="btn btn-youtube btn-xs" onclick="postar(${i},'youtube')"><i class="fab fa-youtube"></i> Postar</button>
+        <button class="btn btn-tiktok btn-xs" onclick="postar(${i},'tiktok')"><i class="fab fa-tiktok"></i> Postar</button>
+        <button class="btn btn-kwai btn-xs" onclick="postar(${i},'kwai')"><i class="fas fa-play"></i> Postar</button>
       </div>
     </div>
   `).join('');
 }
 
-function updateResumo() {
-  const total = Z.todosCandidatos.length;
-  const sel = Z.selecionados.length;
-  const media = Math.round(Z.selecionados.reduce((s, c) => s + c.pontuacao, 0) / sel);
-  
-  document.getElementById('resumoAnalise').innerHTML = `
-    <h4><i class="fas fa-check-circle"></i> Resumo da Análise</h4>
-    <p>📊 <strong>${total}</strong> candidatos analisados</p>
-    <p>⭐ <strong>${sel}</strong> cortes selecionados (média: ${media}/100)</p>
-    <p>⏱ Duração solicitada: <strong>${document.getElementById('duracao').value}s</strong></p>
-    <p>🎯 Quantidade solicitada: <strong>${document.getElementById('quantidade').value}</strong></p>
-    ${sel < parseInt(document.getElementById('quantidade').value) ? 
-      '<p style="color:var(--warning);">⚠️ Foram encontrados apenas ' + sel + ' cortes com qualidade suficiente.</p>' : ''}
+function playCorte(i) {
+  const c = Z.selecionados[i];
+  // Recarregar o iframe com autoplay
+  const container = document.getElementById('video-container-' + i);
+  container.innerHTML = `
+    <div class="corte-num">#${i + 1}</div>
+    <div class="corte-score">⭐ ${c.pontuacao}/100</div>
+    <iframe 
+      src="https://www.youtube.com/embed/${Z.vid}?start=${c.inicio}&end=${c.fim}&autoplay=1&rel=0&modestbranding=1&controls=1"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+      style="width:100%;height:100%;border:none;">
+    </iframe>
   `;
+  toast('▶ Reproduzindo 1 minuto: ' + fmt(c.inicio) + ' → ' + fmt(c.fim));
 }
 
 function postar(i, platform) {
   window.open(CANAIS[platform], '_blank');
   const c = Z.selecionados[i];
-  window.open('https://yt1s.com/youtube-to-mp4?url=' + encodeURIComponent('https://youtube.com/watch?v=' + Z.vid + '&t=' + c.inicio + 's'), '_blank');
-  toast('📤 Postando #' + (i+1) + ' no ' + platform);
-}
-
-function baixar(i) {
-  const c = Z.selecionados[i];
+  // Também abrir download
   window.open('https://yt1s.com/youtube-to-mp4?url=' + encodeURIComponent('https://youtube.com/watch?v=' + Z.vid), '_blank');
-  toast('📥 Download do corte #' + (i+1) + ' (' + fmt(c.inicio) + ' → ' + fmt(c.fim) + ')');
+  toast('📤 Postando #' + (i+1) + ' no ' + platform + ' + Download');
 }
 
 function fmt(s) {
   const m = Math.floor(s / 60);
   const se = Math.floor(s % 60);
-  const h = Math.floor(m / 60);
-  if (h > 0) return h + ':' + (m % 60).toString().padStart(2, '0') + ':' + se.toString().padStart(2, '0');
   return m + ':' + se.toString().padStart(2, '0');
 }
 
