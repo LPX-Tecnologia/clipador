@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipForge AI — Cortes com IA</title>
+  <meta name="description" content="Crie cortes curtos com IA a partir de vídeos autorizados.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="bg-glow glow-one"></div>
+  <div class="bg-glow glow-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-mark">C</span>
+      <span>ClipForge <b>AI</b></span>
+    </a>
+    <div class="api-pill">
+      <span id="apiDot" class="dot offline"></span>
+      <span id="apiStatus">API desconectada</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">IA • SHORTS • REELS • TIKTOK</div>
+        <h1>Transforme vídeos em<br><span>cortes que prendem atenção.</span></h1>
+        <p>
+          Envie um vídeo autorizado, escolha quantos cortes deseja e deixe a
+          IA encontrar os melhores momentos.
+        </p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="card creator-card">
+        <div class="card-title">
+          <div>
+            <h2>Novo projeto</h2>
+            <p>Configure seu lote de cortes.</p>
+          </div>
+          <span class="step">01</span>
+        </div>
+
+        <form id="projectForm">
+          <label class="upload-zone" id="dropZone" for="videoInput">
+            <input id="videoInput" type="file" accept="video/*" hidden>
+            <div class="upload-icon">↑</div>
+            <strong id="fileTitle">Arraste seu vídeo aqui</strong>
+            <span id="fileInfo">ou clique para selecionar • MP4, MOV, WEBM</span>
+          </label>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="amount">Quantidade de cortes</label>
+              <div class="number-control">
+                <button type="button" id="minus">−</button>
+                <input id="amount" type="number" min="1" max="100" value="10">
+                <button type="button" id="plus">+</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="duration">Duração dos cortes</label>
+              <select id="duration">
+                <option value="30">30 segundos</option>
+                <option value="45">45 segundos</option>
+                <option value="60" selected>60 segundos</option>
+                <option value="90">90 segundos</option>
+                <option value="120">120 segundos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="options">
+            <div class="option-row">
+              <div>
+                <strong>Formato vertical 9:16</strong>
+                <span>Otimizado para Shorts, Reels e TikTok.</span>
+              </div>
+              <input id="vertical" type="checkbox" checked>
+            </div>
+
+            <div class="option-row">
+              <div>
+                <strong>Legendas animadas</strong>
+                <span>Preparar legendas sincronizadas para os cortes.</span>
+              </div>
+              <input id="captions" type="checkbox" checked>
+            </div>
+          </div>
+
+          <div class="notice">
+            <strong>Conteúdo autorizado</strong>
+            <span>Use apenas vídeos que você tenha direito de editar e publicar.</span>
+          </div>
+
+          <button class="primary-btn" id="generateBtn" type="submit">
+            <span>GERAR CORTES COM IA</span>
+            <span>→</span>
+          </button>
+        </form>
+      </div>
+
+      <aside class="card status-card">
+        <div class="card-title">
+          <div>
+            <h2>Processamento</h2>
+            <p>Acompanhe seu projeto em tempo real.</p>
+          </div>
+          <span class="step">02</span>
+        </div>
+
+        <div class="status-empty" id="statusEmpty">
+          <div class="pulse-icon">✦</div>
+          <h3>Nenhum projeto em processamento</h3>
+          <p>Selecione um vídeo e clique em “Gerar cortes com IA”.</p>
+        </div>
+
+        <div id="statusContent" class="hidden">
+          <div class="status-header">
+            <div>
+              <span class="small-label">STATUS</span>
+              <h3 id="statusText">Preparando...</h3>
+            </div>
+            <strong id="progressText">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+          <div class="processing-list">
+            <div class="processing-item" id="itemAnalyze">
+              <span>01</span><b>Análise do vídeo</b><em>aguardando</em>
+            </div>
+            <div class="processing-item" id="itemSelect">
+              <span>02</span><b>Seleção dos melhores momentos</b><em>aguardando</em>
+            </div>
+            <div class="processing-item" id="itemRender">
+              <span>03</span><b>Renderização dos cortes</b><em>aguardando</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-config">
+          <label for="apiUrl">URL da API</label>
+          <div class="api-input">
+            <input id="apiUrl" type="url" placeholder="https://sua-api.onrender.com">
+            <button type="button" id="saveApi">Salvar</button>
+          </div>
+          <small>A URL fica salva apenas neste navegador.</small>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card results-card">
+      <div class="card-title">
+        <div>
+          <h2>Cortes gerados</h2>
+          <p id="resultsSubtitle">Seus vídeos aparecerão aqui depois do processamento.</p>
+        </div>
+        <span id="resultCount" class="result-count">0 cortes</span>
+      </div>
+
+      <div id="resultsEmpty" class="results-empty">
+        <div class="film-icon">▣</div>
+        <p>Seus cortes ainda não foram gerados.</p>
+      </div>
+
+      <div id="resultsGrid" class="results-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>ClipForge AI</span>
+    <span>Frontend open source • Processamento no backend</span>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
