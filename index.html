@@ -1,4 +1,42 @@
 <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Clipador Studio</title>
+</head>
+<body style="background:#0a0a0f;color:white;font-family:sans-serif;padding:20px;">
+<h1>🎬 Clipador Studio</h1>
+<p>Se você está vendo isso, o HTML carregou!</p>
+
+<input type="text" id="ytUrl" placeholder="Cole o link do YouTube" style="padding:10px;width:100%;max-width:500px;margin:10px 0;background:#1a1a25;color:white;border:1px solid #2a2a3a;border-radius:6px;">
+<button onclick="testar()" style="padding:10px 20px;background:#6c5ce7;color:white;border:none;border-radius:6px;cursor:pointer;">TESTAR</button>
+
+<div id="resultado" style="margin-top:20px;"></div>
+
+<script>
+function testar() {
+  const url = document.getElementById('ytUrl').value;
+  if (!url) {
+    document.getElementById('resultado').innerHTML = '<p style="color:red;">Digite uma URL</p>';
+    return;
+  }
+  
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
+  if (!m) {
+    document.getElementById('resultado').innerHTML = '<p style="color:red;">URL inválida</p>';
+    return;
+  }
+  
+  const vid = m[1];
+  document.getElementById('resultado').innerHTML = `
+    <p style="color:green;">✅ Vídeo encontrado! ID: ${vid}</p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/${vid}?start=60&end=120" frameborder="0" allowfullscreen></iframe>
+    <p>Este é um trecho de 1 minuto (60s - 120s)</p>
+  `;
+}
+</script>
+</body>
+</html><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
